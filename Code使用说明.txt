@@ -1,0 +1,50 @@
+1.需要安装的插件:
+	/*———————————————————获取设备信息——————————————————————*/
+	链接: https://github.com/rebeccahughes/react-native-device-info	
+	/*———————————————————添加RN自带的组件, ScrollableTabView这个组件需要这个支持——————————————————————*/
+	命令: npm install --save react-static-container
+	/*———————————————————获取本地数据读写的组件(存/读档)——————————————————————*/
+	链接: https://github.com/sunnylqm/react-native-storage
+
+2.src下面文件夹的描述:
+	Scenes:存放各个界面文件
+	Component:Scenes中的各个界面文件用的组件
+	UserInfo:用于统计收集用户操作的代码
+	Common:一些通用的功能性组件
+		ScrollableTabView:封装了手势统计的TabView用于滑动翻页功能,文件夹下面的help.txt 有详细的组件说明
+			(源插件链接:https://github.com/skv-headless/react-native-scrollable-tab-view)
+		Popover.js:某个位置的泡泡条组件
+		Spinner.js:弹框组件
+3.RNSampleCode 功能演示需要用到的插件(在项目中可以选择安装):
+	/*———————————————————支持侧边弹出菜单——————————————————————*/
+	链接: https://github.com/react-native-community/react-native-side-menu 
+	/*———————————————————一些常用的图标——————————————————————*/
+	链接: https://github.com/oblador/react-native-vector-icons
+
+4.代码说明:
+	AppStyles.js 封装一些与显示有关的常用样式,以及一些各个页面统一使用的标准尺寸
+		ScreenWidth,ScreenHeight,MinWidth=1/PixelRatio,MinUnit=ScreenWidth/100
+	AppRoutes.js 记录每个页面的对象,供App.js中使用.分为3个部分
+		1.import Component 定义组件
+		2.RouteList 包含每个页面的基本属性的数组,页面的基本属性包括
+			name:(String) 必填,不能有重名
+			component:(React.Component) 必填,建议和name使用同一个名称
+			index:(Number) 必填,必须与RouteIndex数组中的对应.这个属性没实际用处,只是为了方便检查错误的.讨论是否需要保留
+			type:(String [‘Scene’,’TabView’])默认为’Scene’,标记这个route是页面还是一个tabView,方便定位当前的’Scene’
+			showStatusBar:(Bool) 默认为App.js中的defaultStatusBar值,表示页面是否要显示StatusBar
+			configure:(String) 默认为’FFR’ 表示页面跳转类型,值必须是官网提供的跳转类型的简写
+		3.RouteIndex 一个Route的索引,在实际使用中,会根据这个来确定Route 在RouteList的位置.
+			
+	APP.js 应用入口,将整个项目公有的功能写在这个文件中
+		1.收集设备信息 logDeviceInfo()
+		2.监测app当前状态,是在运行状态还是后台挂起状态 _handleAppStateChange()
+		3.用户行为收集与上传,通过初始化对象’UB’并将对象定义为全局变量,供项目各个地方调用UB的函数
+		4.与垂直跳页有关的处理<Navigator> 将这个的ref传递给每个页面. 每个页面都可以使用Navigator的静态函数,写了几个获取route的函数
+		  getRoute(name):返回一个RouteList中的某个Route的拷贝对象,通常是push时用
+		  getRouteStackLength():返回当前Navigator中有多少个Route
+		  getStackRouteFirst(name):返回已经在Navigator中的名称为name的Route,从栈尾开始遍历
+		  getStackRouteLast(name):同上,从栈头开始遍历
+		  
+	UserInfo文件夹:包含4个能获取用户操作的组件与1个收集处理这些操作数据的类.用这些组件时,必须传递一个name属性
+	
+	Common/ScrollableTabView 文件夹:包含一个处理水平跳页的组件,详情看文件夹下的help.txt文件

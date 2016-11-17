@@ -1,0 +1,12 @@
+{
+  "id":"1",
+  "title":"Basics1",
+  "icon":"titleIcon1",
+  "lessonTitle":[
+    {"words":"人;男人;女人;男孩;女孩"},
+    {"words":"我;你;她;他;是","sentence":"Subject+Vebr是+Object;"}
+  ],
+  "partice":[
+    {"type":0,"quesion":"abcd?","answer":"d"}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id":"2",
+  "title":"Basics2",
+  "icon":"titleIcon2",
+  "lessonTitle":[
+    {"words":"我们;你们;他们;她们;"},
+    {"words":"桃;梨;水果;吃;","sentence":"Subject+在+Vebr吃+Object;"},
+    {"words":"茶;酒;水;喝;","sentence":"Subject+在+Vebr喝+Object;"}
+  ],
+  "partice":[
+    {"type":0,"quesion":"abcd?","answer":"d"}
+  ]
+}

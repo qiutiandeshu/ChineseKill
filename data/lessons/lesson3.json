@@ -1,0 +1,13 @@
+{
+  "id":"3",
+  "title":"Basics3",
+  "icon":"titleIcon3",
+  "lessonTitle":[
+    {"words":"在;唱;歌;跳;舞;看;书","sentence":"Subject+在+Verb+Object;"},
+    {"words":"桃;梨;水果;吃;","sentence":"Subject+在+Vebr吃+Object;"},
+    {"words":"茶;酒;水;喝;","sentence":"Subject+在+Vebr喝+Object;"}
+  ],
+  "partice":[
+    {"type":0,"quesion":"abcd?","answer":"d"}
+  ]
+}

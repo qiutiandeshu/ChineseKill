@@ -1,0 +1,14 @@
+{
+  "id":"4",
+  "title":"Food",
+  "icon":"titleIcon4",
+  "lessonTitle":[
+    {"words":"苹果;芒果;西瓜;木瓜","sentence":"A+是+B+的"},
+    {"words":"杯;果汁;牛奶;啤酒;咖啡","sentence":"Number+Measure Word+Noun;"},
+    {"words":"肉;蛋;饭;菜;"},
+    {"words":"面包;面条;包子;饺子"}
+  ],
+  "partice":[
+    {"type":0,"quesion":"abcd?","answer":"d"}
+  ]
+}
