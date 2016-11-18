@@ -58,9 +58,9 @@ class PopupBox extends Component {
   		return null;
   	}
     return (
-      <PanView name={'box_' + this.props.name} style={styles.container}>
+      <PanView name={this.props.name} style={styles.container}>
       	<Animated.View style={[styles.frame, {width:this.props.width, height: this.props.height, top: this.state.top}]}>
-      		<PanView name="v_box_top" style={[styles.top]}>
+      		<PanView name="PopupTop" style={[styles.top]}>
       			{this.renderLeftIcon()}
       			<Text style={styles.name}>
       				{this.props.name}
@@ -75,7 +75,7 @@ class PopupBox extends Component {
   renderLeftIcon() {
   	if (this.props.leftIconName) {
   		return (
-  			<PanButton name="b_box_left" onPress={this.props.onLeftPress} >
+  			<PanButton name="PopupLeftI" onPress={this.props.onLeftPress} >
   				<Icon name={this.props.leftIconName} size={size}/>
   			</PanButton>
 			);
@@ -86,7 +86,7 @@ class PopupBox extends Component {
   renderRightIcon() {
   	if (this.props.rightIconName) {
   		return (
-  			<PanButton name="b_box_right" onPress={this.props.onRightPress} >
+  			<PanButton name="PopupRightI" onPress={this.props.onRightPress} >
   				<Icon name={this.props.rightIconName} size={size}/>
   			</PanButton>
 			)
