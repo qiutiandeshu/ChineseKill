@@ -48,7 +48,7 @@ export default class HomeSideMenuLeft extends Component {
     }
     renderTitle = ()=>{
         return(
-            <View style={[styles.menuTitleView,UtilStyles.bottomLine]}>
+            <View style={[styles.menuTitleView, UtilStyles.bottomLine]}>
                 <PanButton name="btnMenuLeftBack" onPress={this._onCloseSideMenu.bind(this)}>
                     <Icon name="angle-left" size={IconSize}/>
                 </PanButton>
