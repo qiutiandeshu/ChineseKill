@@ -7,6 +7,7 @@ import {
   View,
   Animated,
   Text,
+  Modal,
 } from 'react-native';
 import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
@@ -58,18 +59,24 @@ class PopupBox extends Component {
   		return null;
   	}
     return (
-      <PanView name={this.props.name} style={styles.container}>
-      	<Animated.View style={[styles.frame, {width:this.props.width, height: this.props.height, top: this.state.top}]}>
-      		<PanView name="PopupTop" style={[styles.top]}>
-      			{this.renderLeftIcon()}
-      			<Text style={styles.name}>
-      				{this.props.name}
-      			</Text>
-      			{this.renderRightIcon()}
-      		</PanView>
-	      	{this.props.children}
-      	</Animated.View>
-      </PanView>
+      <Modal
+        animationType={"none"}
+        transparent={true}
+        supportedOrientations={['landscape']}
+        visible={true}>
+        <PanView name={this.props.name} style={styles.container}>
+        	<Animated.View style={[styles.frame, {width:this.props.width, height: this.props.height, top: this.state.top}]}>
+        		<PanView name="PopupTop" style={[styles.top]}>
+        			{this.renderLeftIcon()}
+        			<Text style={styles.name}>
+        				{this.props.name}
+        			</Text>
+        			{this.renderRightIcon()}
+        		</PanView>
+  	      	{this.props.children}
+        	</Animated.View>
+        </PanView>
+      </Modal>
     );
   }
   renderLeftIcon() {
@@ -122,11 +129,7 @@ class PopupBox extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		position: 'absolute',
-		left: 0,
-		top: 0,
-		width: ScreenWidth,
-		height: ScreenHeight,
+    flex: 1,
 		backgroundColor: '#00000078',
 		alignItems: 'center',
 	},
