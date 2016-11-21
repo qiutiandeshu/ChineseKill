@@ -52,7 +52,7 @@ export default class HomeSideMenuRight extends Component {
         );
     }
     _onGotoStrokePage(){
-
+        this.props.onPressOrder();
     }
     renderBody(){
         return (

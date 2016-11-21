@@ -5,7 +5,7 @@
 import React, {Component} from 'react'
 import {
     View, Text, Navigator, StyleSheet, StatusBar,
-    AppState, AsyncStorage, AlertIOS
+    AppState, AsyncStorage, AlertIOS, Platform
 } from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles} from './AppStyles'
 import Storage from 'react-native-storage'
@@ -34,6 +34,9 @@ export default class App extends Component {
         this.sceneRef = null;//当前页面的引用对象
         this.storage = null;
         global.storageDate = [];//与本地存储有关的数据
+        // if (Platform.OS == 'ios'){
+        //     Text.defaultProps.allowFontScaling = false;//设置文字不受机器字体放大缩小的影响，这里是全局设定
+        // }
     }
 
     componentWillMount() {
@@ -137,7 +140,7 @@ export default class App extends Component {
 
     Logf(message, ...optionalParams) {
         // var args = arguments.length;
-        console.log(message, ...optionalParams);
+        // console.log(message, ...optionalParams);
     }
 
     setNowPageName = (route)=> { //ScrollViewTab调用
@@ -357,7 +360,10 @@ export default class App extends Component {
                     break;
             }
         }
-        return configure;
+        return {
+            ...configure,
+            gestures:{}//禁用手势返回
+        };
     }
 
     objectIsEqual = (object1, object2)=> {//比较两个对象值是否全等

@@ -3,7 +3,7 @@
  */
 import Home from './Scenes/S_Home'
 import LessonMenus from './Scenes/S_LessonMenus'
-
+import StrokersOrder from './Scenes/S_StrokersOrder'
 import Test from './Scenes/S_Test'
 /*
 import Main from './Component/MainTabView' 
@@ -32,6 +32,12 @@ let RouteList = [
         name:'Test',
         component:Test,
         index:2,
+    },
+    {
+        name:'StrokersOrder',
+        component: StrokersOrder,
+        index: 3,
+        configure: 'FFB',
     },
    /* {
         name:'Main',
@@ -90,6 +96,7 @@ let RouteIndex = {
     Home:0,
     LessonMenus:1,
     Test:2,
+    StrokersOrder: 3,
     /*Main:1,   
     Show1:2,
     Show2:3,

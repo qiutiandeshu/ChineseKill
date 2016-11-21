@@ -96,7 +96,14 @@ export default class S_Home extends Component {
                     {this.renderContent()}
                 </Animated.View>
                 {this.state.menuState == 'left' && <MenuLeft sideMenuAnim={this.state.sideMenuAnim} onCancel = {this.closeSideMenu.bind(this)}/>}
-                {this.state.menuState == 'right' && <MenuRight sideMenuAnim={this.state.sideMenuAnim} onCancel = {this.closeSideMenu.bind(this)}/>}
+                {
+                    this.state.menuState == 'right' && 
+                    <MenuRight 
+                        sideMenuAnim={this.state.sideMenuAnim} 
+                        onCancel = {this.closeSideMenu.bind(this)}
+                        onPressOrder = {this._onPressOrder.bind(this)}
+                    />
+                }
             </View>
         );
     }
@@ -147,6 +154,9 @@ export default class S_Home extends Component {
         console.log("传递属性:",data)
         app.setNextRouteProps({lessonData:data})
         this.props.navigator.push(app.getRoute("LessonMenus"));
+    }
+    _onPressOrder(){
+        this.props.navigator.push(app.getRoute('StrokersOrder'));
     }
 }
 

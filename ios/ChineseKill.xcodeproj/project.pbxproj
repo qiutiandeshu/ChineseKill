@@ -32,6 +32,7 @@
 		5A20B10F1DDACD5E00F2EB54 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5A20B1061DDACD5E00F2EB54 /* SimpleLineIcons.ttf */; };
 		5A20B1101DDACD5E00F2EB54 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5A20B1071DDACD5E00F2EB54 /* Zocial.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		90638DBE1DE298500037994B /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90EE719B1DDEEA0D005B6662 /* libART.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -217,6 +218,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90638DBE1DE298500037994B /* libART.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
