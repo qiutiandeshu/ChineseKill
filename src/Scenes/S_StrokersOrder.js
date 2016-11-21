@@ -42,13 +42,17 @@ var sectionData = [
 
 var rowData = require('../../data/characters/永.json');
 
+var itemHeight = MinUnit * 7;
+
 export default class StrokersOrder extends Component {
   constructor(props) {
     super(props);
     this.dataBlob = {};
     this.sectionIDs = [];
     this.rowIDs = [];
-    var rowIndex = 0;
+    this.rowCount = 0;
+    this.firstRenderCount = 0;
+    var tempCount = (ScreenHeight - itemHeight) / itemHeight + 1;//剩余高度可显示的条数
     for(var i=0;i<sectionData.length;i++){
       var sectionName = i.toString();
       this.sectionIDs.push(sectionName);
@@ -58,11 +62,14 @@ export default class StrokersOrder extends Component {
         var rowName = i.toString() + '_' + j.toString();
         this.rowIDs[i].push(rowName);
         this.dataBlob[rowName] = {
-          rowIndex: rowIndex,
+          rowIndex: this.rowCount,
           show: false,
           data: rowData
         };
-        rowIndex++;
+        this.rowCount++;
+        if (i < tempCount){//一开是关闭的，所以不管子项有多少都要增加
+          this.firstRenderCount++;
+        }
       }
     }
     this.state={
@@ -120,7 +127,16 @@ export default class StrokersOrder extends Component {
     
     var dataString = JSON.stringify(this.dataBlob);
     this.dataBlob = JSON.parse(dataString);
-    var config = layoutAnimationConfigs[0];
+    var config = {
+      duration: Math.min(Math.max(10 * this.dataBlob[key].number, 100), 300),
+      create: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.opacity,
+      },
+      update: {
+        type: LayoutAnimation.Types.easeInEaseOut,
+      }
+    };
     LayoutAnimation.configureNext(config);
     this.setState({
       dataSource: this.state.dataSource.cloneWithRowsAndSections(this.dataBlob, this.sectionIDs, this.rowIDs)
@@ -153,9 +169,8 @@ export default class StrokersOrder extends Component {
           dataSource={this.state.dataSource}
           renderRow={this.renderRow.bind(this)}
           renderSectionHeader={this.renderSectionHeader.bind(this)}
-          initialListSize={20}
+          initialListSize={this.firstRenderCount}
           scrollRenderAheadDistance={500}
-          pageSize={20}
         />
       </View>
     );
@@ -216,7 +231,7 @@ const styles = StyleSheet.create({
     // marginHorizontal: MinUnit*2,
     paddingHorizontal: MinUnit*3,
     width: ScreenWidth, 
-    height: MinUnit*7,
+    height: itemHeight,
     borderBottomWidth: 1, 
     borderBottomColor: '#ACACAC'
   },
@@ -227,11 +242,11 @@ const styles = StyleSheet.create({
   },
   bodyListView:{
     width: ScreenWidth,
-    height: ScreenHeight - MinUnit*7
+    height: ScreenHeight - itemHeight
   },
   itemView:{
     width: ScreenWidth, 
-    height: parseInt(MinUnit*7), 
+    height: parseInt(itemHeight), 
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -273,13 +288,13 @@ const styles = StyleSheet.create({
 var animations = {
   layout: {
     linear: {
-      duration: 10000,
+      duration: 50,
       create: {
-        type: LayoutAnimation.Types.easeInEaseOut,
+        type: LayoutAnimation.Types.easeIn,
         property: LayoutAnimation.Properties.opacity,
       },
       update: {
-        type: LayoutAnimation.Types.easeInEaseOut,
+        type: LayoutAnimation.Types.easeIn,
       },
     },
     spring: {
