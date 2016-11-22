@@ -143,7 +143,7 @@ export default class App extends Component {
 
     Logf(message, ...optionalParams) {
         // var args = arguments.length;
-        // console.log(message, ...optionalParams);
+        console.log(message, ...optionalParams);
     }
 
     setNowPageName = (route)=> { //ScrollViewTab调用

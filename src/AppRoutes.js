@@ -1,10 +1,11 @@
 /**
  * Created by tangweishu on 16/9/19.
  */
-import Home from './Scenes/S_Home'
-import LessonMenus from './Scenes/S_LessonMenus'
-import StrokersOrder from './Scenes/S_StrokersOrder'
-import Test from './Scenes/S_Test'
+import Home from './Scenes/S_Home';
+import LessonMenus from './Scenes/S_LessonMenus';
+import StrokersOrder from './Scenes/S_StrokersOrder';
+import StrokersWrite from './Scenes/S_StrokersWrite';
+import Test from './Scenes/S_Test';
 /*
 import Main from './Component/MainTabView' 
 import Show1 from './Scenes/P_Show1'
@@ -38,6 +39,12 @@ let RouteList = [
         component: StrokersOrder,
         index: 3,
         configure: 'FFB',
+    },
+    {
+        name:'StrokersWrite',
+        component: StrokersWrite,
+        index: 4,
+        configure: 'FFR',
     },
    /* {
         name:'Main',
@@ -97,6 +104,7 @@ let RouteIndex = {
     LessonMenus:1,
     Test:2,
     StrokersOrder: 3,
+    StrokersWrite: 4,
     /*Main:1,   
     Show1:2,
     Show2:3,

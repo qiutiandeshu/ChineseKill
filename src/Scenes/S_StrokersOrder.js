@@ -41,13 +41,17 @@ var sectionData = [
 ];
 
 var rowData = require('../../data/characters/永.json');
+// var rowData = {
+// 	"hz": "永",
+// 	"py": "yong",
+// };
 
 var itemHeight = MinUnit * 7;
 
 export default class StrokersOrder extends Component {
   constructor(props) {
     super(props);
-    this.dataBlob = {};
+    this.dataBlob = [];
     this.sectionIDs = [];
     this.rowIDs = [];
     this.rowCount = 0;
@@ -57,11 +61,12 @@ export default class StrokersOrder extends Component {
       var sectionName = i.toString();
       this.sectionIDs.push(sectionName);
       this.dataBlob[sectionName] = sectionData[i];
+      this.dataBlob[sectionName].child = [];
       this.rowIDs[i] = [];
       for(var j=0;j<sectionData[i].number;j++){
-        var rowName = i.toString() + '_' + j.toString();
+        var rowName = j.toString();
         this.rowIDs[i].push(rowName);
-        this.dataBlob[rowName] = {
+        this.dataBlob[sectionName].child[rowName] = {
           rowIndex: this.rowCount,
           show: false,
           data: rowData
@@ -89,7 +94,8 @@ export default class StrokersOrder extends Component {
     return dataBlob[sectionID];
   }
   getRowData(dataBlob, sectionID, rowID){
-    return dataBlob[rowID];
+    // console.log(dataBlob, sectionID, rowID);
+    return dataBlob[sectionID].child[rowID];
   }
   componentDidMount() {
     this.setState({
@@ -104,10 +110,10 @@ export default class StrokersOrder extends Component {
   
   render() {
     return (
-      <PanView name='StrokersOrderBack' style={styles.container}>
+      <View name='StrokersOrderBack' style={styles.container}>
         {this.renderTop()}
         {this.renderBody()}
-      </PanView>
+      </View>
     );
   }
   onBackScene(){
@@ -117,18 +123,19 @@ export default class StrokersOrder extends Component {
 
   }
   onItemPress(sectionID){//小项打开或关闭
+    var newBlob = this.dataBlob.slice();
     var key = sectionID.toString();
-    var show = !this.dataBlob[key].show;
-    for(var i=this.dataBlob[key].number-1;i>=0;i--){
-      var itemKey = key + '_' + i.toString();
-      this.dataBlob[itemKey].show = show;
+    var show = !newBlob[key].show;
+    for(var i=newBlob[key].child.length - 1; i>=0; i--){
+      newBlob[key].child[i.toString()].show = show;
     }
-    this.dataBlob[key].show = show;
+    newBlob[key].show = show;
     
-    var dataString = JSON.stringify(this.dataBlob);
-    this.dataBlob = JSON.parse(dataString);
+    var dataString = JSON.stringify(newBlob[key]);
+    newBlob[key] = JSON.parse(dataString);
+    this.dataBlob = newBlob;
     var config = {
-      duration: Math.min(Math.max(10 * this.dataBlob[key].number, 100), 300),
+      duration: Math.min(Math.max(10 * this.dataBlob[key].child.length, 100), 300),
       create: {
         type: LayoutAnimation.Types.linear,
         property: LayoutAnimation.Properties.opacity,
@@ -142,8 +149,9 @@ export default class StrokersOrder extends Component {
       dataSource: this.state.dataSource.cloneWithRowsAndSections(this.dataBlob, this.sectionIDs, this.rowIDs)
     });
   }
-  onItemPressWrite(){//点击进入练习写字
-
+  onItemPressWrite(rowData){//点击进入练习写字
+    app.setNextRouteProps({rowCount: this.rowCount, rowData: rowData});
+    this.props.navigator.push(app.getRoute('StrokersWrite'));
   }
   renderTop(){
     return (
@@ -163,7 +171,7 @@ export default class StrokersOrder extends Component {
   renderBody(){
     return (
       <View name='StrokersOrderBodyView' style={styles.bodyViewBack}>
-        <ListView 
+        <PanListView 
           name='StrokersOrderListView'
           style={styles.bodyListView}
           dataSource={this.state.dataSource}
@@ -181,11 +189,11 @@ export default class StrokersOrder extends Component {
     return (
       <PanButton name={name} style={styles.itemView} onPress={this.onItemPress.bind(this, sectionID)}>
         <View style={styles.itemFrontView}>
-          <Animated.View style={[styles.itemFrontIconView, {
+          <View style={[styles.itemFrontIconView, {
             transform: [{rotateZ: sectionData.show ? '180deg' : '0deg'}]
           }]}>
             <Icon name="angle-down" size={MinUnit*2} style={{color: 'white'}}/>
-          </Animated.View>
+          </View>
           <Text style={styles.itemFrontText}>
             {sectionData.name}
           </Text>
@@ -201,11 +209,11 @@ export default class StrokersOrder extends Component {
     var name = 'btnStrokersOrderItem' + sectionID.toString() + '_' + rowID.toString();
     console.log('row name : ' + name);
     return (
-      <PanButton name={name} style={[styles.itemView, styles.itemViewChild]} onPress={this.onItemPressWrite.bind(this)}>
+      <PanButton name={name} style={[styles.itemView, styles.itemViewChild]} onPress={this.onItemPressWrite.bind(this, rowData)}>
         <View style={styles.itemFrontView}>
           <View style={[styles.itemFrontIconView, styles.itemFrontNumberView]}>
-            <Text style={{fontSize: MinUnit*1.2, color:'white'}}>
-              {rowData.rowIndex.toString()+'0'}
+            <Text style={styles.itemIndexNumber}>
+              {rowData.rowIndex + 1}
             </Text>
           </View>
           <Text style={[styles.itemFrontText, {marginLeft: MinUnit*2.5}]}>
@@ -213,6 +221,10 @@ export default class StrokersOrder extends Component {
           </Text>
         </View>
         <Icon name="pencil-square-o" size={MinUnit*3}/>
+        {
+          this.dataBlob[sectionID.toString()].child.length - 1 == rowID ? null :
+          <View style={styles.itemSeparatorView}/>
+        }
       </PanButton>
     );
   }
@@ -242,7 +254,8 @@ const styles = StyleSheet.create({
   },
   bodyListView:{
     width: ScreenWidth,
-    height: ScreenHeight - itemHeight
+    height: ScreenHeight - itemHeight,
+    // backgroundColor: 'yellow'
   },
   itemView:{
     width: ScreenWidth, 
@@ -283,6 +296,18 @@ const styles = StyleSheet.create({
   itemFrontNumberView:{
     backgroundColor: '#D2D2D2',
   },
+  itemIndexNumber:{
+    fontSize: MinUnit*1.2, 
+    color:'white'
+  },
+  itemSeparatorView:{
+    position:'absolute', 
+    width: ScreenWidth - MinUnit * 3,
+    height: 1,
+    left: MinUnit*3,
+    bottom: 0,
+    backgroundColor: '#C8C7CC'
+  }
 });
 
 var animations = {
