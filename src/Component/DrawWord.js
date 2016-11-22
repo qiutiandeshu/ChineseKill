@@ -9,6 +9,8 @@ import {
   StyleSheet,
   View,
   ART,
+  PixelRatio,
+  PanResponder,
 } from 'react-native';
 
 const {
@@ -26,6 +28,14 @@ const {
 
 import Utils from '../Utils';
 
+var backLineData = [
+  {w: 2, t: 0, c: [1,1,1,-1,-1,-1,-1,1,1,1], p:[0, 0, 0, 100, 100, 100, 100, 0, 0, 0]},
+  {w: 1, t: 0, c: [0, 0, 0, 0], p:[50, 0, 50, 100]},
+  {w: 1, t: 0, c: [0, 0, 0, 0], p:[0, 50, 100, 50]},
+  {w: 1, t: 1, c: [0, 0, 0, 0], p:[0, 0, 100, 100]},
+  {w: 1, t: 1, c: [0, 0, 0, 0], p:[0, 100, 100, 0]}
+];
+
 export default class DrawWord extends Component {
   constructor(props){
     super(props);
@@ -33,16 +43,65 @@ export default class DrawWord extends Component {
     this.state = {
       blnUpdate: false
     };
+    this.props.autoSpeed = Math.min(1, Math.max(5, this.props.autoSpeed));
+    this.backLine = [];
+    this._panResponder = {};
+    this.touchLastPoint = null;
+    this.unitDisSt = this.props.curWidth / 25;
+    this.unitDisMv = this.props.curWidth / 15;
+    this.wrongCount = 0;
+    this.nowPos = 0;
+    this.createBackLine();
   }
   static propTypes = {
-    curWidth: PropTypes.number.isRequired,
+    curWidth: PropTypes.number.isRequired, //宽高必须
+    data: PropTypes.array.isRequired, //数据，点阵数组数据
+    blnTouch: PropTypes.bool.isRequired, //是否可书写
+    backColor: PropTypes.string, //背景颜色
+    fillColor: PropTypes.string, //填充颜色
+    fillArray: PropTypes.array, //填充颜色数组，如果存在则以这个为准，用于不同部件的颜色标识
+    writeOver: PropTypes.func, //自动写完回调函数
+    autoSpeed: PropTypes.number, //自动书写速度
   }
   static defaultProps = {
+    autoSpeed: 3,
+    backColor: '#DADADA',
+    fillColor: '#000000',
+    fillArray: null,
+    touch: true, //默认是可写的
   }
   setUpdate(){
     this.setState({
       blnUpdate: !this.blnUpdate,
     });
+  }
+  createBackLine(){
+    for(var i=0;i<backLineData.length;i++){
+      var line = new Path();
+      for(var j=0;j<backLineData[i].p.length;){
+        if (j==0) {
+          line.moveTo(
+            backLineData[i].p[j+0] * this.props.curWidth/100 + backLineData[i].c[j+0], 
+            backLineData[i].p[j+1] * this.props.curWidth/100 + backLineData[i].c[j+1]
+          );
+        }else { 
+          line.lineTo(
+            backLineData[i].p[j+0] * this.props.curWidth/100 + backLineData[i].c[j+0], 
+            backLineData[i].p[j+1] * this.props.curWidth/100 + backLineData[i].c[j+1]
+          );
+        }
+        j+=2;
+      }
+      if (backLineData[i].t == 0){
+        this.backLine.push(
+          <Shape key={i} d={line} strokeWidth={backLineData[i].w/PixelRatio.get()} stroke={'#4C8D93'}/>
+        );  
+      }else{
+        this.backLine.push(
+          <Shape key={i} d={line} strokeWidth={backLineData[i].w/PixelRatio.get()} stroke={'#4C8D93'} strokeDash={[7,3]}/>
+        );
+      }
+    }
   }
   InitWord(data){
     this.data = data;
@@ -60,7 +119,7 @@ export default class DrawWord extends Component {
   }
   loadWord(){
     this.drawIdx = -1;
-    var character = this.data.character;
+    var character = this.data;
     console.log(character.length);
     this.arrLine = [];
     for(var i=0;i<character.length;i++){
@@ -94,7 +153,7 @@ export default class DrawWord extends Component {
       smoothBSPArr[this.startIdx].pos = 1;
       smoothBSPArr[this.endIdx].pos = 2;
       character[i].bspArr = smoothBSPArr;
-      character[i].color = 'rgb(255,0,0)';
+      character[i].color = this.props.backColor;
 
       var loc2 = -1;
       var loc3 = -1;
@@ -260,12 +319,13 @@ export default class DrawWord extends Component {
     }
   }
   setBeginDraw(){
-    var bh = this.data.character[this.drawIdx];
+    this.wrongCount = 0;
+    var bh = this.data[this.drawIdx];
     this.max_Step = Math.min(bh.upPoints.length, bh.downPoints.length);
     this.now_Step = 0;
   }
   DrawingPecent(per){
-    var bh = this.data.character[this.drawIdx];
+    var bh = this.data[this.drawIdx];
     this.now_Step = per;
     var up_step = parseInt(per * bh.upPoints.length);
     var down_step = parseInt(per * bh.downPoints.length);
@@ -287,14 +347,14 @@ export default class DrawWord extends Component {
         line.lineTo(point.x, point.y);
       }
     }
-    this.tempDrawData.color = 'rgb(0,0,0)';
+    this.tempDrawData.color = this.props.fillColor;
     this.tempDrawLine = (
       <Shape d={line} fill={this.tempDrawData.color}/>
     );
     this.setUpdate();
   }
   setEndDraw(){
-    var character = this.data.character;
+    var character = this.data;
     this.arrLine[this.drawIdx] = (
       <Shape key={this.drawIdx} d={character[this.drawIdx].line} fill={this.tempDrawData.color}/>
     );
@@ -302,7 +362,7 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   setRestart(){
-    var character = this.data.character;
+    var character = this.data;
     for(var i=0;i<character.length;i++){
       this.arrLine[i] = (
         <Shape key={i} d={character[i].line} fill={character[i].color}/>
@@ -310,6 +370,7 @@ export default class DrawWord extends Component {
     }
     this.tempDrawLine = null;
     this.drawIdx = 0;
+    this.nowPos = 0;
     this.setBeginDraw();
     
     if (this.blnBlink){
@@ -353,18 +414,160 @@ export default class DrawWord extends Component {
       }
     }
   }
+  setAutoWrite(){
+    this.setRestart();
+    this.stopAutoWrite();
+    this._autoWrite = setInterval(this.autoWrite.bind(this), 1/60);
+  }
+  stopAutoWrite(){
+    this._autoWrite && clearInterval(this._autoWrite);
+    this._autoWrite = null;
+    this.nowPos = 0;
+    this.drawIdx = 0;
+    this.setBeginDraw();
+  }
+  autoWrite(){
+    if (this.drawIdx >= 0){
+      var points = this.data[this.drawIdx].orgPoints;
+      if (this.nowPos >= points.length + 5 + this.props.autoSpeed){
+        if (this.drawIdx < this.data.length){
+          this.setEndDraw();
+          this.drawIdx++;
+          this.nowPos = 0;
+          if (this.drawIdx == this.data.length){
+            if (this.props.writeOver){
+              this.props.writeOver();
+            }
+            this._autoWrite && clearInterval(this._autoWrite);
+            this._autoWrite = null;
+          }else{
+            this.setBeginDraw();
+          }
+        }
+      }else {
+        this.nowPos += 0.2 * this.props.autoSpeed;
+        this.DrawingPecent(this.nowPos / points.length);
+      }
+    }
+  }
+  componentWillMount() {
+    if (this.props.blnTouch){
+      this._panResponder = PanResponder.create({
+        onStartShouldSetPanResponder: this.onStartShouldSetPanResponder.bind(this),
+        onMoveShouldSetPanResponder: this.onMoveShouldSetPanResponder.bind(this),
+        onPanResponderGrant: this.onPanResponderGrant.bind(this),
+        onPanResponderMove: this.onPanResponderMove.bind(this),
+        onPanResponderRelease: this.onPanResponderRelease.bind(this),
+        onPanResponderTerminate: this.onPanResponderTerminate.bind(this),
+      });
+    }
+  }
   componentDidMount() {
     this.drawIdx = 0;
     this.setBeginDraw();
   }
   componentWillUnmount() {
     this._blinkTime && clearTimeout(this._blinkTime);
+    this._autoWrite && clearInterval(this._autoWrite);
   }
-  
+  onStartShouldSetPanResponder(e, g){
+    if (this.drawIdx >= this.data.length){
+      return false;
+    }
+    return this.props.blnTouch;
+  }
+  onMoveShouldSetPanResponder(e, g){
+    if (this.drawIdx >= this.data.length){
+      return false;
+    }
+    return this.props.blnTouch;
+  }
+  onPanResponderGrant(e, g){
+    if (g.numberActiveTouches == 1){
+      var tp = {
+        x: e.nativeEvent.locationX,
+        y: e.nativeEvent.locationY
+      };
+      this.touchLastPoint = tp;
+      var idx = this.drawIdx;
+      if (idx >= 0){
+        var points = this.data[idx].orgPoints;
+        var dis = Utils.DisP(tp, this.data[idx].orgPoints[Math.min(this.nowPos, points.length-1)]);
+        if (dis < this.unitDisSt){
+          this.nowPos++;
+          this.DrawingPecent(this.nowPos / points.length);
+        }
+      }
+    }
+  }
+  onPanResponderMove(e, g){
+    if (g.numberActiveTouches == 1){
+      var tp = {
+        x: e.nativeEvent.locationX,
+        y: e.nativeEvent.locationY
+      };
+      var idx = this.drawIdx; 
+      if (idx >= 0){
+        var points = this.data[idx].orgPoints;
+        if (this.nowPos - 1 < points.length){
+          var tempD = Utils.DisP(tp, this.touchLastPoint);
+          if (tempD >= 1){
+            var count = Math.max(1, parseInt(tempD / 4));
+            var oldPos = this.nowPos;
+            for(var i=0;i<count;i++){
+              var sp = Utils.LerpP(this.touchLastPoint, tp, (i+1) / count);
+              if (i==tempD-1){
+                sp = tp;
+              }
+              var dis = Utils.DisP(tp, points[Math.min(this.nowPos, points.length-1)]);
+              if (dis < this.unitDisMv){
+                this.nowPos++;
+              }
+            }
+            if (this.nowPos != oldPos){
+              this.DrawingPecent(this.nowPos / points.length);
+            }
+          }
+          this.touchLastPoint = tp;
+        }
+      }
+    }
+  }
+  onPanResponderRelease(e, g){
+    this.endPanResponder(e, g);
+  }
+  onPanResponderTerminate(e, g){
+    this.endPanResponder(e, g);
+  }
+  endPanResponder(e, g){
+    var idx = this.drawIdx; 
+    if (idx >= 0){
+      var points = this.data[idx].orgPoints;
+      if (this.nowPos >= points.length){
+        if (this.drawIdx < this.data.length - 1){
+          console.log('学习下一笔');
+          this.setEndDraw();
+          this.drawIdx++;
+          this.nowPos = 0;
+          this.wrongCount = 0;
+          this.setBeginDraw();
+        }else{
+          console.log('书写完毕!');
+        }
+      }else if (this.nowPos == 0){
+        this.wrongCount ++;
+        if (this.wrongCount == 3){
+          this.drawWord.setStrokeBlink();
+          this.wrongCount = 0;
+        }
+      }
+    }
+  }
   render() {
     return (
-      <View style={[styles.container, this.props.style? this.props.style : {}]}>
+      <View style={[styles.container, this.props.style? this.props.style : {}]} {...this._panResponder.panHandlers}>
         <Surface ref={'lineView'} width={this.props.curWidth} height={this.props.curWidth}>
+          {this.backLine}
           {this.arrLine}
           {this.tempDrawLine}
         </Surface>
