@@ -12,6 +12,7 @@ import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles,IconSize} from 
 import MenuLeft from '../Component/HomeSideMenuLeft'
 import MenuRight from '../Component/HomeSideMenuRight'
 import Icon from 'react-native-vector-icons/FontAwesome'
+var Box = require('../Component/Box.js');
 
 export default class S_Home extends Component {
     constructor(props) {
@@ -31,6 +32,7 @@ export default class S_Home extends Component {
         };
         this.blnContentOffX = false;
 
+        global.Home = this;
     }
 
     static propTypes = {
@@ -104,6 +106,10 @@ export default class S_Home extends Component {
                         onPressOrder = {this._onPressOrder.bind(this)}
                     />
                 }
+                <Box.SettingBox ref={'Setting'} />
+                <Box.LoginBox ref={'Login'} />
+                <Box.SignUpBox ref={'SignUp'} />
+                <Box.ForgetBox ref={'Forget'} />
             </View>
         );
     }
@@ -157,6 +163,14 @@ export default class S_Home extends Component {
     }
     _onPressOrder(){
         this.props.navigator.push(app.getRoute('StrokersOrder'));
+    }
+
+    // 控制弹出框显示/隐藏
+    _onPopupBoxShow = (name)=>{
+        this.refs[name].show();
+    }
+    _onPopupBoxHidden = (name)=>{
+        this.refs[name].hidden();
     }
 }
 

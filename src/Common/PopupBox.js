@@ -59,24 +59,18 @@ class PopupBox extends Component {
   		return null;
   	}
     return (
-      <Modal
-        animationType={"none"}
-        transparent={true}
-        supportedOrientations={['landscape']}
-        visible={true}>
-        <PanView name={this.props.name} style={styles.container}>
-        	<Animated.View style={[styles.frame, {width:this.props.width, height: this.props.height, top: this.state.top}]}>
-        		<PanView name="PopupTop" style={[styles.top]}>
-        			{this.renderLeftIcon()}
-        			<Text style={styles.name}>
-        				{this.props.name}
-        			</Text>
-        			{this.renderRightIcon()}
-        		</PanView>
-  	      	{this.props.children}
-        	</Animated.View>
-        </PanView>
-      </Modal>
+      <PanView name={this.props.name} style={styles.container}>
+      	<Animated.View style={[styles.frame, {width:this.props.width, height: this.props.height, top: this.state.top}]}>
+      		<PanView name="PopupTop" style={[styles.top]}>
+      			{this.renderLeftIcon()}
+      			<Text style={styles.name}>
+      				{this.props.name}
+      			</Text>
+      			{this.renderRightIcon()}
+      		</PanView>
+	      	{this.props.children}
+      	</Animated.View>
+      </PanView>
     );
   }
   renderLeftIcon() {
@@ -129,7 +123,11 @@ class PopupBox extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-    flex: 1,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: ScreenWidth,
+    height: ScreenHeight,
 		backgroundColor: '#00000078',
 		alignItems: 'center',
 	},

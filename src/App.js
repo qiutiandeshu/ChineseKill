@@ -13,6 +13,7 @@ import Storage from 'react-native-storage'
 import UserBehavior from './UserInfo/UserBehavior'
 import {RouteList, RouteIndex} from './AppRoutes'
 const defaultStatusBar = false; //默认的状态栏属性
+import SocketLink from './Component/SocketLink.js'
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -40,7 +41,9 @@ export default class App extends Component {
     }
 
     componentWillMount() {
-        this.getStorageDate()
+        this.getStorageDate();
+        // 连接服务器
+        global.socket = new SocketLink(this);
         this.getLessonDate();
     }
 
@@ -199,6 +202,8 @@ export default class App extends Component {
     componentWillUnMount() {
         console.log("App is closed");
         AppState.removeEventListener('change', this._handleAppStateChange.bind(this));
+        // stop服务器连接
+        socket.stopLink();
     }
 
     _handleAppStateChange = (state)=> {

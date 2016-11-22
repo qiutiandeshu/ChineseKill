@@ -2,7 +2,7 @@
  * Created by tangweishu on 16/9/18.
  */
 import React, {Component, PropTypes} from 'react'
-import {View,Text, StyleSheet, Animated} from 'react-native'
+import {View,Text, StyleSheet, Animated, Modal} from 'react-native'
 import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import {ScreenWidth,ScreenHeight,MinUnit,MinWidth,IconSize,UtilStyles} from '../AppStyles'
@@ -14,7 +14,9 @@ export default class HomeSideMenuLeft extends Component {
         super(props);
 
         this.state = {
+            blnShow: false,
         };
+        console.log(app.storage);
     }
     static propTypes = {
         onCancel:React.PropTypes.func.isRequired,
@@ -38,8 +40,6 @@ export default class HomeSideMenuLeft extends Component {
                     {this.renderUserInfo()}
                     {this.renderMemoryMenu()}
                 </Animated.View>
-                <Box.SettingBox ref={'Setting'} />
-                <Box.LoginBox ref={'Login'} />
             </PanView>
         );
     }
@@ -60,7 +60,10 @@ export default class HomeSideMenuLeft extends Component {
     }
     // 控制弹出框显示
     _onPopupBoxShow = (name)=>{
-        this.refs[name].show();
+        Home._onPopupBoxShow(name);
+    }
+    _onPopupBoxHidden = (name)=>{
+        Home._onPopupBoxHidden(name);
     }
 
     // 用户头像，登陆
