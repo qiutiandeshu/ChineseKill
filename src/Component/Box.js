@@ -9,11 +9,13 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  ListView,
 } from 'react-native';
 
 import {ScreenWidth,ScreenHeight,MinUnit,MinWidth,IconSize,UtilStyles} from '../AppStyles'
 import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
+import PanListView from '../UserInfo/PanListView.js'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import PopupBox from '../Common/PopupBox.js'
 
@@ -293,7 +295,111 @@ class SignUpBox extends Box {
     }
   }
 }
+// 记忆卡（记忆曲线）
+class FlashCardBox extends Box {
+  render() {
+    return (
+      <PopupBox ref={'PopupBox'} name={'FlashCard Review'} leftIconName={'close'} onLeftPress={this.hidden.bind(this, "FlashCard")}>
+      </PopupBox>
+    );
+  }
+}
+// 字
+class CharacterBox extends Box {
+  constructor(props) {
+    super(props);
+  
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.state = {
+      dataSource: ds.cloneWithRows([]),
+      blnWait: true
+    };
+  }
+  render() {
+    return (
+      <PopupBox ref={'PopupBox'} name={'Character Review'} 
+        leftIconName={'close'} onLeftPress={this.hidden.bind(this, "Character")} 
+        rightIconName={'pencil-square-o'} 
+        showAnimatedEnd={this.showEnd.bind(this)} hiddenAnimatedEnd={this.hiddenEnd.bind(this)} >
+        <PanListView
+          name={'l_characterBox'}
+          style={styles.listView}
+          enableEmptySections={true}
+          dataSource={this.state.dataSource}
+          renderRow={this.renderRow.bind(this)}/>
+        <PanView name={'v_characterBox'} style={styles.character}>
+        </PanView>
+        {this.renderWait(this.state.blnWait)}
+      </PopupBox>
+    );
+  }
+  renderRow(data, s_id, r_id) {
+    return (
+      <ListItem name="character" rowId={parseInt(r_id)} data={data} />
+    );
+  }
+  showEnd(bln) {
+    this.setState({
+      blnWait: false,
+    });
+    var array = ['row1', 'row2', 'row3', 'row4', 'row5', 'row6'];
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(array),
+    });
+  }
+  hiddenEnd(bln) {
+    this.setState({
+      blnWait: true,
+    });
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows([]),
+    });
+  }
+}
+// 词
+class WordBox extends Box {
+  render() {
+    return (
+      <PopupBox ref={'PopupBox'} name={'Word Review'} leftIconName={'close'} onLeftPress={this.hidden.bind(this, "Word")} rightIconName={'pencil-square-o'}>
+      </PopupBox>
+    );
+  }
+}
+// 句
+class SentenceBox extends Box {
+  render() {
+    return (
+      <PopupBox ref={'PopupBox'} name={'Sentence Review'} leftIconName={'close'} onLeftPress={this.hidden.bind(this, "Sentence")} rightIconName={'pencil-square-o'}>
+      </PopupBox>
+    );
+  }
+}
 
+class ListItem extends Component {
+  static propTypes = {
+    name: React.PropTypes.string,
+    rowId: React.PropTypes.number,
+  };
+  static defaultProps = {
+    name: 'character',
+    rowId: 2,
+  };
+  render() {
+    var _str = ''+this.props.rowId;
+    var fontSize = MinUnit* (1.4 - _str.length*0.15);
+    if (fontSize < MinUnit*0.8) fontSize = MinUnit;
+    return (
+      <PanButton name={'b_listItem_'+this.props.name+'_'+this.props.rowId} style={styles.listItem} >
+        <View style={styles.listIndexView}>
+          <Text style={[styles.indexFont, {fontSize: fontSize}]}>
+            {this.props.rowId + 1}
+          </Text>
+        </View>
+      </PanButton>
+    );
+  }
+}
+// 圆形图标
 class CircleIcon extends Component {
   static propTypes = {
     name: React.PropTypes.string,
@@ -416,6 +522,37 @@ const styles = StyleSheet.create({
   },
   bword: {
     fontSize: MinUnit*2,
+  },
+  listView: {
+    backgroundColor: '#EEEEEE',
+    borderBottomWidth: MinWidth,
+    borderColor: '#AFAFAF'
+  },
+  listItem: {
+    height: MinUnit*4.6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: MinWidth,
+    borderColor: '#CBCBCB',
+    backgroundColor: '#FFFFFF',
+    padding: MinUnit*2,
+  },
+  listIndexView: {
+    width: MinUnit*2.2,
+    height: MinUnit*2.2,
+    borderRadius: MinUnit*1.1,
+    backgroundColor: '#000000',
+    alignItems: 'center',
+    justifyContent: 'center',
+    // overflow: "hidden",
+  },
+  indexFont: {
+    fontSize: MinUnit*1.4,
+    color: '#FFFFFF'
+  },
+  character: {
+    height: ScreenHeight*0.4,
   }
 });
 
@@ -424,4 +561,8 @@ module.exports = {
   SignUpBox,
   ForgetBox,
   SettingBox,
+  FlashCardBox,
+  CharacterBox,
+  WordBox,
+  SentenceBox,
 };

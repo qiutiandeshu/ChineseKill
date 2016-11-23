@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
  * 要显示时调用 show()
  * 要隐藏时调用 hidden()
  **/
-const size = MinUnit*4;
+const size = MinUnit*3.5;
 class PopupBox extends Component {
 	static propTypes = {
 	  blnShow: React.PropTypes.bool,	//默认初始值（隐藏/显示）
@@ -31,6 +31,8 @@ class PopupBox extends Component {
 	  onLeftPress: React.PropTypes.func,	//左按钮点击触发
 	  rightIconName: React.PropTypes.string,	//右按钮名称（FontAwesome， http://fontawesome.io/icons/）
 	  onRightPress: React.PropTypes.func,	//右按钮触发
+    showAnimatedEnd: React.PropTypes.func, //进场动画是否结束
+    hiddenAnimatedEnd: React.PropTypes.func, //出场动画是否结束
 	};
 	static defaultProps = {
 	  blnShow: false,
@@ -38,8 +40,10 @@ class PopupBox extends Component {
 	  height: ScreenHeight*0.86,
 	  tipStyle: {},
 	  name: 'NAME',
-	  onLeftPress: ()=>{console.log('onPress left')},
-	  onRightPress: ()=>{console.log('onPress right')},
+	  onLeftPress: ()=>{},
+	  onRightPress: ()=>{},
+    showAnimatedEnd: (bln)=>{},
+    hiddenAnimatedEnd: (bln)=>{},
 	};
 	constructor(props) {
 	  super(props);
@@ -59,9 +63,10 @@ class PopupBox extends Component {
   		return null;
   	}
     return (
-      <PanView name={this.props.name} style={styles.container}>
+      <View name={this.props.name} style={[styles.container, {backgroundColor: '#00000078'}]}>
+        <PanButton name={'b_popupBox_back'} style={styles.container} />
       	<Animated.View style={[styles.frame, {width:this.props.width, height: this.props.height, top: this.state.top}]}>
-      		<PanView name="PopupTop" style={[styles.top]}>
+      		<PanView name="v_popupTop" style={[styles.top]}>
       			{this.renderLeftIcon()}
       			<Text style={styles.name}>
       				{this.props.name}
@@ -70,7 +75,7 @@ class PopupBox extends Component {
       		</PanView>
 	      	{this.props.children}
       	</Animated.View>
-      </PanView>
+      </View>
     );
   }
   renderLeftIcon() {
@@ -103,7 +108,10 @@ class PopupBox extends Component {
       	toValue: (ScreenHeight - this.props.height)/2,
       	duration: 300,
       },
-    ).start();
+    ).start(this.showEnd.bind(this));
+  }
+  showEnd() {
+    this.props.showAnimatedEnd(true);
   }
   hidden() {
   	Animated.timing(
@@ -112,7 +120,11 @@ class PopupBox extends Component {
       	toValue: ScreenHeight,
       	duration: 300,
       },
-    ).start(this.changeState.bind(this, false));
+    ).start(this.hiddenEnd.bind(this));
+  }
+  hiddenEnd() {
+    this.changeState(false); 
+    this.props.hiddenAnimatedEnd(true);
   }
   changeState(bln) {
   	this.setState({
@@ -128,7 +140,6 @@ const styles = StyleSheet.create({
     top: 0,
     width: ScreenWidth,
     height: ScreenHeight,
-		backgroundColor: '#00000078',
 		alignItems: 'center',
 	},
 	frame: {
@@ -148,7 +159,8 @@ const styles = StyleSheet.create({
 		paddingHorizontal: MinUnit*1.5,
 	},
 	name: {
-		fontSize: MinUnit*3,
+		fontSize: MinUnit*2,
+    fontWeight: 'bold',
 	}
 });
 

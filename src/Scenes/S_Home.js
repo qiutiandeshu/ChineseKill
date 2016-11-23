@@ -110,6 +110,10 @@ export default class S_Home extends Component {
                 <Box.LoginBox ref={'Login'} />
                 <Box.SignUpBox ref={'SignUp'} />
                 <Box.ForgetBox ref={'Forget'} />
+                <Box.FlashCardBox ref={'FlashCard'} />
+                <Box.CharacterBox ref={'Character'} />
+                <Box.WordBox ref={'Word'} />
+                <Box.SentenceBox ref={'Sentence'} />
             </View>
         );
     }

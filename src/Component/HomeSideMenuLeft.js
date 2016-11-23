@@ -9,6 +9,7 @@ import {ScreenWidth,ScreenHeight,MinUnit,MinWidth,IconSize,UtilStyles} from '../
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 var Box = require('./Box.js');
+const LineWidth = MinUnit*14;
 export default class HomeSideMenuLeft extends Component {
     constructor(props) {
         super(props);
@@ -83,11 +84,43 @@ export default class HomeSideMenuLeft extends Component {
     renderMemoryMenu = ()=>{
         return (
             <PanView name='memoryMenu' style={[styles.memoryMenu, ]}>
+                <MemoryFrame onPress={this._onPopupBoxShow.bind(this, 'FlashCard')} />
+                <MemoryFrame name={'Character'} color={'#E57C86'} onPress={this._onPopupBoxShow.bind(this, "Character")} />
+                <MemoryFrame name={'Word'} color={'#5ABD5A'} onPress={this._onPopupBoxShow.bind(this, 'Word')} />
+                <MemoryFrame name={'Sentence'} color={'#F4B460'} onPress={this._onPopupBoxShow.bind(this, 'Sentence')} />
             </PanView>
         );
     }
 }
-
+class MemoryFrame extends Component {
+    static propTypes = {
+      name: React.PropTypes.string,
+      color: React.PropTypes.string,
+      number: React.PropTypes.number,
+      onPress: React.PropTypes.func,
+    };
+    static defaultProps = {
+      name: 'FlashCard',
+      color: '#1A9FAA',
+      number: 300,
+      onPress: ()=>{console.log("onPress MemoryFrame")},
+    };
+    render() {
+        return (
+            <View style={[styles.memoryFrame, ]}>
+                <PanButton name={'b_memoryIcon_'+this.props.name} style={[styles.memoryIcon, {backgroundColor: this.props.color}]} onPress={this.props.onPress} >
+                </PanButton>
+                <PanButton name={'b_memoryText_'+this.props.name} style={{width: LineWidth}} onPress={this.props.onPress} >
+                    <View style={styles.numberView}>
+                        <Text style={[styles.memoryNumber, {color: this.props.color}]} >{this.props.number}</Text>
+                        <Icon name={'angle-right'} size={MinUnit*2.8} color={this.props.color} />
+                    </View>
+                    <LineText color={this.props.color} word={this.props.name} fontSize={MinUnit*1.3} />
+                </PanButton>
+            </View>
+        );
+    }
+}
 // 下方标有直线的Text（跟带下滑线的text不同）
 class LineText extends Component {
     static propTypes = {
@@ -97,7 +130,7 @@ class LineText extends Component {
       lineDis: React.PropTypes.number,
     };
     static defaultProps = {
-      fontSize: MinUnit*2,
+      fontSize: MinUnit*1.5,
       color: "#737373",
       word: 'Sign In/Sign Up',
       lineDis: 3*MinWidth,
@@ -146,9 +179,31 @@ const styles = StyleSheet.create({
         paddingLeft: MinUnit,
     },
     memoryMenu: {
-        height: ScreenHeight/2,
+        height: ScreenHeight*0.6,
+    },
+    memoryFrame: {
+        height: ScreenHeight*0.14,
+        flexDirection: "row",
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    memoryIcon: {
+        width: MinUnit*7,
+        height: MinUnit*7,
+        borderRadius: MinUnit,
+        marginLeft: MinUnit*2,
+    },
+    numberView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingRight: MinUnit*2.5,
+    },
+    memoryNumber: {
+        fontSize: MinUnit*3.8,
+        fontWeight: "bold",
     },
     lineText: {
-        width: MinUnit*14,
+        width: LineWidth,
     },
 });
