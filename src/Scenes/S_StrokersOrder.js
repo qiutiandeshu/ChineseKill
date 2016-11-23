@@ -40,7 +40,21 @@ var sectionData = [
   {'name': '几', 'number': parseInt(Math.random() * 10) + 1, show: false}
 ];
 
-var rowData = require('../../data/characters/永.json');
+var rowData = [
+  require('../../data/characters/八.json'),
+  require('../../data/characters/口.json'),
+  require('../../data/characters/吞.json'),
+  require('../../data/characters/哀.json'),
+  require('../../data/characters/器.json'),
+  require('../../data/characters/天.json'),
+  require('../../data/characters/拥.json'),
+  require('../../data/characters/永.json'),
+  require('../../data/characters/波.json'),
+  require('../../data/characters/盲.json'),
+  require('../../data/characters/睁.json'),
+  require('../../data/characters/秋.json'),
+  require('../../data/characters/问.json')
+];
 // var rowData = {
 // 	"hz": "永",
 // 	"py": "yong",
@@ -69,7 +83,7 @@ export default class StrokersOrder extends Component {
         this.dataBlob[sectionName].child[rowName] = {
           rowIndex: this.rowCount,
           show: false,
-          data: rowData
+          data: rowData[this.rowCount % rowData.length]
         };
         this.rowCount++;
         if (i < tempCount){//一开是关闭的，所以不管子项有多少都要增加

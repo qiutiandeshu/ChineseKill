@@ -25,22 +25,24 @@ import {
 var itemHeight = MinUnit * 7;
 import DrawWord from '../Component/DrawWord.js';
 var curWidth = parseInt(ScreenHeight * 0.48);
-var scaleWidth = curWidth / 400;
 
 export default class StrokersWrite extends Component {
   constructor(props) {
     super(props);
+    var scaleWidth = curWidth*0.8 / 400;
+    var offsetXY = curWidth*0.2 / 2;
     this.blnAutoWrite = false;
     this.blnHandWrite = false;
     this.blnSeeBack = true;
     this.blnSeeLine = true;
     this.drawWord = null;
-    this.character = props.rowData.data.character.slice();
+    var jsonStr = JSON.stringify(props.rowData.data.character);
+    this.character = JSON.parse(jsonStr);
     for(var i=0;i<this.character.length;i++){
       var points = this.character[i].points;
       for(var k=0;k<points.length;k++){
-        points[k].x = points[k].x * scaleWidth;
-        points[k].y = points[k].y * scaleWidth;
+        points[k].x = points[k].x * scaleWidth + offsetXY;
+        points[k].y = points[k].y * scaleWidth + offsetXY;
       }
     }
   }
