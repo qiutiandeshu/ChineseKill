@@ -30,6 +30,10 @@ var scaleWidth = curWidth / 400;
 export default class StrokersWrite extends Component {
   constructor(props) {
     super(props);
+    this.blnAutoWrite = false;
+    this.blnHandWrite = false;
+    this.blnSeeBack = true;
+    this.blnSeeLine = true;
     this.drawWord = null;
     this.character = props.rowData.data.character.slice();
     for(var i=0;i<this.character.length;i++){
@@ -45,7 +49,16 @@ export default class StrokersWrite extends Component {
     rowCount: PropTypes.number.isRequired, //列表里面的总数
   }
   static defaultProps = {
-  } 
+  }
+  componentDidMount() {
+    if (this.blnSeeBack){
+      this.setSeeBack(this.blnSeeBack);
+    } 
+    if (this.blnSeeLine){
+      this.setSeeLine(this.blnSeeLine);
+    }
+    this.onPressAutoWrite();
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -60,7 +73,7 @@ export default class StrokersWrite extends Component {
   renderTop(){
     var indexString = `${this.props.rowData.rowIndex + 1}/${this.props.rowCount}`;
     return (
-      <View name='StrokersWriteTopView' style={styles.topViewBack}>
+      <PanView name='StrokersWriteTopView' style={styles.topViewBack}>
         <View style={styles.textView}>
           <PanButton name="btnStrokersWriteBack" onPress={this.onBackScene.bind(this)}>
             <Icon name="times" size={MinUnit*3}/>
@@ -76,7 +89,7 @@ export default class StrokersWrite extends Component {
             {indexString}
           </Text>
         </View>
-      </View>
+      </PanView>
     );
   }
   onPressRemember(){
@@ -87,7 +100,7 @@ export default class StrokersWrite extends Component {
   }
   renderBody(){
     return (
-      <View name='StrokersWriteBodyView' style={styles.bodyView}>
+      <PanView name='StrokersWriteBodyView' style={styles.bodyView}>
         <View style={[styles.textView, {width: ScreenWidth*0.5, height: itemHeight}]}>
           <Text style={styles.greyText}>
             {this.props.rowData.data.en}
@@ -95,19 +108,22 @@ export default class StrokersWrite extends Component {
         </View>
         {this.renderBodyMiddle()}
         <View style={styles.bodyBottomView}>
-          <PanButton name='btnStrokersWriteRemember' 
-            onPress={this.onPressRemember.bind(this)} 
-            style={[styles.btnBackView, {borderColor: '#CDCFA7'}]}>
-            <Icon name="check" size={MinUnit*5} style={{color: '#CDCFA7'}}/>
-          </PanButton>
-          <View style={{width: MinUnit * 8, height: itemHeight}} />
-          <PanButton name='btnStrokersWriteForget' 
+          <CircleIcon
+            name='btnStrokersWriteRemember'
+            onPress={this.onPressRemember.bind(this)}
+            style={[styles.btnBackView, {borderColor: '#CDCFA7', marginRight: MinUnit*4}]}
+            iconName={'check'}
+            iconSize={5} 
+            iconStyle={{color: '#CDCFA7'}} />
+          <CircleIcon
+            name='btnStrokersWriteForget'
             onPress={this.onPressForget.bind(this)}
-            style={[styles.btnBackView, {borderColor: '#D0B5BC'}]}>
-            <Icon name="remove" size={MinUnit*5} style={{color: '#D0B5BC'}}/>
-          </PanButton>
+            style={[styles.btnBackView, {borderColor: '#D0B5BC', marginLeft: MinUnit*4}]}
+            iconName={'remove'}
+            iconSize={5} 
+            iconStyle={{color: '#D0B5BC'}} />
         </View>
-      </View>
+      </PanView>
     );
   }
   onPressPlay(){//播放语音
@@ -117,67 +133,281 @@ export default class StrokersWrite extends Component {
     
   }
   onPressAutoWrite(){//自动描红
-    if (this.drawWord){
-      this.drawWord.setAutoWrite();
+    if (this.blnHandWrite){
+      this.blnHandWrite = false;
+      if (this.refHandWrite){
+        this.refHandWrite.setIconIndex(0);
+      }
+    }
+    if (!this.blnAutoWrite){
+      this.blnAutoWrite = true;
+      if (this.drawWord){
+        this.drawWord.setArrowShow(false);
+        this.drawWord.setAutoWrite();
+      }
+      if (this.refAutoWrite){
+        this.refAutoWrite.setIconIndex(1);
+      }
     }
   }
   onPressHandWrite(){//手写描红
-
+    if (this.blnAutoWrite){
+      this.blnAutoWrite = false;
+      if (this.drawWord){
+        this.drawWord.stopAutoWrite();
+      }
+      if (this.refAutoWrite){
+        this.refAutoWrite.setIconIndex(0);
+      }
+    }
+    this.blnHandWrite = true;
+    if (this.drawWord){
+      this.drawWord.setArrowShow(this.blnSeeLine);
+      this.drawWord.setHandWrite();
+    }
+    if (this.refHandWrite){
+      this.refHandWrite.setIconIndex(1);
+    }
+  }
+  setSeeLine(bln){
+    if (this.refSeeLine){
+      this.refSeeLine.setIconIndex(bln ? 1 : 0);
+    }
+    if (this.drawWord){
+      if (this.blnHandWrite){
+        this.drawWord.setArrowShow(bln);
+      }else if (this.blnAutoWrite){
+        this.drawWord.setArrowShow(false);
+      }
+    }
+  }
+  setSeeBack(bln){
+    if (this.refSeeBack){
+      this.refSeeBack.setIconIndex(bln ? 1 : 0);
+    }
+    if (this.drawWord){
+      this.drawWord.setBackShow(bln);
+    }
   }
   onPressSeeBack(){//是否看见汉字背影
-
+    this.blnSeeBack = !this.blnSeeBack;
+    this.setSeeBack(this.blnSeeBack);
   }
   onPressSeeLine(){//是否看见笔画提示
-
+    this.blnSeeLine = !this.blnSeeLine;
+    this.setSeeLine(this.blnSeeLine);
+  }
+  writeOver(){
+    if (this.blnAutoWrite){
+      this.blnAutoWrite = false;
+      if (this.refAutoWrite){
+        this.refAutoWrite.setIconIndex(0);
+      }
+    }
   }
   renderBodyMiddle(){
     return (
       <View style={styles.bodyCenterView}>
         <View style={styles.bodyMiddleLeftView}>
-          <PanButton name='btnStrokersWritePaly' 
+          <CircleIcon
+            name='btnStrokersWritePaly'
             onPress={this.onPressPlay.bind(this)}
-            style={[styles.btnBackView2, {borderColor: '#4C8D93'}]}>
-            <Icon name="volume-up" size={MinUnit*3} style={{color: '#4C8D93'}}/>
-          </PanButton>
-          <PanButton name='btnStrokersWritePop' 
+            style={[styles.btnBackView2, {borderColor: '#4C8D93'}]}
+            iconName={'volume-up'}
+            iconSize={3} 
+            iconStyle={{color: '#4C8D93'}} />
+          <CircleIcon
+            name='btnStrokersWritePop'
             onPress={this.onPressPop.bind(this)}
-            style={[styles.btnBackView2, {borderColor: '#4C8D93'}]}>
-            <Icon name="leaf" size={MinUnit*3} style={{color: '#4C8D93'}}/>
-          </PanButton>
+            style={[styles.btnBackView2, {borderColor: '#4C8D93'}]}
+            iconName={'leaf'}
+            iconSize={3} 
+            iconStyle={{color: '#4C8D93'}} />
         </View>
-        <DrawWord 
+        <DrawWord ref={(r)=>{this.drawWord = r}}
           style={styles.bodyMiddleCenterView} 
-          ref={(r)=>{this.drawWord = r}} 
           data={this.character}
           curWidth={curWidth}
           blnTouch={true}
+          writeOver={this.writeOver.bind(this)}
         />
         <View style={styles.bodyMiddleRightView}>
-          <PanButton name='btnStrokersWriteAutoWrite' 
+          <ButtonIcon ref={(r)=>{this.refAutoWrite = r}}
+            name='btnStrokersWriteAutoWrite'
             onPress={this.onPressAutoWrite.bind(this)}
-            style={{marginTop: MinUnit*2}}>
-            <Icon name="play-circle-o" size={MinUnit*3.5} style={{color: '#4C8D93'}}/>
-          </PanButton>
-          <PanButton name='btnStrokersWriteHandWrite' 
+            style={{marginTop: MinUnit*2}}
+            iconName={["play-circle-o", "pause-circle-o"]}
+            iconSize={3.5} 
+            iconStyle={{color: '#4C8D93'}} />
+          <CircleIcon ref={(r)=>{this.refHandWrite = r}}
+            name='btnStrokersWriteHandWrite'
             onPress={this.onPressHandWrite.bind(this)}
-            style={[styles.btnBackView2, {borderColor: '#4C8D93', marginTop: MinUnit*4}]}>
-            <Icon name="paint-brush" size={MinUnit*3} style={{color: '#4C8D93'}}/>
-          </PanButton>
+            style={[styles.btnBackView2, {borderColor: '#4C8D93', marginTop: MinUnit*4}]}
+            iconName={["paint-brush", "paint-brush"]}
+            iconSize={3} 
+            iconStyle={{color: '#4C8D93'}} />
           <View style={{marginBottom: MinUnit*2}}>
-            <PanButton name='btnStrokersWriteSeeBack' 
+            <CircleIcon ref={(r)=>{this.refSeeBack = r}}
+              name='btnStrokersWriteSeeBack'
               onPress={this.onPressSeeBack.bind(this)}
-              style={[styles.btnBackView3, {borderColor: '#4C8D93'}]}>
-              <Icon name="eye" size={MinUnit*2} style={{color: '#4C8D93'}}/>
-            </PanButton>
-            <PanButton name='btnStrokersWriteSeeLine' 
+              style={[styles.btnBackView3, {borderColor: '#4C8D93'}]}
+              iconName={["eye","eye"]}
+              iconSize={2} 
+              iconStyle={{color: '#4C8D93'}} />
+            <CircleIcon ref={(r)=>{this.refSeeLine = r}}
+              name='btnStrokersWriteSeeLine'
               onPress={this.onPressSeeLine.bind(this)}
-              style={[styles.btnBackView3, {borderColor: '#4C8D93', marginTop: MinUnit*2}]}>
-              <Icon name="fire" size={MinUnit*2} style={{color: '#4C8D93'}}/>
-            </PanButton>
+              style={[styles.btnBackView3, {borderColor: '#4C8D93', marginTop: MinUnit*2}]}
+              iconName={["fire","fire"]}
+              iconSize={2} 
+              iconStyle={{color: '#4C8D93'}} />
           </View>
         </View>
       </View>
     );
+  }
+}
+class ButtonIcon extends Component {
+  constructor(props) {
+    super(props);
+    this.state={
+      blnUpdate: false,
+    };
+    this.iconIdx = 0;
+    this.selfStyle={
+      width: (this.props.iconSize) * MinUnit, 
+      height: (this.props.iconSize) * MinUnit, 
+      borderColor: '#CDCFA7', 
+      alignItems: 'center', 
+      justifyContent: 'center'
+    };
+  }
+  static propTypes = {
+    name: PropTypes.string.isRequired, //PanView 或者 PanButton的名字
+    iconName: PropTypes.oneOfType([PropTypes.array, PropTypes.string]).isRequired, //icon的名字
+    iconSize: PropTypes.number, //icon的大小
+    iconStyle: PropTypes.object,  //icon的样式
+    onPress: PropTypes.func.isRequired, //可以按，说明就是button
+  }
+  static defaultProps = {
+    iconStyle: {color: '#000'},
+    iconSize: 2,
+  }
+  setIconIndex(idx){
+    this.iconIdx = idx % 2;
+    this.setUpdate();
+  }
+  setUpdate(){
+    this.setState({
+      blnUpdate: !this.state.blnUpdate,
+    });
+  }
+  render(){
+    var iname = '';
+    if (typeof(this.props.iconName) == 'string'){
+      iname = this.props.iconName;
+    }else {
+      iname = this.props.iconName[this.iconIdx];
+    }
+    return (
+      <PanButton 
+        name={this.props.name} 
+        onPress={this.props.onPress} 
+        style={[this.selfStyle, this.props.style]}
+      >
+        <Icon 
+          name={iname} 
+          size={this.props.iconSize * MinUnit} 
+          style={[this.props.iconStyle, ]}
+        />
+      </PanButton>
+    );
+  }
+}
+class CircleIcon extends Component {
+  constructor(props) {
+    super(props);
+     this.state={
+      blnUpdate: false,
+    };
+    this.iconIdx = 0;
+    this.selfStyle={
+      width: (this.props.iconSize + 1.4) * MinUnit, 
+      height: (this.props.iconSize + 1.4) * MinUnit, 
+      borderRadius: (this.props.iconSize + 1.4) * MinUnit / 2, 
+      borderWidth: 1, 
+      borderColor: '#CDCFA7', 
+      alignItems: 'center', 
+      justifyContent: 'center'
+    };
+    this.selectStyle = [
+      {backgroundColor: this.props.style.backgroundColor},
+      {color: this.props.iconStyle.color},
+      {backgroundColor: this.props.iconStyle.color},
+      {color: '#FFFFFF'},
+    ];
+  }
+  static propTypes = {
+    name: PropTypes.string.isRequired, //PanView 或者 PanButton的名字
+    iconName: PropTypes.oneOfType([PropTypes.array, PropTypes.string]).isRequired, //icon的名字
+    iconSize: PropTypes.number, //icon的大小
+    iconStyle: PropTypes.object,  //icon的样式
+    onPress: PropTypes.func, //可以按，说明就是button
+  }
+  static defaultProps = {
+    onPress: null,
+    iconStyle: {color: '#000'},
+    iconSize: 2,
+  }
+  setIconIndex(idx){
+    this.iconIdx = idx % 2;
+    this.setUpdate();
+  }
+  setUpdate(){
+    this.setState({
+      blnUpdate: !this.state.blnUpdate,
+    });
+  }
+  render(){
+    var iname = '';
+    var tempBack = {};
+    var tempIcon = {};
+    if (typeof(this.props.iconName) == 'string'){
+      iname = this.props.iconName;
+    }else {
+      iname = this.props.iconName[this.iconIdx];
+      tempBack = this.selectStyle[this.iconIdx*2+0];
+      tempIcon = this.selectStyle[this.iconIdx*2+1];
+    }
+    var child = (
+      <Icon 
+        name={iname} 
+        size={this.props.iconSize * MinUnit} 
+        style={[this.props.iconStyle, tempIcon]}
+      />
+    );
+    var ret = null;
+    if (this.props.onPress){
+      ret = (
+        <PanButton 
+          name={this.props.name} 
+          onPress={this.props.onPress} 
+          style={[this.selfStyle, this.props.style, tempBack]}
+        >
+          {child}
+        </PanButton>
+      );
+    }else{
+      ret = (
+        <PanView 
+          name={this.props.name} 
+          style={[this.selfStyle, this.props.style, tempBack]}
+        >
+          {child}
+        </PanView>
+      );
+    }
+    return ret;
   }
 }
 const styles = StyleSheet.create({
@@ -274,7 +504,7 @@ const styles = StyleSheet.create({
     height: curWidth,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#EEE',
+    // backgroundColor: '#EEE',
   },
   bodyMiddleRightView:{
     width: MinUnit*8,

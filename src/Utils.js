@@ -305,11 +305,18 @@ var Utils = {
   PRotP: function(a, b, v){//b点绕a点旋转v度后的坐标，v角度
     v = v * Math.PI / 180;//角度转换成弧度
     var ab = Utils.DisP(a, b);//两点的距离
-    var k = Math.atan2(b.y-a.y, b.x-a.x);//以a为远点，b的夹角
+    var k = Math.atan2(b.y-a.y, b.x-a.x);//以a为原点，b的夹角
     return ({
-      x: a.x + ab * Math.sin(k+v),
-      y: a.y + ab * Math.cos(k+v) 
+      x: a.x + ab * Math.cos(k+v),
+      y: a.y + ab * Math.sin(k+v) 
     });
+  },
+  isArray(object){
+    return object && 
+      typeof object === 'object' && 
+      typeof object.length==='number' && 
+      typeof object.splice==='function' && 
+      !(object.propertyIsEnumerable('length'));
   }
 };
 

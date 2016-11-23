@@ -51,15 +51,31 @@ export default class DrawWord extends Component {
     this.unitDisMv = this.props.curWidth / 15;
     this.wrongCount = 0;
     this.nowPos = 0;
+    this.blnShowArrow = true;
+    this.blnShowBack = true;
     this.createBackLine();
+    
+    this.tempColor = [];
+    this.tempColor.push(this.props.fillColor);
+    if (this.props.fillArray != null){
+      if (Utils.isArray(this.props.fillArray)){
+        for(var i=0; i<this.data.length;i++){
+          this.tempColor.push(this.props.fillArray[i % this.props.fillArray.length]);
+        }
+      }else{
+        for(var i=0; i<this.data.length;i++){
+          this.tempColor.push(`rgb(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255})`);
+        }
+      }
+    }
   }
   static propTypes = {
     curWidth: PropTypes.number.isRequired, //宽高必须
     data: PropTypes.array.isRequired, //数据，点阵数组数据
     blnTouch: PropTypes.bool.isRequired, //是否可书写
     backColor: PropTypes.string, //背景颜色
-    fillColor: PropTypes.string, //填充颜色
-    fillArray: PropTypes.array, //填充颜色数组，如果存在则以这个为准，用于不同部件的颜色标识
+    fillColor: PropTypes.string, //填充颜色，
+    fillArray: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]), //如果存在则以这个为准，用于不同部件的颜色标识，如果是bool类型，则在内部随机颜色，否则以给定颜色为准
     writeOver: PropTypes.func, //自动写完回调函数
     autoSpeed: PropTypes.number, //自动书写速度
   }
@@ -115,6 +131,7 @@ export default class DrawWord extends Component {
     this.tempDrawData = {};
     this.tempDrawLine = null;
     this.showPoints = [];
+    this.showArrow = [];
     this.loadWord();
   }
   loadWord(){
@@ -222,7 +239,46 @@ export default class DrawWord extends Component {
       y = (upPoints[up_step - 1].y + downPoints[down_step - 1].y) / 2;
       orgPoints.push({'x': x, 'y': y});
       character[i].orgPoints = orgPoints;
-      // character[i].dashPoints = ResampleByLen(orgPoints, 10);
+      character[i].dashPoints = Utils.ResampleByLen(orgPoints, 8);
+      if (character[i].dashPoints.length>=4){
+        var line = new Path();
+        for(var k=1;k<character[i].dashPoints.length-1;k++){
+          if (k == 1){
+            line.moveTo(character[i].dashPoints[k].x, character[i].dashPoints[k].y);
+          }else{
+            line.lineTo(character[i].dashPoints[k].x, character[i].dashPoints[k].y);
+          }
+          if (k==character[i].dashPoints.length-2){
+            var p1 = Utils.PRotP(character[i].dashPoints[k], character[i].dashPoints[k-1], 30);
+            var p2 = Utils.PRotP(character[i].dashPoints[k], character[i].dashPoints[k-1], -30);
+            line.lineTo(p1.x, p1.y);
+            line.lineTo(character[i].dashPoints[k].x, character[i].dashPoints[k].y);
+            line.lineTo(p2.x, p2.y);
+          }
+        }
+        this.showArrow.push(
+          <Shape key={i} d={line} stroke={'red'} strokeWidth={1} />
+        );
+      }else{
+        var line = new Path();
+        for(var k=0;k<character[i].dashPoints.length;k++){
+          if (k == 0){
+            line.moveTo(character[i].dashPoints[k].x, character[i].dashPoints[k].y);
+          }else{
+            line.lineTo(character[i].dashPoints[k].x, character[i].dashPoints[k].y);
+          }
+          if (k==character[i].dashPoints.length-1){
+            var p1 = Utils.PRotP(character[i].dashPoints[k], character[i].dashPoints[k-1], 30);
+            var p2 = Utils.PRotP(character[i].dashPoints[k], character[i].dashPoints[k-1], -30);
+            line.lineTo(p1.x, p1.y);
+            line.lineTo(character[i].dashPoints[k].x, character[i].dashPoints[k].y);
+            line.lineTo(p2.x, p2.y);
+          }
+        }
+        this.showArrow.push(
+          <Shape key={i} d={line} stroke={'red'} strokeWidth={1} />
+        );
+      }
       
       // for(var k=0;k<character[i].dashPoints.length;k++){
       //   this.showPoints.push(
@@ -347,7 +403,11 @@ export default class DrawWord extends Component {
         line.lineTo(point.x, point.y);
       }
     }
-    this.tempDrawData.color = this.props.fillColor;
+    var tColor = this.props.fillColor;
+    if (this.props.fillArray != null){
+      tColor = this.tempColor[bh.bushou % (this.tempColor.length-1) + 1];
+    }
+    this.tempDrawData.color = tColor;
     this.tempDrawLine = (
       <Shape d={line} fill={this.tempDrawData.color}/>
     );
@@ -358,7 +418,7 @@ export default class DrawWord extends Component {
     this.arrLine[this.drawIdx] = (
       <Shape key={this.drawIdx} d={character[this.drawIdx].line} fill={this.tempDrawData.color}/>
     );
-    this.tempDrawLine = null;
+    // this.tempDrawLine = null;
     this.setUpdate();
   }
   setRestart(){
@@ -415,6 +475,7 @@ export default class DrawWord extends Component {
     }
   }
   setAutoWrite(){
+    this.tempDrawLine = null;
     this.setRestart();
     this.stopAutoWrite();
     this._autoWrite = setInterval(this.autoWrite.bind(this), 1/60);
@@ -440,6 +501,7 @@ export default class DrawWord extends Component {
             }
             this._autoWrite && clearInterval(this._autoWrite);
             this._autoWrite = null;
+            this.setUpdate();
           }else{
             this.setBeginDraw();
           }
@@ -449,6 +511,9 @@ export default class DrawWord extends Component {
         this.DrawingPecent(this.nowPos / points.length);
       }
     }
+  }
+  setHandWrite(){
+    this.setRestart();
   }
   componentWillMount() {
     if (this.props.blnTouch){
@@ -552,6 +617,8 @@ export default class DrawWord extends Component {
           this.wrongCount = 0;
           this.setBeginDraw();
         }else{
+          this.drawIdx++;
+          this.setUpdate();
           console.log('书写完毕!');
         }
       }else if (this.nowPos == 0){
@@ -563,13 +630,41 @@ export default class DrawWord extends Component {
       }
     }
   }
+  setArrowShow(bln){
+    this.blnShowArrow = bln;
+    this.setUpdate(); 
+  }
+  setBackShow(bln){
+    this.blnShowBack = bln;
+    this.setUpdate();
+  }
   render() {
+    var arrayArrow = null;
+    if (this.blnShowArrow){
+      for(var i=0;i<this.showArrow.length;i++){
+        if (i == this.drawIdx){
+          arrayArrow = this.showArrow[i];
+          break;
+        }
+      }
+    }
+    var arrayLine = [];
+    if (this.blnShowBack){
+      arrayLine = this.arrLine;
+    }else{
+      for(var i=0;i<this.arrLine.length;i++){
+        if (i < this.drawIdx){
+          arrayLine.push(this.arrLine[i]);
+        }
+      }
+    }
     return (
       <View style={[styles.container, this.props.style? this.props.style : {}]} {...this._panResponder.panHandlers}>
         <Surface ref={'lineView'} width={this.props.curWidth} height={this.props.curWidth}>
           {this.backLine}
-          {this.arrLine}
+          {arrayLine}
           {this.tempDrawLine}
+          {arrayArrow}
         </Surface>
         {this.showPoints}
       </View>
@@ -581,6 +676,6 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    // backgroundColor: '#F5FCFF',
   },
 });
