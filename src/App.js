@@ -62,7 +62,7 @@ export default class App extends Component {
         //..this.removeAllStorageData()
     }
 
-
+    
     /*--------------------------本地数据存储部分 Start-----------------------*/
     initUserInfoByStorage = ()=>{
         this.storage.getAllDataForKey('UserInfo').then(
@@ -126,6 +126,7 @@ export default class App extends Component {
         for(let i=0;i<this.lessonData.length;i++){
             let data = this.lessonData[i]
             for(let j=0;j<data.lessonTitle.length;j++){
+                this.storageLearning[index] = {};
                 this.storageLearning[index].state = 'locked' //'locked','unlocked','passed'
                 this.storageLearning[index].score = 0 //每一课的得到分数
                 this.storageLearning[index].time = 0  //每一课的时间

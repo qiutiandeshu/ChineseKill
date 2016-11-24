@@ -33,6 +33,21 @@
 		5A20B1101DDACD5E00F2EB54 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5A20B1071DDACD5E00F2EB54 /* Zocial.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		90638DBE1DE298500037994B /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90EE719B1DDEEA0D005B6662 /* libART.a */; };
+		90F3B59B1DE6E4C3004B01AC /* PcmPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B5991DE6E4C3004B01AC /* PcmPlayer.m */; };
+		90F3B59E1DE6E4DD004B01AC /* ChivoxISE.m in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B59D1DE6E4DD004B01AC /* ChivoxISE.m */; };
+		90F3B5AC1DE6E501004B01AC /* libaiengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5A21DE6E501004B01AC /* libaiengine.a */; };
+		90F3B5AD1DE6E501004B01AC /* aiengine.provision in Resources */ = {isa = PBXBuildFile; fileRef = 90F3B5A41DE6E501004B01AC /* aiengine.provision */; };
+		90F3B5AE1DE6E501004B01AC /* aiplayer.c in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B5A61DE6E501004B01AC /* aiplayer.c */; };
+		90F3B5AF1DE6E501004B01AC /* airecorder.c in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B5A81DE6E501004B01AC /* airecorder.c */; };
+		90F3B5B51DE6E5D1004B01AC /* libiconv.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5B31DE6E5D1004B01AC /* libiconv.2.dylib */; };
+		90F3B5B61DE6E5D1004B01AC /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5B41DE6E5D1004B01AC /* libz.1.dylib */; };
+		90F3B5B81DE6E5EE004B01AC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5B71DE6E5EE004B01AC /* AVFoundation.framework */; };
+		90F3B5BA1DE6E5F6004B01AC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5B91DE6E5F6004B01AC /* Foundation.framework */; };
+		90F3B5BC1DE6E5FF004B01AC /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5BB1DE6E5FF004B01AC /* CoreFoundation.framework */; };
+		90F3B5BE1DE6E604004B01AC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5BD1DE6E604004B01AC /* UIKit.framework */; };
+		90F3B5C01DE6E60A004B01AC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5BF1DE6E60A004B01AC /* AudioToolbox.framework */; };
+		90F3B5C21DE6E60F004B01AC /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5C11DE6E60F004B01AC /* Security.framework */; };
+		90F3B5C41DE6E614004B01AC /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5C31DE6E614004B01AC /* SystemConfiguration.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -203,6 +218,28 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		90EE71961DDEEA0D005B6662 /* ART.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ART.xcodeproj; path = "../node_modules/react-native/Libraries/ART/ART.xcodeproj"; sourceTree = "<group>"; };
+		90F3B5981DE6E4C3004B01AC /* PcmPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmPlayer.h; sourceTree = "<group>"; };
+		90F3B5991DE6E4C3004B01AC /* PcmPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PcmPlayer.m; sourceTree = "<group>"; };
+		90F3B59A1DE6E4C3004B01AC /* PcmPlayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmPlayerDelegate.h; sourceTree = "<group>"; };
+		90F3B59C1DE6E4DD004B01AC /* ChivoxISE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChivoxISE.h; path = ChineseKill/ChivoxISE.h; sourceTree = "<group>"; };
+		90F3B59D1DE6E4DD004B01AC /* ChivoxISE.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ChivoxISE.m; path = ChineseKill/ChivoxISE.m; sourceTree = "<group>"; };
+		90F3B5A21DE6E501004B01AC /* libaiengine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libaiengine.a; sourceTree = "<group>"; };
+		90F3B5A31DE6E501004B01AC /* aiengine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aiengine.h; path = ChineseKill/aiengine.h; sourceTree = "<group>"; };
+		90F3B5A41DE6E501004B01AC /* aiengine.provision */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = aiengine.provision; path = ChineseKill/aiengine.provision; sourceTree = "<group>"; };
+		90F3B5A61DE6E501004B01AC /* aiplayer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aiplayer.c; sourceTree = "<group>"; };
+		90F3B5A71DE6E501004B01AC /* aiplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aiplayer.h; sourceTree = "<group>"; };
+		90F3B5A81DE6E501004B01AC /* airecorder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = airecorder.c; sourceTree = "<group>"; };
+		90F3B5A91DE6E501004B01AC /* airecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = airecorder.h; sourceTree = "<group>"; };
+		90F3B5AA1DE6E501004B01AC /* wavehdr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavehdr.h; sourceTree = "<group>"; };
+		90F3B5B31DE6E5D1004B01AC /* libiconv.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.2.dylib; path = ../../../../../../../usr/lib/libiconv.2.dylib; sourceTree = "<group>"; };
+		90F3B5B41DE6E5D1004B01AC /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../../../../usr/lib/libz.1.dylib; sourceTree = "<group>"; };
+		90F3B5B71DE6E5EE004B01AC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		90F3B5B91DE6E5F6004B01AC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		90F3B5BB1DE6E5FF004B01AC /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		90F3B5BD1DE6E604004B01AC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		90F3B5BF1DE6E60A004B01AC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		90F3B5C11DE6E60F004B01AC /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		90F3B5C31DE6E614004B01AC /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,9 +255,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90F3B5C41DE6E614004B01AC /* SystemConfiguration.framework in Frameworks */,
+				90F3B5C21DE6E60F004B01AC /* Security.framework in Frameworks */,
+				90F3B5C01DE6E60A004B01AC /* AudioToolbox.framework in Frameworks */,
+				90F3B5BE1DE6E604004B01AC /* UIKit.framework in Frameworks */,
+				90F3B5BC1DE6E5FF004B01AC /* CoreFoundation.framework in Frameworks */,
+				90F3B5BA1DE6E5F6004B01AC /* Foundation.framework in Frameworks */,
+				90F3B5B81DE6E5EE004B01AC /* AVFoundation.framework in Frameworks */,
+				90F3B5B51DE6E5D1004B01AC /* libiconv.2.dylib in Frameworks */,
+				90F3B5B61DE6E5D1004B01AC /* libz.1.dylib in Frameworks */,
 				90638DBE1DE298500037994B /* libART.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
+				90F3B5AC1DE6E501004B01AC /* libaiengine.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
 				00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */,
 				133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */,
@@ -315,6 +362,11 @@
 		13B07FAE1A68108700A75B9A /* ChineseKill */ = {
 			isa = PBXGroup;
 			children = (
+				90F3B5971DE6E4C3004B01AC /* pcmPlayerCode */,
+				90F3B5C51DE6E787004B01AC /* Chivox */,
+				90F3B5A51DE6E501004B01AC /* audio */,
+				90F3B59C1DE6E4DD004B01AC /* ChivoxISE.h */,
+				90F3B59D1DE6E4DD004B01AC /* ChivoxISE.m */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -391,6 +443,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				90F3B5B01DE6E538004B01AC /* Frameworks */,
 				5A20B0FE1DDACD5E00F2EB54 /* Fonts */,
 				13B07FAE1A68108700A75B9A /* ChineseKill */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -416,6 +469,65 @@
 				90EE719B1DDEEA0D005B6662 /* libART.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		90F3B5971DE6E4C3004B01AC /* pcmPlayerCode */ = {
+			isa = PBXGroup;
+			children = (
+				90F3B5981DE6E4C3004B01AC /* PcmPlayer.h */,
+				90F3B5991DE6E4C3004B01AC /* PcmPlayer.m */,
+				90F3B59A1DE6E4C3004B01AC /* PcmPlayerDelegate.h */,
+			);
+			name = pcmPlayerCode;
+			path = ChineseKill/pcmPlayerCode;
+			sourceTree = "<group>";
+		};
+		90F3B5A11DE6E501004B01AC /* aiengine-ios */ = {
+			isa = PBXGroup;
+			children = (
+				90F3B5A21DE6E501004B01AC /* libaiengine.a */,
+			);
+			name = "aiengine-ios";
+			path = "ChineseKill/aiengine-ios";
+			sourceTree = "<group>";
+		};
+		90F3B5A51DE6E501004B01AC /* audio */ = {
+			isa = PBXGroup;
+			children = (
+				90F3B5A61DE6E501004B01AC /* aiplayer.c */,
+				90F3B5A71DE6E501004B01AC /* aiplayer.h */,
+				90F3B5A81DE6E501004B01AC /* airecorder.c */,
+				90F3B5A91DE6E501004B01AC /* airecorder.h */,
+				90F3B5AA1DE6E501004B01AC /* wavehdr.h */,
+			);
+			name = audio;
+			path = ChineseKill/audio;
+			sourceTree = "<group>";
+		};
+		90F3B5B01DE6E538004B01AC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				90F3B5C31DE6E614004B01AC /* SystemConfiguration.framework */,
+				90F3B5C11DE6E60F004B01AC /* Security.framework */,
+				90F3B5BF1DE6E60A004B01AC /* AudioToolbox.framework */,
+				90F3B5BD1DE6E604004B01AC /* UIKit.framework */,
+				90F3B5BB1DE6E5FF004B01AC /* CoreFoundation.framework */,
+				90F3B5B91DE6E5F6004B01AC /* Foundation.framework */,
+				90F3B5B71DE6E5EE004B01AC /* AVFoundation.framework */,
+				90F3B5B31DE6E5D1004B01AC /* libiconv.2.dylib */,
+				90F3B5B41DE6E5D1004B01AC /* libz.1.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		90F3B5C51DE6E787004B01AC /* Chivox */ = {
+			isa = PBXGroup;
+			children = (
+				90F3B5A41DE6E501004B01AC /* aiengine.provision */,
+				90F3B5A31DE6E501004B01AC /* aiengine.h */,
+				90F3B5A11DE6E501004B01AC /* aiengine-ios */,
+			);
+			name = Chivox;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -682,6 +794,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5A20B10D1DDACD5E00F2EB54 /* MaterialIcons.ttf in Resources */,
+				90F3B5AD1DE6E501004B01AC /* aiengine.provision in Resources */,
 				5A20B10E1DDACD5E00F2EB54 /* Octicons.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				5A20B10A1DDACD5E00F2EB54 /* FontAwesome.ttf in Resources */,
@@ -727,6 +840,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90F3B5AE1DE6E501004B01AC /* aiplayer.c in Sources */,
+				90F3B59E1DE6E4DD004B01AC /* ChivoxISE.m in Sources */,
+				90F3B5AF1DE6E501004B01AC /* airecorder.c in Sources */,
+				90F3B59B1DE6E4C3004B01AC /* PcmPlayer.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
@@ -798,6 +915,10 @@
 				);
 				INFOPLIST_FILE = ChineseKill/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ChineseKill/aiengine-ios",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -822,6 +943,10 @@
 				);
 				INFOPLIST_FILE = ChineseKill/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ChineseKill/aiengine-ios",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

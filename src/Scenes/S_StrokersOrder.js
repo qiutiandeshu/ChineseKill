@@ -29,6 +29,7 @@ import {
 var {
   UIManager,
 } = NativeModules;
+// import InputBoard from '../Common/InputBoard.js';
 
 var sectionData = [
   {'name': '丶', 'number': parseInt(Math.random() * 10) + 1, show: false},
@@ -41,6 +42,7 @@ var sectionData = [
 ];
 
 var rowData = [
+  require('../../data/characters/不.json'),
   require('../../data/characters/八.json'),
   require('../../data/characters/口.json'),
   require('../../data/characters/吞.json'),
