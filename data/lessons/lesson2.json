@@ -1,13 +1,89 @@
 {
-  "id":"2",
-  "title":"Basics2",
-  "icon":"titleIcon2",
-  "lessonTitle":[
-    {"words":"我们;你们;他们;她们;"},
-    {"words":"桃;梨;水果;吃;","sentence":"Subject+在+Vebr吃+Object;"},
-    {"words":"茶;酒;水;喝;","sentence":"Subject+在+Vebr喝+Object;"}
-  ],
-  "partice":[
-    {"type":0,"quesion":"abcd?","answer":"d"}
+  "id": "2",
+  "title": "Basics2",
+  "icon": "titleIcon2",
+  "lessonTitle": [
+    {
+      "words": "人;男人;女人;男孩;女孩",
+      "questions": [
+        {
+          "Q_Type": 0,
+          "title": "choose a correct picture",
+          "question": "我_*_中国_人",
+          "question_PY":"wo_*_zhong guo_ren",
+          "Q_Sound": "人.mp3",
+          "Q_Pics": [
+            "fish",
+            "mother",
+            "cat",
+            "dog"
+          ],
+          "Q_Contents": [
+            "鱼 / yu",
+            "妈妈 / ma ma",
+            "猫 / mao",
+            "狗 / gou"
+          ],
+          "Q_Answer": "妈妈 / ma ma"
+        }
+      ]
+    },
+
+    {
+      "words": "我;你;她;他;是",
+      "sentence": "Subject+Vebr是+Object;",
+      "questions":[
+        {
+          "Q_Type": 1,
+          "title": "write down the word's translation",
+          "question": "女孩/nv hai",
+          "Q_Sound": "女孩.mp3",
+          "Q_Tips":"Write down the translation",
+          "Q_Answer": [
+            "girl",
+            "unboy",
+            "small women"
+          ]
+        },
+        {
+          "Q_Type": 2,
+          "title": "select a correct translation",
+          "question": "女人/nv ren",
+          "Q_Centents": [
+            "boy",
+            "girl",
+            "woman",
+            "male",
+            "man",
+            "a",
+            "people",
+            "hello",
+            "name",
+            "Tang Wei Shu",
+            "中文都有",
+            "pin yin yo"
+          ],
+          "Q_Answer": [
+            "woman",
+            "man"
+          ]
+        },
+        {
+          "Q_Type":3,
+          "title":"link sth",
+          "quesion":"",
+          "Q_Centents":[
+            "boy",
+            "girl",
+            "woman"
+          ],
+          "Q_Answer":[
+            "男孩",
+            "女孩",
+            "女人"
+          ]
+        }
+      ]
+    }
   ]
 }

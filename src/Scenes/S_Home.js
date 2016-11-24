@@ -7,67 +7,63 @@ import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView'
 
 import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView} from 'react-native'
-import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles,IconSize} from '../AppStyles'
-
+import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import MenuLeft from '../Component/HomeSideMenuLeft'
 import MenuRight from '../Component/HomeSideMenuRight'
 import Icon from 'react-native-vector-icons/FontAwesome'
 var Box = require('../Component/Box.js');
-
 export default class S_Home extends Component {
     constructor(props) {
-        super(props);
-        console.log('All Lesson Date',props.allLessonData)
-        var ds = new ListView.DataSource({rowHasChanged:(r1,r2)=>r1!==r2})
-        var tmpDate = [];
-        for(var i=0;i<100;i++){
-            tmpDate[i] = {title:i,icon:i,lessonTitle:[0,1]}
-        }
+        super(props);        
+        console.log('All Lesson Date', props.allLessonData)
+        var ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1 !== r2})
+
         //console.log("所有数据:",props.allLessonData)
         this.state = {
             menuState: 'none',
             sideMenuAnim: new Animated.Value(0),
-            dataSource:ds.cloneWithRows(props.allLessonData)
-            //dataSource:ds.cloneWithRows(tmpDate)
+            dataSource: ds.cloneWithRows(props.allLessonData)
+
         };
         this.blnContentOffX = false;
-
         global.Home = this;
     }
 
     static propTypes = {
-        allLessonData:React.PropTypes.array.isRequired,
+        allLessonData: PropTypes.array.isRequired,
     };
     static defaultProps = {
-        allLessonData:[]
+        allLessonData: []
     };
 
     openSideMenu = (side)=> {
-        if(this.state.menuState != 'none'){
+        if (this.state.menuState != 'none') {
             this.state.sideMenuAnim.setValue(0)
         }
         this.blnContentOffX = false;
-        if(side == 'left'){
+        if (side == 'left') {
             this.blnContentOffX = true;
         }
-        Animated.timing(this.state.sideMenuAnim,{
-            toValue:1,
+        Animated.timing(this.state.sideMenuAnim, {
+            toValue: 1,
         }).start()
-        this.setState({menuState:side})
+        this.setState({menuState: side})
     }
 
-    closeSideMenu = ()=>{
+    closeSideMenu = ()=> {
         this.blnContentOffX = false;
-        if(this.state.menuState == 'left'){
+        if (this.state.menuState == 'left') {
             this.blnContentOffX = true;
         }
-        Animated.timing(this.state.sideMenuAnim,{
-            toValue:0,
-        }).start(()=>{this.setState({menuState:'none'})})
+        Animated.timing(this.state.sideMenuAnim, {
+            toValue: 0,
+        }).start(()=> {
+            this.setState({menuState: 'none'})
+        })
     }
 
-    shouldComponentUpdate(nProps,nStates) {
-        if(nStates != this.state){
+    shouldComponentUpdate(nProps, nStates) {
+        if (nStates != this.state) {
             return true;
         }
         return false;
@@ -93,19 +89,15 @@ export default class S_Home extends Component {
 
         return (
             <View name="s_home" style={styles.container}>
-                <Animated.View  style={[{width},{left}]}>
+                <Animated.View style={[{width},{left}]}>
                     {this.renderTitleBar()}
                     {this.renderContent()}
                 </Animated.View>
-                {this.state.menuState == 'left' && <MenuLeft sideMenuAnim={this.state.sideMenuAnim} onCancel = {this.closeSideMenu.bind(this)}/>}
-                {
-                    this.state.menuState == 'right' && 
-                    <MenuRight 
-                        sideMenuAnim={this.state.sideMenuAnim} 
-                        onCancel = {this.closeSideMenu.bind(this)}
-                        onPressOrder = {this._onPressOrder.bind(this)}
-                    />
-                }
+                {this.state.menuState == 'left' &&
+                <MenuLeft sideMenuAnim={this.state.sideMenuAnim} onCancel={this.closeSideMenu.bind(this)}/>}
+                {this.state.menuState == 'right' &&
+                <MenuRight sideMenuAnim={this.state.sideMenuAnim} onCancel={this.closeSideMenu.bind(this)}
+                           onPressOrder = {this._onPressOrder.bind(this)}/>}
                 <Box.SettingBox ref={'Setting'} />
                 <Box.LoginBox ref={'Login'} />
                 <Box.SignUpBox ref={'SignUp'} />
@@ -119,7 +111,7 @@ export default class S_Home extends Component {
     }
 
     renderTitleBar = ()=> {
-        return (             
+        return (
             <PanView name="homeTitleView" style={[styles.titleView,UtilStyles.bottomLine,UtilStyles.grayBackColor]}>
                 {
                     this.state.menuState == 'left' ? <View style={{width:IconSize}}/> :
@@ -136,7 +128,7 @@ export default class S_Home extends Component {
             </PanView>
         );
     }
-    renderContent = ()=>{
+    renderContent = ()=> {
         return (
             <PanListView name="homeContentListView"
                          style={styles.contentView}
@@ -149,22 +141,22 @@ export default class S_Home extends Component {
             />
         );
     }
-    _renderRow = (rowData,sectionID,rowID)=>{
-        const {title,icon,lessonTitle} = rowData;
+    _renderRow = (rowData, sectionID, rowID)=> {
+        const {title, icon, lessonTitle} = rowData;
         return (
             <PanButton name={"btn"+title} style={styles.card} onPress={this._onPressCard.bind(this,rowData)}>
-                <Icon name = 'bug' size={MinUnit*8}/>
+                <Icon name='bug' size={MinUnit*8}/>
                 <Text>{title}</Text>
                 <Text>{lessonTitle.length}</Text>
             </PanButton>
         );
     }
 
-    _onPressCard = (data)=>{
-        console.log("传递属性:",data)
-        app.setNextRouteProps({lessonData:data})
+    _onPressCard = (data)=> {
+        app.setNextRouteProps({lessonData: data})
         this.props.navigator.push(app.getRoute("LessonMenus"));
     }
+
     _onPressOrder(){
         this.props.navigator.push(app.getRoute('StrokersOrder'));
     }
@@ -190,33 +182,33 @@ const styles = StyleSheet.create({
         paddingHorizontal: MinUnit * 2,
         justifyContent: 'space-between',
         alignItems: 'center',
-       
+
     },
     titleText: {
         fontSize: MinUnit * 4,
         color: 'black',
-    }, 
-    contentView:{
-        width:ScreenWidth,
-        height:ScreenHeight,
+    },
+    contentView: {
+        width: ScreenWidth,
+        height: ScreenHeight,
         //flex:1,
         //backgroundColor:'#ffff00',
-        alignSelf:'center'
+        alignSelf: 'center'
     },
-    listContent:{
+    listContent: {        
         justifyContent: 'space-between',
         //marginTop:MinUnit*12,
-        flexDirection:'row',
-        flexWrap:'wrap',
-        paddingHorizontal:ScreenWidth*0.25,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        paddingHorizontal: ScreenWidth * 0.25,
     },
-    card:{
-        width:MinUnit*10,
-        height:MinUnit*12,
-        backgroundColor:'skyblue',
-        marginVertical:MinUnit*2,
-        marginHorizontal:MinUnit*2,
-        justifyContent:'space-between',
-        alignItems:'center'
+    card: {
+        width: MinUnit * 10,
+        height: MinUnit * 12,
+        backgroundColor: 'skyblue',
+        marginVertical: MinUnit * 2,
+        marginHorizontal: MinUnit * 2,
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
 });
