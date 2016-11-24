@@ -71,7 +71,7 @@ export default class HomeSideMenuLeft extends Component {
     renderUserInfo = ()=>{
         return (
             <PanView name='v_userInfo' style={[styles.userInfo, ]}>
-                <PanButton name='b_userHead' onPress={this._onPopupBoxShow.bind(this, "Login")}>
+                <PanButton name="b_userHead" onPress={this._onPopupBoxShow.bind(this, "Login")}>
                     <Icon name="user-circle" size={MinUnit*8}/>
                 </PanButton>
                 <PanButton name='b_userSign' onPress={this._onPopupBoxShow.bind(this, "Login")}>

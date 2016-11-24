@@ -44,7 +44,7 @@ class Box extends Component {
     return (
       <View style={styles.wait}>
         <View style={styles.waitFrame}>
-          <ActivityIndicator color={'#FFFFFF'} size={'large'} />
+          <ActivityIndicator color={'#FFFFFF'}/>
         </View>
       </View>
     );
@@ -81,9 +81,9 @@ class LoginBox extends Box {
             <Text style={[styles.buttonWord, {color: '#FFFFFF'}]}>Sign In</Text>
           </PanButton>
           <View style={[styles.thirdView, ]}>
-            <CircleIcon onPress={this.onFacebookLogin.bind(this)} />
-            <CircleIcon name={'twitter'} color={'#1AB2F3'} onPress={this.onTwitterLogin.bind(this)} />
-            <CircleIcon name={'google'} color={'#CC0000'} onPress={this.onGoogleLogin.bind(this)} />
+            <CircleIcon backStyle={[styles.circle, {borderColor: '#3A58F3'}]} name={'facebook'} color={'#3A58F3'} onPress={this.onFacebookLogin.bind(this)} />
+            <CircleIcon backStyle={[styles.circle, {borderColor: '#1AB2F3'}]} name={'twitter'} color={'#1AB2F3'} onPress={this.onTwitterLogin.bind(this)} />
+            <CircleIcon backStyle={[styles.circle, {borderColor: '#CC0000'}]} name={'google'} color={'#CC0000'} onPress={this.onGoogleLogin.bind(this)} />
           </View>
           <PanButton name={'b_text_forget'} style={{marginTop: MinUnit*3}} onPress={this.onForgetPassword.bind(this)}>
             <Text style={styles.bword}>Forget Password?</Text>
@@ -304,20 +304,86 @@ class FlashCardBox extends Box {
     );
   }
 }
-// 字
-class CharacterBox extends Box {
+
+// 带有声音处理的Box
+class SoundBox extends Box {
+  blnRecord = false;
   constructor(props) {
     super(props);
   
+    this.state = {
+      blnShowLoop: false,
+    };
+  }
+  release() {
+    this.blnRecord = false;
+    this.setState({
+      blnShowLoop: false,
+    });
+  }
+  renderButton() {
+    var width = MinUnit*7;
+    return (
+      <View style={[{flexDirection: 'row', justifyContent: 'space-between',}, ]} >
+        <View style={{width}} />
+        <CircleIcon name={'microphone'} size={MinUnit*5} color={'#F6F6F6'} backStyle={styles.microphone} onPress={this.onRecordKey.bind(this)} />
+        {this.state.blnShowLoop && <CircleIcon name={'rotate-left'} size={MinUnit*5} color={'#F6F6F6'} backStyle={styles.microphone} onPress={this.onLoopKey.bind(this)} />}
+        {this.state.blnShowLoop==false && <View style={{width}} />}
+      </View>
+    );
+  }
+  // 录音按钮
+  onRecordKey() {
+    this.blnRecord = !this.blnRecord;
+    if (this.state.blnShowLoop==false && this.blnRecord==false) {
+      this.setState({
+        blnShowLoop: true,
+      });
+    }
+  }
+  // 循环按钮
+  onLoopKey() {
+    this.blnLoop = !this.blnLoop;
+  }
+  // 播放功能
+  playSound() {
+
+  }
+}
+var yxMsg = require('../../data/hz/6字义项表x.json');
+const CharacterList = [4,9,20,26,27,40,41,54,71,86,141,190,203,234,248,258,277,403,437,464,474];
+// 字
+class CardBox extends SoundBox {
+  static propTypes = {
+    kind: React.PropTypes.string,
+  };
+  static defaultProps = {
+    kind: 'Character',
+  }
+  constructor(props) {
+    super(props);
+
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       dataSource: ds.cloneWithRows([]),
-      blnWait: true
+      blnWait: true,
+      selectData: null,
+      blnShowLoop: false,
     };
   }
+  init() {
+    this.num = 0;
+    this.setState({
+      blnWait: true,
+      selectData: null,
+      dataSource: this.state.dataSource.cloneWithRows([]),
+    });
+    this.release();
+  }
   render() {
+    var _name = this.props.kind + ' Review';
     return (
-      <PopupBox ref={'PopupBox'} name={'Character Review'} 
+      <PopupBox ref={'PopupBox'} name={_name}
         leftIconName={'close'} onLeftPress={this.hidden.bind(this, "Character")} 
         rightIconName={'pencil-square-o'} 
         showAnimatedEnd={this.showEnd.bind(this)} hiddenAnimatedEnd={this.hiddenEnd.bind(this)} >
@@ -327,51 +393,100 @@ class CharacterBox extends Box {
           enableEmptySections={true}
           dataSource={this.state.dataSource}
           renderRow={this.renderRow.bind(this)}/>
-        <PanView name={'v_characterBox'} style={styles.character}>
-        </PanView>
+        {this.renderMsg()}
         {this.renderWait(this.state.blnWait)}
       </PopupBox>
     );
   }
-  renderRow(data, s_id, r_id) {
+  renderMsg() {
+    if (this.props.kind == 'Character') {
+      return this.renderCharacter();
+    } else if (this.props.kind == 'Word') {
+      return this.renderSentence();
+    } else if (this.props.kind == 'Sentence') {
+      return this.renderSentence();
+    }
+  }
+  renderCharacter() {
     return (
-      <ListItem name="character" rowId={parseInt(r_id)} data={data} />
+      <PanView name={'v_characterBox'} style={styles.character}>
+        <PanView name={'v_characterBox_c'} style={[styles.c_view, styles.border]}>
+        </PanView>
+        <View style={[styles.cMsg_view, ]}>
+          <View style={{height: MinUnit*5, alignItems: 'center',}}>
+            <Text style={{fontSize:MinUnit*4}}>{this.state.selectData?this.state.selectData.pyin:''}</Text>
+          </View>
+          <View style={[{height: MinUnit*4, marginVertical:MinUnit*2, alignItems: 'center',}, ]}>
+            <Text style={{fontSize:MinUnit*1.5, color: '#747474'}}>{this.state.selectData?this.state.selectData.yxstr:''}</Text>
+          </View>
+          {this.renderButton()}
+        </View>
+      </PanView>
     );
   }
-  showEnd(bln) {
+  renderSentence() {
+    return (
+      <PanView name={'v_characterBox'} style={styles.word}>
+        <View style={{height: MinUnit*4, marginVertical:MinUnit, alignItems: 'center',}}>
+          <Text style={{fontSize:MinUnit*2}}>{this.state.selectData?this.state.selectData.pyin:''}</Text>
+        </View>
+        <View style={{height: MinUnit*4, marginVertical:MinUnit*0.5, alignItems: 'center',}}>
+          <Text style={{fontSize:MinUnit*3, color: '#00B8D2'}}>{this.state.selectData?this.state.selectData.character:''}</Text>
+        </View>
+        <View style={[{height: MinUnit*4, marginVertical:MinUnit, alignItems: 'center',}, ]}>
+          <Text style={{fontSize:MinUnit*1.5, color: '#747474'}}>{this.state.selectData?this.state.selectData.yxstr:''}</Text>
+        </View>
+        {this.renderButton()}
+      </PanView>
+    );
+  }
+
+  componentWillUnmount() {
+    this.timer && clearTimeout(this.timer);
+  }
+  renderRow(data, s_id, r_id) {
+    return (
+      <ListItem name={this.props.kind} kind={this.props.kind} rowId={parseInt(r_id)} data={data} onPress={this.changeItem.bind(this, data)} />
+    );
+  }
+  changeItem(data) {
     this.setState({
-      blnWait: false,
+      selectData: data,
     });
-    var array = ['row1', 'row2', 'row3', 'row4', 'row5', 'row6'];
+  }
+  showEnd(bln) {
+    this.timer = setTimeout(this.getCharacterMsg.bind(this), 500);
+  }
+  hiddenEnd(bln) {
+    this.init();
+  }
+  getCharacterMsg() {
+    var array = [];
+    for (var i=0;i<CharacterList.length;i++) {
+      var _key = CharacterList[i];
+      var _data = yxMsg[_key-1];
+      var obj = {
+        character: _data['汉字内容'],
+        pyin: _data['拼音内容'],
+      };
+      if (_data['义项翻译']) {
+        obj['yxstr'] = _data['义项翻译'];
+      } else {
+        obj['yxstr'] = 'HelloWorld, this is a hz from china, learn it very easy use this tool';
+      }
+      array.push(obj);
+    }
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(array),
     });
-  }
-  hiddenEnd(bln) {
     this.setState({
-      blnWait: true,
+      blnWait: false,
     });
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows([]),
-    });
-  }
-}
-// 词
-class WordBox extends Box {
-  render() {
-    return (
-      <PopupBox ref={'PopupBox'} name={'Word Review'} leftIconName={'close'} onLeftPress={this.hidden.bind(this, "Word")} rightIconName={'pencil-square-o'}>
-      </PopupBox>
-    );
-  }
-}
-// 句
-class SentenceBox extends Box {
-  render() {
-    return (
-      <PopupBox ref={'PopupBox'} name={'Sentence Review'} leftIconName={'close'} onLeftPress={this.hidden.bind(this, "Sentence")} rightIconName={'pencil-square-o'}>
-      </PopupBox>
-    );
+    if (array[0] != null) {
+      this.setState({
+        selectData: array[0],
+      });
+    }
   }
 }
 
@@ -379,22 +494,81 @@ class ListItem extends Component {
   static propTypes = {
     name: React.PropTypes.string,
     rowId: React.PropTypes.number,
+    onPress: React.PropTypes.func,
+    kind: React.PropTypes.string,
   };
   static defaultProps = {
     name: 'character',
     rowId: 2,
+    onPress: ()=>{},
+    kind: "Character",
   };
   render() {
+    if (this.props.kind == 'Sentence') {
+      return this.renderSentenceListItem();
+    }
     var _str = ''+this.props.rowId;
     var fontSize = MinUnit* (1.4 - _str.length*0.15);
     if (fontSize < MinUnit*0.8) fontSize = MinUnit;
     return (
-      <PanButton name={'b_listItem_'+this.props.name+'_'+this.props.rowId} style={styles.listItem} >
+      <PanButton name={'b_listItem_'+this.props.name+'_'+this.props.rowId} style={styles.listItem} onPress={this.props.onPress} >
         <View style={styles.listIndexView}>
-          <Text style={[styles.indexFont, {fontSize: fontSize}]}>
-            {this.props.rowId + 1}
-          </Text>
+          <Text style={[styles.indexFont, {fontSize: fontSize}]}>{this.props.rowId + 1}</Text>
         </View>
+        <View style={[{width: MinUnit*10}, styles.center]}>
+          <Text style={styles.listWord1}>{this.props.data.character}</Text>
+        </View>
+        <View style={[{width: MinUnit*10}, styles.center]}>
+          <Text style={styles.listWord2}>{this.props.data.pyin}</Text>
+        </View>
+        <View style={[{flex: 1,}, styles.center]}>
+          <Text style={styles.listWord2}>{this.props.data.yxstr}</Text>
+        </View>
+      </PanButton>
+    );
+  }
+  renderSentenceListItem() {
+    var _str = ''+this.props.rowId;
+    var fontSize = MinUnit* (1.4 - _str.length*0.15);
+    if (fontSize < MinUnit*0.8) fontSize = MinUnit;
+    return (
+      <PanButton name={'b_listItem_'+this.props.name+'_'+this.props.rowId} style={styles.listItem} onPress={this.props.onPress} >
+        <View style={styles.listIndexView}>
+          <Text style={[styles.indexFont, {fontSize: fontSize}]}>{this.props.rowId + 1}</Text>
+        </View>
+        <View style={[{width: MinUnit*22}, styles.center]}>
+          <Text style={[styles.listWord2, {marginBottom: MinUnit*0.2}]}>{this.props.data.pyin}</Text>
+          <Text style={styles.listWord1}>{this.props.data.character}</Text>
+        </View>
+        <View style={[{flex: 1,}, styles.center]}>
+          <Text style={styles.listWord2}>{this.props.data.yxstr}</Text>
+        </View>
+      </PanButton>
+    );  
+  }
+}
+//带图标的按钮
+class IconButton extends Component {
+  static propTypes = {
+    panName: React.PropTypes.string,
+    onPress: React.PropTypes.func,
+    name: React.PropTypes.string,
+    size: React.PropTypes.number,
+    color: React.PropTypes.string,
+  };
+  static defaultProps = {
+    panName: 'hello',
+    onPress: ()=>{},
+    size: 20,
+    color: "#000000",
+
+    backStyle: {},
+    iconStyle: {},
+  }
+  render() {
+    return (
+      <PanButton name={this.props.panName} onPress={this.props.onPress} style={this.props.backStyle} >
+        <Icon name={this.props.name} size={this.props.size} color={this.props.color} style={this.props.iconStyle} />
       </PanButton>
     );
   }
@@ -407,15 +581,20 @@ class CircleIcon extends Component {
     onPress: React.PropTypes.func,
   };
   static defaultProps = {
-    name: 'facebook',
-    color: '#3A58F3',
-    onPress: ()=>{console.log("Hello CircleIcon")}
+    name: 'user-circle',
+    color: '#000000',
+    onPress: ()=>{},
+    backStyle: {}
   };
   render() {
     return (
-      <PanButton name={'b_circle_' + this.props.name} style={[styles.circle, {borderColor: this.props.color}]} onPress={this.props.onPress} >
-        <Icon name={this.props.name} size={MinUnit*4} color={this.props.color} />
-      </PanButton>
+      <IconButton
+        panName={'b_circle_' + this.props.name}
+        backStyle={this.props.backStyle}
+        onPress={this.props.onPress}
+        name={this.props.name}
+        size={MinUnit*4}
+        color={this.props.color} />
     );
   }
 }
@@ -454,12 +633,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   waitFrame: {
-    width: MinUnit*6,
-    height: MinUnit*6,
-    backgroundColor: '#939393',
+    width: MinUnit*5,
+    height: MinUnit*5,
+    backgroundColor: '#000000',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: MinUnit,
+    borderRadius: MinUnit*0.5,
+    transform: [{scale: 1.6}]
   },
   border: {
     borderColor: '#202130',
@@ -525,8 +705,6 @@ const styles = StyleSheet.create({
   },
   listView: {
     backgroundColor: '#EEEEEE',
-    borderBottomWidth: MinWidth,
-    borderColor: '#AFAFAF'
   },
   listItem: {
     height: MinUnit*4.6,
@@ -545,14 +723,57 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: MinUnit*3,
     // overflow: "hidden",
   },
   indexFont: {
     fontSize: MinUnit*1.4,
     color: '#FFFFFF'
   },
+  listWord1: {
+    fontSize: MinUnit*2,
+    color: '#151515'
+  },
+  listWord2: {
+    fontSize: MinUnit*1.3,
+    color: '#939393'
+  },
+  c_view: {
+    width: MinUnit*20,
+    height: MinUnit*20,
+    marginLeft: MinUnit*3,
+  },
+  cMsg_view: {
+    flex: 1,
+    padding: MinUnit*2,
+    justifyContent: 'center',
+  },
+  center: {
+    // alignItems: 'center',
+    justifyContent: 'center',
+  },
   character: {
+    borderTopWidth: MinWidth,
+    borderColor: '#AFAFAF',
     height: ScreenHeight*0.4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  word: {
+    borderTopWidth: MinWidth,
+    borderColor: '#AFAFAF',
+    height: ScreenHeight*0.4,
+    justifyContent: 'center',
+    paddingHorizontal: MinUnit*5,
+  },
+  microphone: {
+    backgroundColor: "#00BBD5",
+    width: MinUnit*7,
+    height: MinUnit*7,
+    borderRadius: MinUnit*3.5,
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
 
@@ -562,7 +783,5 @@ module.exports = {
   ForgetBox,
   SettingBox,
   FlashCardBox,
-  CharacterBox,
-  WordBox,
-  SentenceBox,
+  CardBox,
 };

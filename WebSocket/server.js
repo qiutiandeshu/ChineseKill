@@ -3,7 +3,7 @@ var Deal = require('./Deal.js');
 var server = new WebSocketServer({
 	port: 1111,
 });
-
+// 处理客户端端发送的请求
 var work = new Deal();
 server.on('connection', function(socket) {
 	console.log('新客户');

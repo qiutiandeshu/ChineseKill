@@ -36,7 +36,7 @@ class PopupBox extends Component {
 	};
 	static defaultProps = {
 	  blnShow: false,
-	  width: ScreenHeight*0.8,
+	  width: ScreenWidth*0.54,
 	  height: ScreenHeight*0.86,
 	  tipStyle: {},
 	  name: 'NAME',

@@ -83,20 +83,6 @@ function Deal() {
 				userDelete(msg.data);
 				break;
 		}
-
-		// if (msg.from == "New") {
-		// 	addNewUser(msg.data, function(_json) {
-		// 		callback(_json);
-		// 	})
-		// } else if (msg.from == "Login") {
-		// 	userLogin(msg.data, function(_json) {
-		// 		callback(_json);
-		// 	})
-		// } else if (msg.from == "Update") {
-		// 	userUpdate(msg.data, function(_json) {
-		// 		callback(_json);
-		// 	})
-		// }
 	}
 
 // 注册新用户

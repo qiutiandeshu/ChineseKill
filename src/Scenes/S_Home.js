@@ -111,9 +111,9 @@ export default class S_Home extends Component {
                 <Box.SignUpBox ref={'SignUp'} />
                 <Box.ForgetBox ref={'Forget'} />
                 <Box.FlashCardBox ref={'FlashCard'} />
-                <Box.CharacterBox ref={'Character'} />
-                <Box.WordBox ref={'Word'} />
-                <Box.SentenceBox ref={'Sentence'} />
+                <Box.CardBox ref={'Character'} kind={'Character'} />
+                <Box.CardBox ref={'Word'} kind={'Word'} />
+                <Box.CardBox ref={'Sentence'} kind={'Sentence'} />
             </View>
         );
     }
