@@ -9,7 +9,6 @@ import {
 } from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles} from './AppStyles'
 import Storage from 'react-native-storage'
-
 import UserBehavior from './UserInfo/UserBehavior'
 import {RouteList, RouteIndex} from './AppRoutes'
 const defaultStatusBar = false; //默认的状态栏属性
@@ -26,102 +25,155 @@ export default class App extends Component {
         this.closeTime = null;//计时器, 当用户在后台多长时间后,就当做用户已经退出,并上传本次使用情况
         global.app = this;//定义一个全局变量,可以在项目中随时访问主类 (不建议经常使用,而是将app中的各大通用功能分成模块,就像global.UB,global.Storage)
         global.logf = this.Logf.bind(this);//重写的一个log函数,方便调试用
-        this.lessonDate = [];
-        this.routeProps = {allLessonData:this.lessonDate};//页面跳转时,从A页面到B页面需要传递的消息
+        this.lessonData = [];
+        this.lessonStartId = [];
+        this.routeProps = {allLessonData:this.lessonData};//页面跳转时,从A页面到B页面需要传递的消息
         this.routeStackNowIndex = 0;//route堆栈的序号,其实现在只会一条堆栈的导航,还不会多条堆栈的
         this.initRouteName = "Home";//初始页面的名称
         this.nowSceneName = "";
         //..this.setNowPageName(this.getRoute(this.initRouteName))
         this.sceneRef = null;//当前页面的引用对象
-        this.storage = null;
+        this.storage = new Storage(
+            {
+                size: 2000,//最大容量,默认值5000条数据循环存储
+                storageBackend: AsyncStorage,//定义存储引擎,如果不指定则数据只会保存在内存中重启后消失
+                defaultExpires: null,//(单位:毫秒) 数据过期时间,默认为24小时,设置为null为永不过期
+                enableCache: true,//读写时在内存中缓存数据.默认启用
+            }
+        );
         global.storageDate = [];//与本地存储有关的数据
-        // if (Platform.OS == 'ios'){
-        //     Text.defaultProps.allowFontScaling = false;//设置文字不受机器字体放大缩小的影响，这里是全局设定
-        // }
+        this.storageUserInfo = null;//用户信息
+        this.storageLearning = [];//学习进度
+        this.storageCardInfo = null;//卡片情况
     }
 
     componentWillMount() {
-        this.getStorageDate();
         // 连接服务器
         global.socket = new SocketLink(this);
-        this.getLessonDate();
+        this.getLessonDate()
+        this.initUserInfoByStorage()
+        this.initLearningByStorage();
     }
 
     componentDidMount() {
         //..this.logDeviceInfo(); 打印设备信息
         AppState.addEventListener('change', this._handleAppStateChange.bind(this));
         global.UB = new UserBehavior(this, require('react-native-device-info'));
+        //..this.removeAllStorageData()
     }
 
-    getStorageDate = ()=> {
-        var storage = new Storage(
-            {
-                size: 1000,//最大容量,默认值1000条数据循环存储
-                storageBackend: AsyncStorage,//定义存储引擎,如果不指定则数据只会保存在内存中重启后消失
-                defaultExpires: 1000 * 3600 * 24,//(单位:毫秒) 数据过期时间,默认为24小时,设置为null为永不过期
-                enableCache: true,//读写时在内存中缓存数据.默认启用
-                //..sync:{login:this.initStorageDate.bind(this)}
-                /*如果storage中没有数据或数据过期,则会调用相应的sync方法,无缝返回最新数据.
-                 也可以将sync写到另一个文件里,用require引入*/
+
+    /*--------------------------本地数据存储部分 Start-----------------------*/
+    initUserInfoByStorage = ()=>{
+        this.storage.getAllDataForKey('UserInfo').then(
+            ret=>{
+                console.log("读取到UserInfo:",ret)
+                this.storageUserInfo = ret
+            }
+        ).catch (err=>{
+            switch (err.name) {
+                case 'NotFoundError'://没有找到相关数据
+                    console.log("没有找到UserInfo相关数据")
+                    break;
+                case 'ExpiredError'://相关数据已过期
+                    console.log("UserInfo数据过期了")
+                    break;
+            }
+        })
+    }
+
+    initLearningByStorage = ()=>{
+        this.storage.getAllDataForKey('Learning').then(
+            ret =>{
+                console.log("读取到Learning:",ret)
+                if(ret.length == 0){//如果这个key里面没有数据,则初始化以下
+                    this.noneLearningStorage()
+                }else{
+                    this.storageLearning = ret //赋值
+                }
             }
         )
-        console.log("准备读取本地数据")
-        storage.load({key: 'login', id: '1'}).then(ret=> {
-            console.log("数据读取成功")
-            console.log(ret)
-        }).catch(err=> {
+        /*this.storage.getAllDataForKey('Learning').then(
+            ret =>{
+                console.log("读取到Learning:",ret)
+            }
+        ).catch(err=>{
             console.log("数据读取失败")
             console.log(err)
             switch (err.name) {
                 case 'NotFoundError'://没有找到相关数据
-                    this.initStorageDate()
+                    console.log("没有找到Learning相关数据")
+                    this.noneLearningStorage()
                     break;
                 case 'ExpiredError'://相关数据已过期
+                    console.log("Learning数据过期了")
+                    this.noneLearningStorage()
                     break;
             }
-        })
-        this.storage = storage
+        })*/
     }
 
-    getLessonDate = ()=>{
-        this.lessonDate[0] = require('../data/lessons/lesson1.json')
-        this.lessonDate[1] = require('../data/lessons/lesson2.json')
-        this.lessonDate[2] = require('../data/lessons/lesson3.json')
-        this.lessonDate[3] = require('../data/lessons/lesson4.json')
+    initCardInfoByStorage = ()=>{
+
     }
 
-    initStorageDate = ()=> {
-        //..AlertIOS.alert("本地无数据或数据已过期");
-        var initUser = {
-            key: 'login',
-            //id:'1',
-            rawData: {
-                userid: '123456',
-                password: '654321',
-                age: '00',
-                name: '无名氏',
-                love: ['抽烟', '喝酒', '烫头'],
-            },
-            expires: 1000 * 3600 * 24,//如果不指定过期时间，则会使用defaultExpires参数,null用不过期
-        }
-        this.saveStorageData(initUser);
+    noneUserInfoStorage = ()=>{
+
     }
 
-    saveStorageData = (data)=> {
-        console.log("运行了保存数据的函数")
-        var allData = global.storageDate;
-        console.log(global.storageDate);
-        console.log(data);
-        var dataIndex = allData.length;
-        for (var i = 0; i < allData.length; i++) {
-            if (allData[i].key === data.key && allData[i].id === data.id) {
-                dataIndex = i;
-                break;
+    noneLearningStorage = ()=>{
+        let index = 0;
+        for(let i=0;i<this.lessonData.length;i++){
+            let data = this.lessonData[i]
+            for(let j=0;j<data.lessonTitle.length;j++){
+                this.storageLearning[index].state = 'locked' //'locked','unlocked','passed'
+                this.storageLearning[index].score = 0 //每一课的得到分数
+                this.storageLearning[index].time = 0  //每一课的时间
+
+                this.storage.save({
+                    key:'Learning',
+                    id:this.getSaveId(index),
+                    rawData:this.storageLearning[index],
+                    expires:null,
+                })
+                index += 1
             }
         }
-        allData[dataIndex] = data;
-        global.storageDate = allData;
-        this.storage.save(data)
+        this.storageLearning[0].state = 'unlocked'
+        this.storage.save({
+            key:'Learning',
+            id:this.getSaveId(0),
+            rawData:this.storageLearning[0],
+            expires:null,
+        })
+    }
+
+    saveUserInfo = (saveData,expires=null)=>{
+        this.storage.save({
+            key:'UserInfo',
+            rawDtat:saveData,
+            expires:expires
+        })
+    }
+
+    saveLearningStorage = (courseId,chapterId,saveData)=>{
+        let index = this.lessonStartId[courseId] + chapterId
+        this.storageLearning[index] = saveData
+        this.storage.save({
+            key:'Learning',
+            id:this.getSaveId(index),
+            rawData:saveData,
+            expires:null,//永不过期
+        })
+    }
+
+    getSaveId = (id,blnStartOne=true)=>{ //默认传进来的id都会+1,
+        let size = 2000
+        let saveId = size + id
+        if(blnStartOne){
+            saveId += 1
+        }
+        return saveId+""
     }
 
     removeStorageData = (data)=> {//移除某项数据
@@ -138,12 +190,34 @@ export default class App extends Component {
     }
 
     removeAllStorageData = ()=> {//清空所有数据
-        storage.clearMap();
+        this.storage.clearMap();
+    }
+
+/*--------------------------本地数据存储部分End-----------------------*/
+
+    getChapterDate = (courseId,chapterId)=>{//获取某个chapterId的信息
+        const {courseStartId,learnTimes,learnScores,learnStates} = this.storageLearning
+        let index = courseStartId[courseId] + chapterId
+        return {state:learnStates[index],score:learnScores[index],learnTimes:learnTimes[index]}
+    }
+
+    getLessonDate = ()=>{
+        this.lessonData[0] = require('../data/lessons/lesson1.json')
+        this.lessonData[1] = require('../data/lessons/lesson2.json')
+        this.lessonData[2] = require('../data/lessons/lesson3.json')
+        this.lessonData[3] = require('../data/lessons/lesson4.json')
+        //..以下是计算每个lesson下的第一个章节的位置
+        let index = 0
+        for(let i=0;i<this.lessonData.length;i++){
+            this.lessonStartId[i] = index
+            let data = this.lessonData[i]
+            index += data.lessonTitle.length
+        }
     }
 
     Logf(message, ...optionalParams) {
         // var args = arguments.length;
-        console.log(message, ...optionalParams);
+        //console.log(message, ...optionalParams);
     }
 
     setNowPageName = (route)=> { //ScrollViewTab调用
@@ -265,7 +339,7 @@ export default class App extends Component {
     }
 
     _onDidFocus = (route)=> {
-        console.log("On Did Focus")
+        //console.log("On Did Focus")
         //this.routeProps = {};//当页面跳转完成清除属性
         if (route.type) {
             if (route.type === 'Scene') {
@@ -284,6 +358,7 @@ export default class App extends Component {
             StatusBar.setHidden(!this.state.blnShowStatusBar, false);
         }
         let Component = route.component;
+        //console.log("App Renider Scene Route Props:",this.routeProps)
         return <Component ref={this.setSceneRef.bind(this)}  {...this.routeProps} navigator={navigator}/>
     }
 
@@ -292,8 +367,10 @@ export default class App extends Component {
     }
 
     setNextRouteProps = (props)=> {
-
+        //console.log("Set Next Route Props:",props)
+        //console.log("Next Route Props Type:",typeof(props))
         this.routeProps = props;
+        //console.log("Set Next Route Props:",this.routeProps)
     }
 
     getRoute = (name) => {
@@ -365,10 +442,7 @@ export default class App extends Component {
                     break;
             }
         }
-        return {
-            ...configure,
-            gestures:{}//禁用手势返回
-        };
+        return configure;
     }
 
     objectIsEqual = (object1, object2)=> {//比较两个对象值是否全等
