@@ -25,11 +25,16 @@ export default class InputBoard extends Component {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
   }
-  _keyboardDidShow () {//当键盘弹起来
+  _keyboardDidShow(e) {//当键盘弹起来
     this.keyboardShow = true;
+    console.log("did show", e);
   }
-  _keyboardDidHide () {//当键盘收起后
+  _keyboardDidHide(e) {//当键盘收起后
     this.keyboardShow = false;
+    console.log("did hide", e);
+  }
+  setLog(log){
+    console.log(log);
   }
   onLayout(event){
     console.log(event);
@@ -37,13 +42,14 @@ export default class InputBoard extends Component {
     console.log(event.nativeEvent.layout);
   }
   render() {
-    return (
-      <View ref={(r)=>{this.root = r}} 
-      style={[styles.container, this.props.style, {marginTop: this.state.marginTop}]}
-      onLayout={this.onLayout.bind(this)}>
-        {this.props.child}
-      </View>
-    );
+    // return (
+    //   <View ref={(r)=>{this.root = r}} 
+    //   style={[styles.container, this.props.style, {marginTop: this.state.marginTop}]}
+    //   onLayout={this.onLayout.bind(this)}>
+    //     {this.props.child}
+    //   </View>
+    // );
+    return (null);
   }
 }
 

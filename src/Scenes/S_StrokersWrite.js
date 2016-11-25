@@ -23,7 +23,7 @@ import {
   IconSize
 } from '../AppStyles';
 var itemHeight = MinUnit * 7;
-import DrawWord from '../Component/DrawWord.js';
+import DrawWord from '../Common/DrawWord.js';
 var curWidth = parseInt(ScreenHeight * 0.48);
 
 export default class StrokersWrite extends Component {

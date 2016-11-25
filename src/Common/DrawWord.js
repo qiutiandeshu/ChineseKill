@@ -26,7 +26,7 @@ const {
   ClippingRectangle,
 } = ART;
 
-import Utils from '../Utils';
+import Utils from '../Utils/Utils.js';
 
 var backLineData = [
   {w: 2, t: 0, c: [1,1,1,-1,-1,-1,-1,1,1,1], p:[0, 0, 0, 100, 100, 100, 100, 0, 0, 0]},
