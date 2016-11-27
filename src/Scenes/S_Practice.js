@@ -34,14 +34,16 @@ export default class S_Practice extends Component {
     static propTypes = {
         blnGate: PropTypes.bool,//标记是否为闯关,因为涉及到life属性的处理和显示的问题还有练习结果页面
         questionData: PropTypes.array.isRequired,
+        newCardInfo:PropTypes.object.isRequired,
+        lessonInfo:PropTypes.object,
+        chapterRecord:PropTypes.object
     }
     static defaultProps = {
         blnGate: true,
-        questionData: [],
+        //questionData: [],
     }
 
-    setCheckBtn = (blnOpen)=> {
-        console.log("Set Check Btn:", blnOpen)
+    setCheckBtn = (blnOpen)=> {        
         this.setState({
             canCheck: blnOpen
         })
@@ -80,13 +82,15 @@ export default class S_Practice extends Component {
 
     nextQuestion = ()=> {
         let {index, canCheck, showGameOver} = this.state
+        
         index += 1
         canCheck = false
         if (this.state.life < 0) {
             showGameOver = "Fail"
         } else {
-            if (index == this.questionCount) {
-                if (this.props.blnGate) {
+            if (index == this.questionCount) {                
+                if (this.props.blnGate) {                    
+                    this.saveLearning()
                     showGameOver = "Success"
                 } else {
                     showGameOver = "TheEnd"
@@ -99,6 +103,69 @@ export default class S_Practice extends Component {
             showResult: "",
             showGameOver: showGameOver,
         })
+    }
+
+    saveLearning = ()=>{
+        let nowScore = this.state.score
+        let nowUseTime = this.practiceTime
+        const{chapterState,chapterScore,chapterTime}=this.props.chapterRecord
+        const{lessonId,chapterIndex} = this.props.lessonInfo        
+        
+        let blnSave = false
+        if(chapterScore < nowScore){ //如果记录的得分小于当前得分,确定要保存            
+            blnSave = true
+        }else{//如果记录的分数大于或等于当前得分,那就重新赋值,以便后面可能会保存
+            nowScore = chapterScore
+        }
+        if(chapterTime == 0){
+            blnSave = true
+        }else{
+            if(chapterTime > nowUseTime ){
+                blnSave = true
+            }else{
+                nowUseTime = chapterTime
+            }    
+        }
+        
+        if(blnSave){ //如果要保存
+            app.saveLearningStorage(lessonId,chapterIndex,{
+                state:"passed",
+                score:nowScore,
+                time:nowUseTime,
+            })            
+        }
+
+        if(chapterState != "passed"){//如果当前关卡不是已经打通的,那就需要将下一关卡解锁
+            let unlockLesson = lessonId
+            let unlockChapter = chapterIndex + 1
+            if(unlockChapter == app.getChapterCount(unlockLesson)){
+                unlockChapter = 0
+                unlockLesson += 1
+            }
+            if(unlockLesson < app.getLessonCount()){
+                app.saveLearningStorage(unlockLesson,unlockChapter,{
+                    state:"unlocked",
+                    score:0,
+                    time:0,
+                })
+                LessonMenu.updateRender(app.getStorageLearning()[lessonId])
+                Home.changeDataSource(unlockLesson,unlockChapter,{
+                    state:"unlocked",
+                    score:0,
+                    time:0,
+                })
+            }
+            this.saveCardInfo()
+        }
+    }
+
+    saveCardInfo = ()=>{
+        const{lessonId,chapterIndex} = this.props.lessonInfo
+        let serverList = []
+        for(let i=0;i<this.questionCount;i++){
+            serverList[i] = this.props.questionData[i].Q_Service
+        }
+        app.saveCardInfo(this.props.newCardInfo,serverList,lessonId,chapterIndex)
     }
 
     shouldComponentUpdate(nProps, nStates) {
@@ -380,10 +447,10 @@ class QuestionResult extends Component {
     }
 
     getAnswerMsg = ()=> {
-        const {Q_Type, question, Q_Answer} = this.props.questionData
+        const {Q_Type, Q_Question, Q_Answer} = this.props.questionData
 
         if (Q_Type == 0) {
-            return <Text style={styles.textAnswer}>{Q_Answer + "=" + this.getQuestion(question)}</Text>
+            return <Text style={styles.textAnswer}>{Q_Answer + "=" + this.getQuestion(Q_Question)}</Text>
         }
     }
 

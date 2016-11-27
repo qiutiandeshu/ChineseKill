@@ -51,7 +51,7 @@ var UtilStyles = StyleSheet.create({
         color:'black',
     },
     fontSmall: {
-        fontSize: MinUnit*3,
+        fontSize: MinUnit*2,
         color: 'black',
     },   
     shade: {

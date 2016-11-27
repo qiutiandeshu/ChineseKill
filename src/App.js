@@ -19,15 +19,16 @@ export default class App extends Component {
         // 初始状态
         this.state = {
             blnShowStatusBar: defaultStatusBar, //是否显示状态栏
+            blnLoading:true,
         };
         this.blnUpdate = false; //一个标记是否上传了用户操作数据的变量,作用是在用户恢复app时,检测算新启动还是只算从后台恢复
         this.appState = 'active';//初始的app状态
         this.closeTime = null;//计时器, 当用户在后台多长时间后,就当做用户已经退出,并上传本次使用情况
         global.app = this;//定义一个全局变量,可以在项目中随时访问主类 (不建议经常使用,而是将app中的各大通用功能分成模块,就像global.UB,global.Storage)
         global.logf = this.Logf.bind(this);//重写的一个log函数,方便调试用
-        this.lessonData = [];
-        this.lessonStartId = [];
-        this.routeProps = {allLessonData:this.lessonData};//页面跳转时,从A页面到B页面需要传递的消息
+        this.allLessonData = [];
+        this.lessonChapterCount = [];
+        this.routeProps = {allLessonData:this.allLessonData};//页面跳转时,从A页面到B页面需要传递的消息
         this.routeStackNowIndex = 0;//route堆栈的序号,其实现在只会一条堆栈的导航,还不会多条堆栈的
         this.initRouteName = "Home";//初始页面的名称
         this.nowSceneName = "";
@@ -35,16 +36,18 @@ export default class App extends Component {
         this.sceneRef = null;//当前页面的引用对象
         this.storage = new Storage(
             {
-                size: 2000,//最大容量,默认值5000条数据循环存储
+                size: 2000,//最大容量,默认值2000条数据循环存储
                 storageBackend: AsyncStorage,//定义存储引擎,如果不指定则数据只会保存在内存中重启后消失
                 defaultExpires: null,//(单位:毫秒) 数据过期时间,默认为24小时,设置为null为永不过期
                 enableCache: true,//读写时在内存中缓存数据.默认启用
             }
         );
-        global.storageDate = [];//与本地存储有关的数据
+       
+        /*-----------本地存储数据有关的变量 Start--------------*/
         this.storageUserInfo = null;//用户信息
         this.storageLearning = [];//学习进度
         this.storageCardInfo = null;//卡片情况
+        /*-----------本地存储数据有关的变量 End--------------*/
     }
 
     componentWillMount() {
@@ -52,20 +55,21 @@ export default class App extends Component {
         global.socket = new SocketLink(this);
         this.getLessonDate()
         this.initUserInfoByStorage()
-        this.initLearningByStorage();
+        this.initLearningByStorage()
+        this.initCardInfoByStorage()
     }
 
     componentDidMount() {
         //..this.logDeviceInfo(); 打印设备信息
         AppState.addEventListener('change', this._handleAppStateChange.bind(this));
         global.UB = new UserBehavior(this, require('react-native-device-info'));
-        //..this.removeAllStorageData()
+        //this.removeAllStorageData()
     }
 
-    
+
     /*--------------------------本地数据存储部分 Start-----------------------*/
     initUserInfoByStorage = ()=>{
-        this.storage.getAllDataForKey('UserInfo').then(
+        this.storage.load({key:'UserInfo'}).then(
             ret=>{
                 console.log("读取到UserInfo:",ret)
                 this.storageUserInfo = ret
@@ -79,6 +83,18 @@ export default class App extends Component {
                     console.log("UserInfo数据过期了")
                     break;
             }
+        })       
+    }
+
+    noneUserInfoStorage = ()=>{
+
+    }
+
+    saveUserInfo = (saveData,expires=null)=>{
+        this.storage.save({
+            key:'UserInfo',
+            rawData:saveData,
+            expires:expires
         })
     }
 
@@ -86,85 +102,153 @@ export default class App extends Component {
         this.storage.getAllDataForKey('Learning').then(
             ret =>{
                 console.log("读取到Learning:",ret)
-                if(ret.length == 0){//如果这个key里面没有数据,则初始化以下
-                    this.noneLearningStorage()
+                if(ret.length != this.allLessonData.length){//如果这个key里面没有数据,则初始化以下
+                    this.noneLearningStorage(ret)
                 }else{
                     this.storageLearning = ret //赋值
+
                 }
+                this.setState({blnLoading:false})
             }
         )
-        /*this.storage.getAllDataForKey('Learning').then(
-            ret =>{
-                console.log("读取到Learning:",ret)
+    }
+
+    noneLearningStorage = (retData)=>{//传入已经保存的数据
+        console.log("None Learning Storage:",retData)
+        for(let i=0;i<this.allLessonData.length;i++){
+            //console.log("检查index:",i)
+            this.storageLearning[i] = {
+                chapterStates:[],
+                chapterScores:[],
+                chapterTimes:[],
             }
-        ).catch(err=>{
-            console.log("数据读取失败")
-            console.log(err)
-            switch (err.name) {
-                case 'NotFoundError'://没有找到相关数据
-                    console.log("没有找到Learning相关数据")
-                    this.noneLearningStorage()
-                    break;
-                case 'ExpiredError'://相关数据已过期
-                    console.log("Learning数据过期了")
-                    this.noneLearningStorage()
-                    break;
+            if(i<retData.length){//当前的是已经存在本地的数据
+                let data = retData[i]
+                for(let j=0;j<data.chapterStates.length;j++){
+                    this.storageLearning[i].chapterStates[j] = data.chapterStates[j]
+                    this.storageLearning[i].chapterScores[j] = data.chapterScores[j]
+                    this.storageLearning[i].chapterTimes[j] = data.chapterTimes[j]
+                }
+            }else{
+                let data = this.allLessonData[i]
+                //console.log("show data:",data,i);
+                for(let j=0;j<data.chapters.length;j++){
+                    if(i==0&&j==0){
+                        this.storageLearning[i].chapterStates[j] = 'unlocked'
+                    }else{
+                        this.storageLearning[i].chapterStates[j] = 'locked'
+                    }
+                    this.storageLearning[i].chapterScores[j] = 0
+                    this.storageLearning[i].chapterTimes[j] = 0
+                }
             }
-        })*/
+            this.storage.save({
+                key:'Learning',
+                id:this.getSaveId(i),
+                rawData:this.storageLearning[i],
+                expires:null,
+            })
+        }
+    }
+    
+    getStorageLearning = ()=>{
+        return this.storageLearning
+    }
+
+    saveLearningStorage = (lessonId,chapterId,saveData)=>{
+        const {state,score,time} = saveData
+        this.storageLearning[lessonId].chapterStates[chapterId] = state;
+        this.storageLearning[lessonId].chapterScores[chapterId] = score;
+        this.storageLearning[lessonId].chapterTimes[chapterId] = time;
+        this.storage.save({
+            key:'Learning',
+            id:this.getSaveId(lessonId),
+            rawData:this.storageLearning[lessonId],
+            expires:null,//永不过期
+        })
     }
 
     initCardInfoByStorage = ()=>{
-
+        this.storage.load({key:'CardInfo'}).then(
+            ret=>{
+                console.log("读取到CardInfo:",ret)
+                this.storageCardInfo = ret
+            }
+        ).catch (err=>{
+            switch (err.name) {
+                case 'NotFoundError'://没有找到相关数据
+                    console.log("没有找到CardInfo相关数据")
+                    break;
+                case 'ExpiredError'://相关数据已过期
+                    console.log("CardInfo数据过期了")
+                    break;
+            }
+        })
     }
 
-    noneUserInfoStorage = ()=>{
+    noneCardInfoStorage = ()=>{
+        let maxZiCard = 3000;
+        let maxCiCard = 10000;
+        let maxJuCard = 1000; //临时的卡片最大值,实际应该数据给或者从服务器获取,并且在读取数据时,还得检测才行做好扩容的预算
 
+        this.storageCardInfo = {
+            learnCards:{
+                ziKey:[],
+                ciKey:[],
+                juKey:[],
+            },//存储已经学习的卡片
+            cardQuestion:{
+                ziCards:Array.from({length:maxZiCard}, ()=>[]),
+                ciCards:Array.from({length:maxCiCard}, ()=>[]),
+                juCards:Array.from({length:maxJuCard}, ()=>[]),
+            }//用来记录所有卡片的题目,对象的属性是一个二维的数组,通过key值来索引到第二维数据
+        }
     }
 
-    noneLearningStorage = ()=>{
-        let index = 0;
-        for(let i=0;i<this.lessonData.length;i++){
-            let data = this.lessonData[i]
-            for(let j=0;j<data.lessonTitle.length;j++){
-                this.storageLearning[index] = {};
-                this.storageLearning[index].state = 'locked' //'locked','unlocked','passed'
-                this.storageLearning[index].score = 0 //每一课的得到分数
-                this.storageLearning[index].time = 0  //每一课的时间
+    getCardInfo =()=>{
+        return this.storageCardInfo
+    }
 
-                this.storage.save({
-                    key:'Learning',
-                    id:this.getSaveId(index),
-                    rawData:this.storageLearning[index],
-                    expires:null,
-                })
-                index += 1
+    saveCardInfo = (newLearnCards,newQuestions,lessonId,chapterId)=>{
+        const {cardZis,cardCis,cardJus} = newLearnCards
+        if(cardZis){
+            this.storageCardInfo.learnCards.ziKey.concat(cardZis)
+        }
+        if(cardCis){
+            this.storageCardInfo.learnCards.ciKey.concat(cardCis)
+        }
+        if(cardJus){
+            this.storageCardInfo.learnCards.juKey.concat(cardJus)
+        }
+        for(let i=0;i<newQuestions.length;i++){
+            if(newQuestions[i]){
+                const {ziCards,ciCards,juCards} = newQuestions[i]
+                let practice = {
+                    lessonId:lessonId,
+                    chapterId:chapterId,
+                    practiceId:i,
+                } //记录题目的信息
+                if(ziCards){
+                    for(let i=0;i<ziCards.length;i++){
+                        this.storageCardInfo.cardQuestion.ziCards[ziCards[i]].concat(practice)
+                    }
+                }
+                if(ciCards){
+                    for (let i=0;i<ziCards.length;i++){
+                        this.storageCardInfo.cardQuestion.ciCards[ciCards[i]].concat(practice)
+                    }
+                }
+                if(juCards){
+                    for(let i=0;i<juCards.length;i++){
+                        this.storageCardInfo.cardQuestion.juCards[juCards[i]].concat(practice)
+                    }
+                }
             }
         }
-        this.storageLearning[0].state = 'unlocked'
         this.storage.save({
-            key:'Learning',
-            id:this.getSaveId(0),
-            rawData:this.storageLearning[0],
-            expires:null,
-        })
-    }
-
-    saveUserInfo = (saveData,expires=null)=>{
-        this.storage.save({
-            key:'UserInfo',
-            rawDtat:saveData,
+            key:'CardInfo',
+            rawData:this.storageCardInfo,
             expires:expires
-        })
-    }
-
-    saveLearningStorage = (courseId,chapterId,saveData)=>{
-        let index = this.lessonStartId[courseId] + chapterId
-        this.storageLearning[index] = saveData
-        this.storage.save({
-            key:'Learning',
-            id:this.getSaveId(index),
-            rawData:saveData,
-            expires:null,//永不过期
         })
     }
 
@@ -177,43 +261,37 @@ export default class App extends Component {
         return saveId+""
     }
 
-    removeStorageData = (data)=> {//移除某项数据
-        var allData = global.storageDate;
-        var dataIndex = -1;
-        for (var i = 0; i < allData.length; i++) {
-            if (allData[i].key === data.key && allData[i].id === data.id) {
-                dataIndex = i;
-                break;
-            }
-        }
-        allData.copyWithin(dataIndex,)
-        this.storage.remove(data);
+    removeStorageData = (key,id)=> {// 删除单个数据
+        this.storage.remove({
+            key:{key},
+            id:{id}
+        })
     }
 
-    removeAllStorageData = ()=> {//清空所有数据
+    removeAllStorageData = ()=> {//清空map，移除所有"key-id"数据（但会保留只有key的数据）
         this.storage.clearMap();
     }
 
+
 /*--------------------------本地数据存储部分End-----------------------*/
 
-    getChapterDate = (courseId,chapterId)=>{//获取某个chapterId的信息
-        const {courseStartId,learnTimes,learnScores,learnStates} = this.storageLearning
-        let index = courseStartId[courseId] + chapterId
-        return {state:learnStates[index],score:learnScores[index],learnTimes:learnTimes[index]}
+    getLessonDate = ()=>{
+        this.allLessonData[0] = require('../data/lessons/lesson1.json')
+        this.allLessonData[1] = require('../data/lessons/lesson2.json')
+        this.allLessonData[2] = require('../data/lessons/lesson3.json')
+        this.allLessonData[3] = require('../data/lessons/lesson4.json')
+
+        for(let i=0;i<this.allLessonData.length;i++){
+            this.lessonChapterCount[i] = this.allLessonData[i].chapters.length
+        }
     }
 
-    getLessonDate = ()=>{
-        this.lessonData[0] = require('../data/lessons/lesson1.json')
-        this.lessonData[1] = require('../data/lessons/lesson2.json')
-        this.lessonData[2] = require('../data/lessons/lesson3.json')
-        this.lessonData[3] = require('../data/lessons/lesson4.json')
-        //..以下是计算每个lesson下的第一个章节的位置
-        let index = 0
-        for(let i=0;i<this.lessonData.length;i++){
-            this.lessonStartId[i] = index
-            let data = this.lessonData[i]
-            index += data.lessonTitle.length
-        }
+    getLessonCount = ()=>{
+        return this.allLessonData.length
+    }
+    
+    getChapterCount = (lessonId)=>{
+        return this.lessonChapterCount[lessonId]
     }
 
     Logf(message, ...optionalParams) {
@@ -304,6 +382,10 @@ export default class App extends Component {
     }
 
     render() {
+        //console.log("APP Render",this.state.blnLoading)
+        if(this.state.blnLoading){
+            return (<View/>)
+        }
         return (
             <Navigator
                 initialRoute={this.getRoute(this.initRouteName)}

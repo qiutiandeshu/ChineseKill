@@ -13,15 +13,21 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 export default class S_LessonMenus extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
         this.baseProps = props;//在页面保存一下属性,以便pop到此页面时,还能找到属性
+        let initRecord = this.setRecord(props.lessonRecord)
+        this.state = {
+            chaptersRecord:initRecord,
+        };
+        global.LessonMenu = this
         //console.log("lesstonData:",props.lessonData)
     }
     static propTypes = {
-        lessonData: PropTypes.object.isRequired,
+        lessonData: PropTypes.object,//.isRequired,
+        lessonRecord:PropTypes.object,//.isRequired
+        lessonId:PropTypes.number,
     };
     static defaultProps = {
-        lessonData:{title:"null",icon:"none",lessonTitle:["none","none"]}
+        //lessonData:{title:"null",icon:"none",lessonTitle:["none","none"]}
     };
     shouldComponentUpdate(nProps,nStates) {
         if(nStates != this.state){
@@ -29,23 +35,54 @@ export default class S_LessonMenus extends Component {
         }
         return false;
     }
+    
+    setRecord = (lessonRecord)=>{
+        const {chapterStates,chapterScores,chapterTimes} = lessonRecord;
+        var records = []
+        for(let i=0;i<this.baseProps.lessonData.chapters.length;i++){
+            let chapterRecord = {
+                chapterState:chapterStates[i],
+                chapterScore:chapterScores[i],
+                chapterTime:chapterTimes[i]
+            }           
+            records[i] = chapterRecord
+        }
+        return records       
+    }
 
-    render() {    
-        const {title,icon,lessonTitle} = this.props.lessonData;
-        console.log("Scene LessonMenus Render")
+    updateRender = (record)=>{
+        var newRecord = this.setRecord(record)
+        this.setState({
+            chaptersRecord:newRecord,
+        })
+    }
+
+    render() {
+        const {lessonTitle,lessonIcon,chapters} = this.baseProps.lessonData;
+        let LessonCards = []              
+        for(let i=0;i<chapters.length;i++){   
+            LessonCards.push(
+                <LessonCard key = {i} chapterIndex={i} chapterCount = {chapters.length}
+                            chapterRecord={this.state.chaptersRecord[i]}
+                             contentData={chapters[i]}
+                             onPressStart={this.startPractice.bind(this,i)}
+                />
+            )
+        }
         return (
             <PanView name = "S_LessonMenus" style={styles.container}>
                 <View style={styles.titleView}>
                     <PanButton name="btnLessonMenusBack" onPress={this.onBackScene.bind(this)}>
                         <Icon name="angle-left" size={IconSize} color='white'/>
                     </PanButton>
-                    <Text style={[UtilStyles.fontNormal,styles.titleText]}>{title}</Text>
+                    <Text style={[UtilStyles.fontNormal,styles.titleText]}>{lessonTitle}</Text>
                     <View/>
                 </View>
                 <Icon name = "car" size={60} style={{marginTop:MinUnit*5,marginBottom:MinUnit*15}} />
-                <LessonCard index={0} cardCount = {this.props.lessonData.lessonTitle.length}
-                            contentData={this.props.lessonData.lessonTitle[0]} onPressStart={this.startPractice.bind(this)}
-                />
+                <View style={{flexDirection:'row'}}>
+                    {LessonCards}
+                </View>
+
             </PanView>
         );
     }
@@ -54,10 +91,16 @@ export default class S_LessonMenus extends Component {
         this.props.navigator.pop();
     }
 
-    startPractice = ()=>{
-        let questions = this.baseProps.lessonData.lessonTitle[0].questions
-        console.log("问题S:",questions);
-        app.setNextRouteProps({questionData:questions})
+    startPractice = (index)=>{
+        let lessonId = this.baseProps.lessonId
+         
+        const {cardZis,cardCis,cardJus,practices} = this.baseProps.lessonData.chapters[index]
+        app.setNextRouteProps({
+            questionData:practices,
+            lessonInfo:{lessonId:lessonId,chapterIndex:index},
+            newCardInfo:{cardZis:cardZis,cardCis:cardCis,cardJus:cardJus},
+            chapterRecord:this.state.chaptersRecord[index]
+        })
         this.props.navigator.push(app.getRoute("Practice"));
     }
 }
@@ -69,21 +112,22 @@ class LessonCard extends Component {
         this.state = {
         };
     }
-    static propTypes = {
-        index:PropTypes.number.isRequired,//卡片index
-        cardCount:PropTypes.number.isRequired,//卡片总数
+    static propTypes = {      
+        chapterIndex:PropTypes.number.isRequired,//卡片index
+        chapterCount:PropTypes.number.isRequired,//卡片总数
         contentData:PropTypes.object.isRequired,
-        blnPassed:PropTypes.bool,
+
         onPressStart:PropTypes.func.isRequired,
+        chapterRecord:PropTypes.object.isRequired
     }
     static defaultProps = {
-        blnPassed:false,
+
     }
 
     render(){
         return (
             <Animated.View>
-                <PanView name={"card"+this.props.index} style={styles.card}>
+                <PanView name={"card"+this.props.chapterIndex} style={styles.card}>
                     <Text style={[UtilStyles.fontSmall,{color:'#7F7F7F'}]}>LESSON</Text>
                     {this.renderIndex()}
                     {this.renderMessage()}
@@ -93,32 +137,33 @@ class LessonCard extends Component {
         );
     }
     renderIndex = ()=>{
-        let nowIndex = this.props.index + 1;
+        const {chapterState} = this.props.chapterRecord
+        let nowIndex = this.props.chapterIndex + 1;
         return (
             <View >
                 <Text style={[UtilStyles.fontNormal,{color:'black',}]}>
-                    {nowIndex + "/" + this.props.cardCount}
+                    {nowIndex + "/" + this.props.chapterCount}
                 </Text>
-                {<Icon style={{position:'absolute',top:MinUnit,right:-MinUnit*4}} name="check-circle" color="#00BCD4" size={IconSize*0.5}/>}
+                {chapterState=="passed"&&<Icon style={{position:'absolute',top:MinUnit,right:-MinUnit*4}} name="check-circle" color="#00BCD4" size={IconSize*0.5}/>}
             </View>
         );
     }
 
     renderMessage = ()=>{
-        console.log("Show contentData:",this.props.contentData)
         return (
             <View style={{alignItems:'center'}}>
                 {this.props.contentData.sentence && <Text style={{fontSize:MinUnit*2,color:'#CACACA'}}>{this.props.contentData.sentence}</Text>}
-                {this.props.contentData.words && <Text style={{fontSize:MinUnit*2,color:'#CACACA'}}>{this.props.contentData.words}</Text>}
+                {this.props.contentData.word && <Text style={{fontSize:MinUnit*2,color:'#CACACA'}}>{this.props.contentData.word}</Text>}
             </View>
         )
     }
 
     renderCardButton = ()=>{
-        if(this.props.blnPassed){
+        const {chapterState} = this.props.chapterRecord
+        if(chapterState=="passed"){
             return (
                 <View style={{width:ScreenWidth*0.4,flexDirection:'row',justifyContent:'space-around'}}>
-                    <PanButton style={styles.btnShort} name="btnShort1">
+                    <PanButton style={styles.btnShort} name="btnShort1" onPress={this._onStartPractice.bind(this)}>
                         <Text style={[UtilStyles.fontSmall,{color:'white'}]}>REDO</Text>
                     </PanButton>
                     <PanButton style={styles.btnShort} name="btnShort2">
@@ -127,9 +172,13 @@ class LessonCard extends Component {
                 </View>
             );
         }
+        let text = chapterState == "unlocked"?"START":"LOCKED"
+        let bgColor = chapterState == "unlocked"?'#00BCD4':'#ADADAD'
+        let canPress = chapterState == "unlocked"?true:false
         return (
-            <PanButton name = 'btnLong'style={styles.btnLong} onPress={this._onStartPractice.bind(this)}>
-                <Text style={[UtilStyles.fontSmall,{color:'white'}]}>START</Text>
+            <PanButton name = 'btnLong'style={[styles.btnLong,{backgroundColor:bgColor}]}
+                       onPress={this._onStartPractice.bind(this)} disabled={!canPress}>
+                <Text style={[UtilStyles.fontSmall,{color:'white'}]}>{text}</Text>
             </PanButton>
         )
     }
@@ -166,6 +215,8 @@ const styles = StyleSheet.create({
         justifyContent:'space-between',
         borderRadius:MinUnit*1,
         alignItems:'center',
+        marginHorizontal:-MinUnit*3,//临时
+        transform :[{scale:0.7}]//临时
     },
     btnLong:{
         width:ScreenWidth*0.4*0.8,

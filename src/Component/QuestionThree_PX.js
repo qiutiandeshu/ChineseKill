@@ -72,15 +72,15 @@ export default class QuestionThree_PX extends Component {
     renderTitle = ()=> {
         return (
             <Text style={[UtilStyles.fontNormal,{color:'#14838D',marginBottom:MinUnit*3}]}>
-                {this.props.questionData.title}
+                {this.props.questionData.Q_Title}
             </Text>
         );
     }
 
     renderQuestion = ()=> {
-        const {question, question_PY, Q_Sound} = this.props.questionData
+        const {Q_Question, Q_Question_PY, Q_Sound} = this.props.questionData
         return (
-            <QuestionRender sound={Q_Sound} question={question} pinyin={question_PY}/>
+            <QuestionRender sound={Q_Sound} question={Q_Question} pinyin={Q_Question_PY}/>
         );
     }
 

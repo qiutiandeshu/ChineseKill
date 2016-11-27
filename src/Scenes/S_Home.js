@@ -14,20 +14,18 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 var Box = require('../Component/Box.js');
 export default class S_Home extends Component {
     constructor(props) {
-        super(props);        
-        console.log('All Lesson Date', props.allLessonData)
+        super(props);
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2)=>r1 !== r2})
-
-        //console.log("所有数据:",props.allLessonData)
+        this.learingRecord = app.getStorageLearning()
         this.state = {
             menuState: 'none',
             sideMenuAnim: new Animated.Value(0),
-            dataSource: ds.cloneWithRows(props.allLessonData)
-
+            dataSource: ds.cloneWithRows(this.learingRecord)
         };
         this.blnContentOffX = false;
         global.Home = this;
-    }
+        this.baseProps = props;
+    }    
 
     static propTypes = {
         allLessonData: PropTypes.array.isRequired,
@@ -35,6 +33,31 @@ export default class S_Home extends Component {
     static defaultProps = {
         allLessonData: []
     };
+    
+    changeDataSource = (lessonId,chapterId,data)=>{
+        let newData = this.learingRecord.slice();
+        const {state,score,time} = data
+        newData[lessonId] = {
+            chapterStates:[],
+            chapterScores:[],
+            chapterTimes:[],
+        }
+        for(let i=0;i<app.getChapterCount(lessonId);i++){
+            if(i==chapterId){
+                newData[lessonId].chapterStates[i] = state
+                newData[lessonId].chapterScores[i] = score
+                newData[lessonId].chapterTimes[i] = time
+            }else{
+                newData[lessonId].chapterStates[i] = this.learingRecord[lessonId].chapterStates[i]
+                newData[lessonId].chapterScores[i] = this.learingRecord[lessonId].chapterScores[i]
+                newData[lessonId].chapterTimes[i] = this.learingRecord[lessonId].chapterTimes[i]
+            }
+        }
+        console.log("change dataSource:",newData)
+        this.setState({
+            dataSource:this.state.dataSource.cloneWithRows(newData)
+        })
+    }    
 
     openSideMenu = (side)=> {
         if (this.state.menuState != 'none') {
@@ -70,7 +93,6 @@ export default class S_Home extends Component {
     }
 
     render() {
-        console.log("Scene Home Render")
         const width = this.state.sideMenuAnim.interpolate(
             {
                 inputRange: [0, 1],
@@ -106,6 +128,15 @@ export default class S_Home extends Component {
                 <Box.CardBox ref={'Character'} kind={'Character'} />
                 <Box.CardBox ref={'Word'} kind={'Word'} />
                 <Box.CardBox ref={'Sentence'} kind={'Sentence'} />
+
+                {this.state.menuState == 'none'&&
+                    <PanButton name="btnDeleteSave" style={styles.delBtn} onPress={()=>{
+                    app.removeAllStorageData()
+                    app.removeStorageData('UserInfo')
+                     app.removeStorageData('UserInfo')
+                    }}>
+                    <Text>删除存档</Text>
+                    </PanButton>}
             </View>
         );
     }
@@ -142,18 +173,32 @@ export default class S_Home extends Component {
         );
     }
     _renderRow = (rowData, sectionID, rowID)=> {
-        const {title, icon, lessonTitle} = rowData;
+        const {chapterStates,chapterScores,chapterTimes} = rowData
+        const {lessonTitle, lessonIcon, chapters} = this.baseProps.allLessonData[rowID]
+        let color = 'black'
+        let canPress = true
+        if(chapterStates[0] == 'locked'){
+            color = 'gray'
+            canPress = false
+        }
+        let passCount = 0
+        for(let i=0;i<chapterStates.length;i++){
+            if(chapterStates[i]=="passed"){
+                passCount += 1
+            }
+        }
+
         return (
-            <PanButton name={"btn"+title} style={styles.card} onPress={this._onPressCard.bind(this,rowData)}>
-                <Icon name='bug' size={MinUnit*8}/>
-                <Text>{title}</Text>
-                <Text>{lessonTitle.length}</Text>
+            <PanButton  name={"btn"+lessonTitle} style={styles.card} disabled={!canPress}
+                        onPress={this._onPressCard.bind(this,this.baseProps.allLessonData[rowID],rowData,parseInt(rowID))}>
+                <Icon name='bug' size={MinUnit*8} color = {color}/>
+                <Text style={{color}}>{lessonTitle}</Text>
+                <Text style={{color}}>{passCount+"/"+chapters.length}</Text>
             </PanButton>
         );
     }
-
-    _onPressCard = (data)=> {
-        app.setNextRouteProps({lessonData: data})
+    _onPressCard = (data,record,id)=> {
+        app.setNextRouteProps({lessonData: data,lessonRecord:record,lessonId:id})
         this.props.navigator.push(app.getRoute("LessonMenus"));
     }
 
@@ -210,5 +255,17 @@ const styles = StyleSheet.create({
         marginHorizontal: MinUnit * 2,
         justifyContent: 'space-between',
         alignItems: 'center'
+    },
+    delBtn:{
+        position:'absolute',
+        left:0,
+        bottom:0,
+        width:MinUnit*10,
+        height:MinUnit*4,
+        borderWidth:1,
+        borderColor:'gray',
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'gray'
     },
 });

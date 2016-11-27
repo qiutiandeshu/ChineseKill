@@ -1,13 +1,38 @@
 {
-  "id": "3",
-  "title": "Basics3",
-  "icon": "titleIcon3",
-  "lessonTitle": [
+  "lessonId": "3",
+  "lessonTitle": "Basics3",
+  "lessonIcon": "titleIcon3",
+  "chapters": [
     {
-      "words": "人;男人;女人;男孩;女孩",
-      "questions": [
+      "word": "人;男人;女人;男孩;女孩",
+      "cardZis":[7],
+      "cardCis":[1,2,3,4],
+      "cardJus":[1,99],
+      "practices": [
         {
           "Q_Type": 0,
+          "Q_Service":{"ziCards":[],"ciCards":[],"juCards":[]},
+          "Q_Title": "choose a correct picture",
+          "Q_Question": "我_*_中国_人",
+          "Q_Question_PY":"wo_*_zhong guo_ren",
+          "Q_Sound": "人.mp3",
+          "Q_Pics": [
+            "fish",
+            "mother",
+            "cat",
+            "dog"
+          ],
+          "Q_Contents": [
+            "鱼 / yu",
+            "妈妈 / ma ma",
+            "猫 / mao",
+            "狗 / gou"
+          ],
+          "Q_Answer": "妈妈 / ma ma"
+        },
+        {
+          "Q_Type": 0,
+          "Q_UserTO":[[1],[],[99]],
           "title": "choose a correct picture",
           "question": "我_*_中国_人",
           "question_PY":"wo_*_zhong guo_ren",
@@ -25,12 +50,13 @@
             "狗 / gou"
           ],
           "Q_Answer": "妈妈 / ma ma"
+
         }
       ]
     },
 
     {
-      "words": "我;你;她;他;是",
+      "word": "我;你;她;他们;是",
       "sentence": "Subject+Vebr是+Object;",
       "questions":[
         {
@@ -67,6 +93,20 @@
             "woman",
             "man"
           ]
+        },{
+          "Q_Type": 2,
+          "title": "select a correct translation",
+          "question": "男人/nan ren",
+          "Q_Centents": [
+            "boy",
+            "girl",
+            "woman",
+            "male",
+            "man"
+          ],
+          "Q_Answer": [
+            "man"
+          ]
         },
         {
           "Q_Type":3,
@@ -84,6 +124,8 @@
           ]
         }
       ]
+    },{
+      "words": "庆祝;我们;你们;是否"
     }
   ]
 }
