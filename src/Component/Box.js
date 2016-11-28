@@ -69,14 +69,14 @@ class LogoutBox extends Box {
         <View style={{flex: 1, backgroundColor: '#E2E2E2',}}>
           <PanView name={"v_logout_userinfo"} style={[styles.userInfoView, styles.center]}>
             <IconButton panName={'b_logout_userImage'} name={'user-circle'} size={MinUnit*12} />
-            <Text style={styles.userInfoT}>{app.storageUserInfo? app.storageUserInfo.userid:''}</Text>
+            <Text style={styles.userInfoT}>{app.storageUserInfo?app.storageUserInfo.userid:''}</Text>
           </PanView>
           <PanButton name={'b_logout_cp'} style={styles.userInfoB} onPress={this.onChangePassword.bind(this)} >
             <IconText text={'Change Password'} />
           </PanButton>
           <PanButton name={'b_logout_cp'} style={styles.userInfoB}>
             <IconText name={'cloud-upload'} text={'Upload Progress'} />
-            {/*<Text>SUCCESS</Text>*/}
+            {<Text>SUCCESS</Text>}
           </PanButton>
           <PanButton name={'b_logout_cp'} style={styles.userInfoB}>
             <IconText name={'trash-o'} text={'Reset Progress'} />
@@ -519,12 +519,17 @@ class FlashCardBox extends Box {
     });
     return (
       <Animated.View style={[styles.flashTest, {left}]}>
+        <PanView name={'v_flashcard_test_question'} style={styles.fTQuestion} >
+        </PanView>
         <PanView name={'v_flashcard_test_answer'} style={styles.fTAnswer} >
+        </PanView>
+        <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV} >
         </PanView>
       </Animated.View>
     );
   }
 }
+
 class DoubleText extends Component {
   static propTypes = {
     name: React.PropTypes.string,
@@ -787,6 +792,7 @@ class ListItem extends Component {
     );  
   }
 }
+
 //带图标的按钮
 class IconButton extends Component {
   static propTypes = {
@@ -1090,12 +1096,20 @@ const styles = StyleSheet.create({
   fmChart: {
     height: ScreenHeight*0.35,
   },
-  fTAnswer: {
+  fTQuestion: {
     width: MinUnit*30,
     height: ScreenHeight*0.3,
     backgroundColor: '#1AA0AA',
-    borderTopLeftRadius: MinUnit,
-    borderTopRightRadius: MinUnit,
+  },
+  fTAnswer: {
+    width: MinUnit*30,
+    height: ScreenHeight*0.15,
+    backgroundColor: '#E9E9E9',
+  },
+  fTButtonV: {
+    width: MinUnit*30,
+    height: ScreenHeight*0.15,
+    marginVertical: MinUnit,
   },
   flashTest: {
     position: 'absolute',
