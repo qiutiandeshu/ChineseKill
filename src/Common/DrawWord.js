@@ -76,7 +76,7 @@ export default class DrawWord extends Component {
     backColor: PropTypes.string, //背景颜色
     fillColor: PropTypes.string, //填充颜色，
     fillArray: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]), //如果存在则以这个为准，用于不同部件的颜色标识，如果是bool类型，则在内部随机颜色，否则以给定颜色为准
-    writeOver: PropTypes.func, //自动写完回调函数
+    writeOver: PropTypes.func, //写完回调函数
     autoSpeed: PropTypes.number, //自动书写速度
   }
   static defaultProps = {
@@ -617,6 +617,9 @@ export default class DrawWord extends Component {
           this.wrongCount = 0;
           this.setBeginDraw();
         }else{
+          if (this.props.writeOver){
+            this.props.writeOver();
+          }
           this.drawIdx++;
           this.setUpdate();
           console.log('书写完毕!');
