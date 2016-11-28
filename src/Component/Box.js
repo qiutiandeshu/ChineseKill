@@ -235,8 +235,6 @@ class LoginBox extends Box {
 	          Login or Create a free account to save your learning progress and sync it across multidevives
 	        </Text>
 	      </PanView>
-        <ForgetBox ref={'forget'}/>
-        <SignUpBox ref={'signup'} parent={this} />
         {this.renderWait(this.state.blnWait)}
       </PopupBox>
 		);
@@ -433,7 +431,11 @@ class FlashCardBox extends Box {
     this.state = {
       moveX: new Animated.Value(0),
       status: 'menu',
+      showKind: 1,
+      isSetting: false,
+      height: new Animated.Value(0),
     };
+    this.state.height.setValue(0);
   }
   render() {
     var _name = 'close';
@@ -443,16 +445,52 @@ class FlashCardBox extends Box {
     return (
       <PopupBox
         ref={'PopupBox'}
-        name={'FlashCard Review'}
+        name={'FlashCard'}
         leftIconName={_name} onLeftPress={this.onLeftPress.bind(this)}
-        rightIconName={this.state.status=='test'?'':'ellipsis-h'}
+        rightIconName={this.state.status=='test'?'':'ellipsis-h'} onRightPressMeasure={this.onRightPress.bind(this)}
         backPress={this.hidden.bind(this)} >
-        <View style={{flex: 1,}}>
+        <View style={{flex: 1,}} ref={'view'}>
          {this.renderMenu()}
          {this.renderTest()}
         </View>
+        {this.renderFlashSetting()}
       </PopupBox>
     );
+  }
+  renderFlashSetting() {
+    if (this.state.isSetting == false) return null;
+    return (
+      <View style={styles.flashSettingBack}>
+        <PanButton name={'b_flashcard_setting'} style={{flex: 1,}} onPress={this.onHiddenSetting.bind(this)} />
+        <Animated.View name={'v_flashcard_setting'} style={[styles.flashSetting, {height: this.state.height}]}>
+          <PanView style={[styles.setDisplay, styles.bottomLine]} name={'v_flahs_set'} >
+            <Text style={styles.setFont}>Display in</Text>
+          </PanView>
+          <PanView style={[styles.setDisplay, styles.bottomLine]} name={'v_flahs_set'} >
+              <Text style={styles.setFont}>Default number: 35</Text>
+          </PanView>
+          <PanView style={[styles.setAudio, styles.bottomLine]} name={'v_flahs_set'} >
+            <Text style={styles.setFont}>Audio auto play</Text>
+          </PanView>
+          <PanView style={[styles.setFocuse, ]} name={'v_flahs_set'} >
+            <Text style={styles.setFont}>Focused on</Text>
+          </PanView>
+        </Animated.View>
+      </View>
+    );
+  }
+  onHiddenSetting() {
+    Animated.timing(
+      this.state.height,
+      {
+        toValue: 0,
+        duration: 300,
+      },
+    ).start(()=>{
+      this.setState({
+        isSetting: false,
+      });
+    });
   }
   onLeftPress() {
     if (this.state.status == 'menu') {
@@ -467,6 +505,19 @@ class FlashCardBox extends Box {
       ).start(this.changeStatus.bind(this, 'menu'));
     }
   }
+  onRightPress(ox, oy, width, height, px, py) {
+    // console.log(ox, oy, width, height, px, py);
+    this.setState({
+      isSetting: true
+    });
+    Animated.timing(
+      this.state.height,
+      {
+        toValue: MinUnit*30,
+        duration: 300,
+      },
+    ).start();
+  }
   renderMenu() {
     var left = this.state.moveX.interpolate({
       inputRange: [0, 1],
@@ -475,7 +526,7 @@ class FlashCardBox extends Box {
     return (
       <Animated.View style={[styles.flashMenu, {left}]}>
         <PanView name={'v_flashcard_m_SRS'} style={{flex: 1, alignItems: 'center', justifyContent: 'center',}}>
-          <PanButton name={'b_flashcard_menu'} style={styles.fmButton} onPress={this.showTest.bind(this)} >
+          <PanButton name={'b_flashcard_menu'} style={styles.fmButton} onPress={this.showTest.bind(this)}>
             <Text style={styles.fmSRS}>SRS</Text>
           </PanButton>
         </PanView>
@@ -508,6 +559,11 @@ class FlashCardBox extends Box {
     ).start(this.changeStatus.bind(this, 'test'));
   }
   changeStatus(_str) {
+    if (_str == 'menu') {
+      this.setState({
+        showKind: 1
+      });
+    }
     this.setState({
       status: _str,
     });
@@ -520,13 +576,83 @@ class FlashCardBox extends Box {
     return (
       <Animated.View style={[styles.flashTest, {left}]}>
         <PanView name={'v_flashcard_test_question'} style={styles.fTQuestion} >
+          <View style={[{height: MinUnit*5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: MinUnit}, ]}>
+            <View style={{width: MinUnit*5}} />
+            <Text style={{fontSize: MinUnit*3, color: '#FFFFFF'}} >1/3</Text>
+            <IconButton name={'volume-up'} size={MinUnit*4} color={'#FFFFFF'} />
+          </View>
         </PanView>
         <PanView name={'v_flashcard_test_answer'} style={styles.fTAnswer} >
         </PanView>
-        <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV} >
-        </PanView>
+        {this.renderButtonShow()}
+        {this.renderButtonYesOrNo()}
+        {this.renderButtonRight()}
+        {this.renderButtonWrong()}
       </Animated.View>
     );
+  }
+  renderButtonShow() {
+    if (this.state.showKind != 1) return null;
+    return (
+      <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV} >
+        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} onPress={this.onChangeLeft.bind(this)} />
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onChangeRight.bind(this)} />
+      </PanView>
+    );
+  }
+  renderButtonYesOrNo() {
+    if (this.state.showKind != 2) return null;
+    return (
+      <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV} >
+        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} onPress={this.onChangeLeft.bind(this)}>
+          <Text>Right</Text>
+        </PanButton>
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onChangeRight.bind(this)}>
+          <Text>Wrong</Text>
+        </PanButton>
+      </PanView>
+    );
+  }
+  renderButtonRight() {
+    if (this.state.showKind != 3) return null;
+    return (
+      <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV1} >
+        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} />
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} />
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} />
+      </PanView>
+    );
+  }
+  renderButtonWrong() {
+    if (this.state.showKind != 4) return null;
+    return (
+      <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV} >
+        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} />
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} />
+      </PanView>
+    );
+  }
+  onChangeLeft() {
+    if (this.state.showKind == 1) {
+      this.setState({
+        showKind: 2 
+      });
+    } else if (this.state.showKind == 2) {
+      this.setState({
+        showKind: 3 
+      });
+    }
+  }
+  onChangeRight() {
+    if (this.state.showKind == 1) {
+      this.setState({
+        showKind: 2
+      });
+    } else if (this.state.showKind == 2) {
+      this.setState({
+        showKind: 4 
+      });
+    }
   }
 }
 
@@ -1055,6 +1181,24 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: '#FFFFFF',
   },
+  flashSettingBack: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: '#00000078',
+  },
+  flashSetting: {
+    position: 'absolute',
+    right: MinUnit,
+    top: MinUnit*5,
+    width: MinUnit*35,
+    height: MinUnit*30,
+    backgroundColor: '#FFFFFF',
+    borderRadius: MinUnit,
+    overflow: 'hidden',
+  },
   fmButton: {
     width: MinUnit*16,
     height: MinUnit*16,
@@ -1109,7 +1253,27 @@ const styles = StyleSheet.create({
   fTButtonV: {
     width: MinUnit*30,
     height: ScreenHeight*0.15,
-    marginVertical: MinUnit,
+    marginVertical: MinUnit*2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  fTButtonV1: {
+    width: MinUnit*45,
+    height: ScreenHeight*0.15,
+    marginVertical: MinUnit*2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  fTButton: {
+    width: MinUnit*12,
+    height: ScreenHeight*0.14,
+    backgroundColor: '#A8A8A8',
+    margin: MinUnit,
+    borderRadius: MinUnit*3,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   flashTest: {
     position: 'absolute',
@@ -1146,6 +1310,29 @@ const styles = StyleSheet.create({
     fontSize: MinUnit*2,
     color: '#868686'
   },
+  bottomLine: {
+    borderBottomWidth: MinWidth,
+    borderColor: '#B2B2B2',
+  },
+  setDisplay: {
+    height: MinUnit*9,
+    paddingHorizontal: MinUnit,
+    justifyContent: 'center',
+  },
+  setAudio: {
+    height: MinUnit*4.5,
+    paddingHorizontal: MinUnit,
+    justifyContent: 'center',
+  },
+  setFocuse: {
+    height: MinUnit*7.5,
+    paddingHorizontal: MinUnit,
+    justifyContent: 'center',
+  },
+  setFont: {
+    fontSize: MinUnit*1.5,
+    color: '#424242',
+  }
 });
 
 module.exports = {

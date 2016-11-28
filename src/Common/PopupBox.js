@@ -43,6 +43,7 @@ class PopupBox extends Component {
 	  name: 'NAME',
 	  onLeftPress: ()=>{},
 	  onRightPress: ()=>{},
+    onRightPressMeasure: (ox, oy, width, height, px, py)=>{},
     showAnimatedEnd: (bln)=>{},
     hiddenAnimatedEnd: (bln)=>{},
     backPress: ()=>{}
@@ -94,13 +95,21 @@ class PopupBox extends Component {
   renderRightIcon() {
   	if (this.props.rightIconName && this.props.rightIconName!='') {
   		return (
-  			<PanButton name="PopupRightI" onPress={this.props.onRightPress} style={styles.lrIconView} >
-  				<Icon name={this.props.rightIconName} size={size}/>
-  			</PanButton>
+        <View style={styles.lrIconView} ref={'right'} >
+    			<PanButton name="PopupRightI" onPress={this.onRightPress.bind(this)} style={styles.lrIconView} >
+    				<Icon name={this.props.rightIconName} size={size}/>
+    			</PanButton>
+        </View>
 			)
   	} else {
   		return (<View style={styles.lrIconView}/>);
   	}
+  }
+  onRightPress() {
+    this.refs.right.measure((ox, oy, width, height, px, py)=>{
+      this.props.onRightPress();
+      this.props.onRightPressMeasure(ox, oy, width, height, px, py);
+    });
   }
   show() {
   	this.changeState(true);
