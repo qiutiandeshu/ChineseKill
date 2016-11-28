@@ -240,6 +240,10 @@ export default class StrokersOrder extends Component {
     //       style={{justifyContent:'center', alignItems: 'center', marginTop:MinUnit*2}}>
     //       <Icon name="volume-up" size={MinUnit*10} style={{color: '#AAF'}} />
     //     </PanButton>
+
+    // <TextInput style={styles.textInput} />
+    //     <View style={{width: ScreenWidth, height: 200, backgroundColor: '#111'}} />
+    //     <InputBoard spaceHeight={44 - 200}/>
     return (
       <View name='StrokersOrderBack' style={styles.container}>
         {this.renderTop()}
@@ -385,7 +389,7 @@ const styles = StyleSheet.create({
   },
   bodyListView:{
     width: ScreenWidth,
-    height: ScreenHeight - itemHeight,
+    // height: ScreenHeight - itemHeight,
     // backgroundColor: 'yellow'
   },
   itemView:{

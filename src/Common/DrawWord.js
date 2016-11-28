@@ -54,6 +54,7 @@ export default class DrawWord extends Component {
     this.blnShowArrow = true;
     this.blnShowBack = true;
     this.createBackLine();
+    this.delayPlay = this.props.autoDelay;
     
     this.tempColor = [];
     this.tempColor.push(this.props.fillColor);
@@ -78,6 +79,7 @@ export default class DrawWord extends Component {
     fillArray: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]), //如果存在则以这个为准，用于不同部件的颜色标识，如果是bool类型，则在内部随机颜色，否则以给定颜色为准
     writeOver: PropTypes.func, //写完回调函数
     autoSpeed: PropTypes.number, //自动书写速度
+    autoDelay: PropTypes.number, //自动书写首次延迟设置
   }
   static defaultProps = {
     autoSpeed: 3,
@@ -85,6 +87,7 @@ export default class DrawWord extends Component {
     fillColor: '#000000',
     fillArray: null,
     touch: true, //默认是可写的
+    autoDelay: 30,
   }
   setUpdate(){
     this.setState({
@@ -488,7 +491,12 @@ export default class DrawWord extends Component {
     this.setBeginDraw();
   }
   autoWrite(){
-    if (this.drawIdx >= 0){
+    if (this.delayPlay >0){
+      this.delayPlay--;
+      console.log(this.delayPlay);
+      return;
+    }
+    if (this.drawIdx >= 0 && this.delayPlay == 0){
       var points = this.data[this.drawIdx].orgPoints;
       if (this.nowPos >= points.length + 5 + this.props.autoSpeed){
         if (this.drawIdx < this.data.length){
