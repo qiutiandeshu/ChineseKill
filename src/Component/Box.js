@@ -10,6 +10,7 @@ import {
   Alert,
   ActivityIndicator,
   ListView,
+  Animated,
 } from 'react-native';
 
 import {ScreenWidth,ScreenHeight,MinUnit,MinWidth,IconSize,UtilStyles} from '../AppStyles'
@@ -59,6 +60,145 @@ class SettingBox extends Box {
 			</PopupBox>
 		);
 	}
+}
+// 取消登陆
+class LogoutBox extends Box {
+  render() {
+    return (
+      <PopupBox ref={'PopupBox'} name={'Account'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)}>
+        <View style={{flex: 1, backgroundColor: '#E2E2E2',}}>
+          <PanView name={"v_logout_userinfo"} style={[styles.userInfoView, styles.center]}>
+            <IconButton panName={'b_logout_userImage'} name={'user-circle'} size={MinUnit*12} />
+            <Text style={styles.userInfoT}>{app.storageUserInfo.userid}</Text>
+          </PanView>
+          <PanButton name={'b_logout_cp'} style={styles.userInfoB} onPress={this.onChangePassword.bind(this)} >
+            <IconText text={'Change Password'} />
+          </PanButton>
+          <PanButton name={'b_logout_cp'} style={styles.userInfoB}>
+            <IconText name={'cloud-upload'} text={'Upload Progress'} />
+            {/*<Text>SUCCESS</Text>*/}
+          </PanButton>
+          <PanButton name={'b_logout_cp'} style={styles.userInfoB}>
+            <IconText name={'trash-o'} text={'Reset Progress'} />
+          </PanButton>
+          <View style={{alignItems: 'center',}}>
+            <PanButton name={'b_logout'} style={styles.button} onPress={this.onLogoutPress.bind(this)} >
+              <Text style={[styles.buttonWord, {color: '#FFFFFF'}]}>Logout</Text>
+            </PanButton>
+          </View>
+          <Text style={styles.msg}>
+            When you login, your learning progerss will be uploaded and synced automatically
+          </Text>
+        </View>
+      </PopupBox>
+    );
+  }
+  onLogoutPress() {
+    app.storageUserInfo.blnSign = false;
+    app.saveUserInfo(app.storageUserInfo);
+    this.hidden();
+    HomeMenuLeft.userLogout();
+  }
+  onChangePassword() {
+    Home._onPopupBoxShow('ChangePassword');
+  }
+}
+// 密码修改界面
+class ChangePasswordBox extends Box {
+  oldP = '';
+  newP = '';
+  confirmP = '';
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      blnWait: false,
+    };
+  }
+  render() {
+    return (
+      <PopupBox ref={'PopupBox'} name={'Change Password'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)}>
+        <PanView name={"v_cp"} style={{flex: 1, alignItems: 'center',}}>
+          <IconInput name={'p_cp_lock1'} iconName={'lock'} placeholder={'Old Password'} secureTextEntry={true} onChangeText={this.onOldPassword.bind(this)} />
+          <IconInput name={'p_cp_lock2'} iconName={'lock'} placeholder={'New Password'} secureTextEntry={true} onChangeText={this.onNewPassword.bind(this)} />
+          <IconInput name={'p_cp_lock3'} iconName={'lock'} placeholder={'Confirm New Password'} secureTextEntry={true} onChangeText={this.onConfirmPassword.bind(this)} />
+          <PanButton name={'b_signup'} style={styles.button} onPress={this.onConfirm.bind(this)}>
+            <Text style={[styles.buttonWord, {color: '#FFFFFF'}]}>Confirm</Text>
+          </PanButton>
+        </PanView>
+        {this.renderWait(this.state.blnWait)}
+      </PopupBox>
+    );
+  }
+  onOldPassword(text) {
+    this.oldP = text;
+  }
+  onNewPassword(text) {
+    this.newP = text;
+  }
+  onConfirmPassword(text) {
+    this.confirmP = text;
+  }
+  onConfirm() {
+    if (this.oldP != app.storageUserInfo.password) {
+      Alert.alert(
+        '警告',
+        '输入旧密码错误',
+      )
+      return;
+    }
+    if (this.newP == '') {
+      Alert.alert(
+        '警告',
+        '请输入新密码'
+      );
+      return;
+    }
+    if (this.confirmP == '') {
+      Alert.alert(
+        '警告',
+        '请输入新密码确定'
+      );
+      return;
+    }
+    if (this.newP != this.confirmP) {
+      Alert.alert(
+        '警告',
+        '两次输入新密码不一样'
+      );
+      return;
+    }
+    socket.userChangePassword(this.newP, this.result.bind(this), this.getMsgFromServer.bind(this));
+  }
+  result(msg) {
+    if (msg == 'fail') {
+      Alert.alert(
+        '失败',
+        '服务器连接失败，请稍后再试'
+      );
+    } else {
+      this.setState({
+        blnWait: true,
+      });
+    }
+  }
+  //发送注册信息后，处理从服务器返回的数据
+  getMsgFromServer(json) {
+    this.setState({
+      blnWait: false,
+    });
+    if (json.msg == '失败') {
+      Alert.alert(
+        '失败',
+        json.data
+      );
+    } else {
+      // 修改成功，保存user信息，隐藏弹出框
+      app.storageUserInfo.password = json.data.password;
+      app.saveUserInfo(app.storageUserInfo);
+      this.hidden();
+    }
+  }
 }
 // 登陆界面
 class LoginBox extends Box {
@@ -128,18 +268,19 @@ class LoginBox extends Box {
       );
       return;
     }
-    socket.userSignIn(this.email, this.password, function(msg) {
-      if (msg == 'fail') {
-        Alert.alert(
-          '失败',
-          '服务器连接失败，请稍后再试'
-        );
-      } else {
-        this.setState({
-          blnWait: true,
-        });
-      }
-    }, this.getMsgFromServer.bind(this));
+    socket.userSignIn(this.email, this.password, this.result.bind(this), this.getMsgFromServer.bind(this));
+  }
+  result(msg) {
+    if (msg == 'fail') {
+      Alert.alert(
+        '失败',
+        '服务器连接失败，请稍后再试'
+      );
+    } else {
+      this.setState({
+        blnWait: true,
+      });
+    }
   }
   //发送注册信息后，处理从服务器返回的数据
   getMsgFromServer(json) {
@@ -152,22 +293,12 @@ class LoginBox extends Box {
         json.data
       );
     } else {
-      // 注册成功，保存user信息，隐藏弹出框
-      var initUser = {
-        key: 'login',
-        id:'1',
-        rawData: {
-            userid: json.data.userid,
-            password: json.data.password,
-            blnLogout: false,
-            age: '00',
-            name: json.data.username,
-            love: ['抽烟', '喝酒', '烫头'],
-        },
-        expires: 1000 * 3600 * 24,//如果不指定过期时间，则会使用defaultExpires参数,null用不过期
-      }
-      app.saveStorageData(initUser);
+      // 登陆成功，保存user信息，隐藏弹出框
+      app.storageUserInfo = json.data;
+      app.storageUserInfo.blnSign = true;
+      app.saveUserInfo(app.storageUserInfo);
       this.hidden();
+      HomeMenuLeft.userLogin();
     }
   }
   onForgetPassword() {
@@ -244,6 +375,13 @@ class SignUpBox extends Box {
   // 注册
   onSignUp() {
     if (this.blnEmail(this.email) == false) return;
+    if (this.password1 == '') {
+      Alert.alert(
+        '警告',
+        "请输入密码",
+      );
+      return;
+    }
     if (this.password1 != this.password2) {
       Alert.alert(
         '警告',
@@ -251,18 +389,19 @@ class SignUpBox extends Box {
       );
       return;
     }
-    socket.userSignUp(this.email, this.password1, function(msg) {
-      if (msg == 'fail') {
-        Alert.alert(
-          '失败',
-          '服务器连接失败，请稍后再试'
-        );
-      } else {
-        this.setState({
-          blnWait: true,
-        });
-      }
-    }, this.getMsgFromServer.bind(this));
+    socket.userSignUp(this.email, this.password1, this.result.bind(this), this.getMsgFromServer.bind(this));
+  }
+  result(msg) {
+    if (msg == 'fail') {
+      Alert.alert(
+        '失败',
+        '服务器连接失败，请稍后再试'
+      );
+    } else {
+      this.setState({
+        blnWait: true,
+      });
+    }
   }
   //发送注册信息后，处理从服务器返回的数据
   getMsgFromServer(json) {
@@ -276,35 +415,136 @@ class SignUpBox extends Box {
       );
     } else {
       // 注册成功，保存user信息，隐藏弹出框
-      var initUser = {
-        key: 'login',
-        id:'1',
-        rawData: {
-            userid: json.data.userid,
-            password: json.data.password,
-            blnLogout: false,
-            age: '00',
-            name: json.data.username,
-            love: ['抽烟', '喝酒', '烫头'],
-        },
-        expires: 1000 * 3600 * 24,//如果不指定过期时间，则会使用defaultExpires参数,null用不过期
-      }
-      app.saveStorageData(initUser);
+      app.storageUserInfo = json.data;
+      app.storageUserInfo.blnSign = true;
+      app.saveUserInfo(app.storageUserInfo);
       this.hidden();
+      HomeMenuLeft.userLogin();
       Home._onPopupBoxHidden('Login');
     }
   }
 }
 // 记忆卡（记忆曲线）
+const FlashWidth = ScreenWidth*0.54;
 class FlashCardBox extends Box {
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      moveX: new Animated.Value(0),
+      status: 'menu',
+    };
+  }
   render() {
+    var _name = 'close';
+    if (this.state.status == 'test') {
+      _name = 'angle-left';
+    }
     return (
-      <PopupBox ref={'PopupBox'} name={'FlashCard Review'} leftIconName={'close'} onLeftPress={this.hidden.bind(this, "FlashCard")}>
+      <PopupBox
+        ref={'PopupBox'}
+        name={'FlashCard Review'}
+        leftIconName={_name} onLeftPress={this.onLeftPress.bind(this)}
+        rightIconName={this.state.status=='test'?'':'ellipsis-h'}
+        backPress={this.hidden.bind(this)} >
+        <View style={{flex: 1,}}>
+         {this.renderMenu()}
+         {this.renderTest()}
+        </View>
       </PopupBox>
     );
   }
+  onLeftPress() {
+    if (this.state.status == 'menu') {
+      this.hidden("FlashCard");
+    } else {
+      Animated.timing(
+        this.state.moveX,
+        {
+          toValue: 0,
+          duration: 300,
+        }
+      ).start(this.changeStatus.bind(this, 'menu'));
+    }
+  }
+  renderMenu() {
+    var left = this.state.moveX.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, -MinUnit*15]
+    });
+    return (
+      <Animated.View style={[styles.flashMenu, {left}]}>
+        <PanView name={'v_flashcard_m_SRS'} style={{flex: 1, alignItems: 'center', justifyContent: 'center',}}>
+          <PanButton name={'b_flashcard_menu'} style={styles.fmButton} onPress={this.showTest.bind(this)} >
+            <Text style={styles.fmSRS}>SRS</Text>
+          </PanButton>
+        </PanView>
+        <PanView name={'v_flashcard_m_msg'} style={[styles.fmList, ]}>
+          <DoubleText />
+          {this.renderPlus()}
+          <DoubleText name={"Word"} num={20} color={'#CDECBE'} />
+          {this.renderPlus()}
+          <DoubleText name={"Character"} num={15} color={'#F9DFBB'} />
+        </PanView>
+        <PanView name={'v_flashcard_m_chart'} style={[styles.fmChart, ]}>
+        </PanView>
+      </Animated.View>
+    );
+  }
+  renderPlus() {
+    return (
+      <View style={styles.fmPlus}>
+        <Text style={styles.fmPlusText}>+</Text>
+      </View>
+    );
+  }
+  showTest() {
+    Animated.timing(
+      this.state.moveX,
+      {
+        toValue: 1,
+        duration: 300,
+      }
+    ).start(this.changeStatus.bind(this, 'test'));
+  }
+  changeStatus(_str) {
+    this.setState({
+      status: _str,
+    });
+  }
+  renderTest() {
+    var left = this.state.moveX.interpolate({
+      inputRange: [0, 1],
+      outputRange: [FlashWidth, 0]
+    });
+    return (
+      <Animated.View style={[styles.flashTest, {left}]}>
+        <PanView name={'v_flashcard_test_answer'} style={styles.fTAnswer} >
+        </PanView>
+      </Animated.View>
+    );
+  }
 }
-
+class DoubleText extends Component {
+  static propTypes = {
+    name: React.PropTypes.string,
+    num: React.PropTypes.number,
+    color: React.PropTypes.string,
+  };
+  static defaultProps = {
+    name: 'Sentence',
+    num: 10,
+    color: '#F7CDD7'
+  };
+  render() {
+    return (
+      <View style={{alignItems: 'center', justifyContent: 'center',}} >
+        <Text style={[styles.fmListNum, {color: this.props.color}]}>{''+this.props.num}</Text>
+        <Text style={[styles.fmListName, {color: this.props.color}]}>{this.props.name}</Text>
+      </View>
+    );
+  }
+}
 // 带有声音处理的Box
 class SoundBox extends Box {
   blnRecord = false;
@@ -352,7 +592,7 @@ class SoundBox extends Box {
 }
 var yxMsg = require('../../data/hz/6字义项表x.json');
 const CharacterList = [4,9,20,26,27,40,41,54,71,86,141,190,203,234,248,258,277,403,437,464,474];
-// 字
+// 字，词，句记忆资料卡
 class CardBox extends SoundBox {
   static propTypes = {
     kind: React.PropTypes.string,
@@ -489,7 +729,7 @@ class CardBox extends SoundBox {
     }
   }
 }
-
+// list列表中每一个
 class ListItem extends Component {
   static propTypes = {
     name: React.PropTypes.string,
@@ -515,13 +755,13 @@ class ListItem extends Component {
         <View style={styles.listIndexView}>
           <Text style={[styles.indexFont, {fontSize: fontSize}]}>{this.props.rowId + 1}</Text>
         </View>
-        <View style={[{width: MinUnit*10}, styles.center]}>
+        <View style={{width: MinUnit*10, justifyContent: 'center',}}>
           <Text style={styles.listWord1}>{this.props.data.character}</Text>
         </View>
-        <View style={[{width: MinUnit*10}, styles.center]}>
+        <View style={{width: MinUnit*10, justifyContent: 'center',}}>
           <Text style={styles.listWord2}>{this.props.data.pyin}</Text>
         </View>
-        <View style={[{flex: 1,}, styles.center]}>
+        <View style={{flex: 1, justifyContent: 'center',}}>
           <Text style={styles.listWord2}>{this.props.data.yxstr}</Text>
         </View>
       </PanButton>
@@ -536,11 +776,11 @@ class ListItem extends Component {
         <View style={styles.listIndexView}>
           <Text style={[styles.indexFont, {fontSize: fontSize}]}>{this.props.rowId + 1}</Text>
         </View>
-        <View style={[{width: MinUnit*22}, styles.center]}>
+        <View style={{width: MinUnit*22, justifyContent: 'center',}}>
           <Text style={[styles.listWord2, {marginBottom: MinUnit*0.2}]}>{this.props.data.pyin}</Text>
           <Text style={styles.listWord1}>{this.props.data.character}</Text>
         </View>
-        <View style={[{flex: 1,}, styles.center]}>
+        <View style={{flex: 1, justifyContent: 'center',}}>
           <Text style={styles.listWord2}>{this.props.data.yxstr}</Text>
         </View>
       </PanButton>
@@ -595,6 +835,32 @@ class CircleIcon extends Component {
         name={this.props.name}
         size={MinUnit*4}
         color={this.props.color} />
+    );
+  }
+}
+class IconText extends Component {
+  static propTypes = {
+    width: React.PropTypes.number,
+    name: React.PropTypes.string,
+    size: React.PropTypes.number,
+    color: React.PropTypes.string,
+    text: React.PropTypes.string,
+  };
+  static defaultProps = {
+    width: MinUnit*20,
+    name: 'key',
+    size: MinUnit*1.4,
+    color: '#01BCD4',
+    text: 'HelloWorld',
+  };
+  render() {
+    return (
+      <View style={{flex: 1, width: this.props.width, flexDirection: 'row', alignItems: 'center'}}>
+        <View style={[{width: MinUnit*2, height:MinUnit*2, borderRadius: MinUnit*1, backgroundColor: this.props.color, marginRight: MinUnit*2}, styles.center]}>
+          <Icon name={this.props.name} size={this.props.size} color={'#FFFFFF'} />
+        </View>
+        <Text style={{fontSize: MinUnit*1.5, color: "#3F3F3F"}} >{this.props.text}</Text>
+      </View>
     );
   }
 }
@@ -668,18 +934,18 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: MinUnit*4,
-    fontSize: MinUnit*1.5,
+    fontSize: MinUnit*1.3,
     textAlign: 'center',
     color: '#646464'
   },
   button: {
     backgroundColor: '#35757A',
-    height: MinUnit*5,
-    width: MinUnit*25,
+    height: MinUnit*4,
+    width: MinUnit*27,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: MinUnit*2.5,
-    marginVertical: MinUnit*6,
+    borderRadius: MinUnit*2,
+    marginVertical: MinUnit*4,
   },
   buttonWord: {
     fontSize: MinUnit*2,
@@ -749,7 +1015,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   center: {
-    // alignItems: 'center',
+    alignItems: 'center',
     justifyContent: 'center',
   },
   character: {
@@ -774,11 +1040,104 @@ const styles = StyleSheet.create({
     borderRadius: MinUnit*3.5,
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  flashMenu: {
+    position: 'absolute',
+    left: 0,
+    width: FlashWidth,
+    top: 0,
+    bottom: 0,
+    backgroundColor: '#FFFFFF',
+  },
+  fmButton: {
+    width: MinUnit*16,
+    height: MinUnit*16,
+    borderRadius: MinUnit*8,
+    backgroundColor: '#0494A4',
+    borderWidth: MinUnit,
+    borderColor: '#04B7CB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fmSRS: {
+    fontSize: MinUnit*6,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+  },
+  fmList: {
+    height: MinUnit*9,
+    borderBottomWidth: MinWidth,
+    borderColor: '#A3A3A3',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fmListName: {
+    fontSize: MinUnit*2,
+  },
+  fmListNum: {
+    fontSize: MinUnit*4,
+  },
+  fmPlus: {
+    margin: MinUnit*2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fmPlusText: {
+    fontSize: MinUnit*4,
+    color: '#E8E8E8',
+  },
+  fmChart: {
+    height: ScreenHeight*0.35,
+  },
+  fTAnswer: {
+    width: MinUnit*30,
+    height: ScreenHeight*0.3,
+    backgroundColor: '#1AA0AA',
+    borderTopLeftRadius: MinUnit,
+    borderTopRightRadius: MinUnit,
+  },
+  flashTest: {
+    position: 'absolute',
+    left: FlashWidth,
+    width: FlashWidth,
+    top: 0,
+    bottom: 0,
+    backgroundColor: '#FAFAFA',
+    borderLeftWidth: 1,
+    borderColor: '#DEDEDE',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  userInfoView: {
+    height: ScreenHeight*0.3,
+    borderWidth: MinWidth,
+    borderColor: '#BEBEBE',
+    marginBottom: MinUnit,
+    backgroundColor: '#FFFFFF'
+  },
+  userInfoB: {
+    height: MinUnit*5,
+    borderTopWidth: MinWidth,
+    borderBottomWidth: MinWidth,
+    borderColor: '#BEBEBE',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: MinUnit*3,
+    flexDirection: "row",
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  userInfoT: {
+    marginTop: MinUnit*2,
+    fontSize: MinUnit*2,
+    color: '#868686'
+  },
 });
 
 module.exports = {
 	LoginBox,
+  LogoutBox,
+  ChangePasswordBox,
   SignUpBox,
   ForgetBox,
   SettingBox,

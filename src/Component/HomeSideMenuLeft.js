@@ -14,10 +14,15 @@ export default class HomeSideMenuLeft extends Component {
     constructor(props) {
         super(props);
 
+        var bln = false;
+        if (app.storageUserInfo) {
+            bln = app.storageUserInfo.blnSign;
+        }
         this.state = {
             blnShow: false,
+            blnSign: bln,
         };
-        console.log(app.storage);
+        global.HomeMenuLeft = this;
     }
     static propTypes = {
         onCancel:React.PropTypes.func.isRequired,
@@ -69,16 +74,33 @@ export default class HomeSideMenuLeft extends Component {
 
     // 用户头像，登陆
     renderUserInfo = ()=>{
+        var _word = 'Sign In/Sign Up';
+        if (this.state.blnSign) {
+            _word = app.storageUserInfo.userid;
+            if (_word.length > 15) {
+                _word = _word.slice(0, 11) + '...';
+            }
+        }
         return (
             <PanView name='v_userInfo' style={[styles.userInfo, ]}>
-                <PanButton name="b_userHead" onPress={this._onPopupBoxShow.bind(this, "Login")}>
+                <PanButton name="b_userHead" onPress={this._onPopupBoxShow.bind(this, this.state.blnSign? "Logout":"Login")}>
                     <Icon name="user-circle" size={MinUnit*8}/>
                 </PanButton>
-                <PanButton name='b_userSign' onPress={this._onPopupBoxShow.bind(this, "Login")}>
-                    <LineText />
+                <PanButton name='b_userSign' onPress={this._onPopupBoxShow.bind(this, this.state.blnSign? "Logout":"Login")}>
+                    <LineText word={_word} />
                 </PanButton>
             </PanView>
         );
+    }
+    userLogin = ()=>{
+        this.setState({
+            blnSign: true 
+        });
+    }
+    userLogout = ()=>{
+        this.setState({
+            blnSign: false
+        });
     }
     // 记忆库信息
     renderMemoryMenu = ()=>{

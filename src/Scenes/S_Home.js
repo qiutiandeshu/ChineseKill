@@ -122,6 +122,8 @@ export default class S_Home extends Component {
                            onPressOrder = {this._onPressOrder.bind(this)}/>}
                 <Box.SettingBox ref={'Setting'} />
                 <Box.LoginBox ref={'Login'} />
+                <Box.LogoutBox ref={'Logout'} />
+                <Box.ChangePasswordBox ref={'ChangePassword'} />
                 <Box.SignUpBox ref={'SignUp'} />
                 <Box.ForgetBox ref={'Forget'} />
                 <Box.FlashCardBox ref={'FlashCard'} />

@@ -33,6 +33,7 @@ class PopupBox extends Component {
 	  onRightPress: React.PropTypes.func,	//右按钮触发
     showAnimatedEnd: React.PropTypes.func, //进场动画是否结束
     hiddenAnimatedEnd: React.PropTypes.func, //出场动画是否结束
+    backPress: React.PropTypes.func, //
 	};
 	static defaultProps = {
 	  blnShow: false,
@@ -44,6 +45,7 @@ class PopupBox extends Component {
 	  onRightPress: ()=>{},
     showAnimatedEnd: (bln)=>{},
     hiddenAnimatedEnd: (bln)=>{},
+    backPress: ()=>{}
 	};
 	constructor(props) {
 	  super(props);
@@ -79,25 +81,25 @@ class PopupBox extends Component {
     );
   }
   renderLeftIcon() {
-  	if (this.props.leftIconName) {
+  	if (this.props.leftIconName && this.props.leftIconName!='') {
   		return (
-  			<PanButton name="PopupLeftI" onPress={this.props.onLeftPress} >
+  			<PanButton name="PopupLeftI" onPress={this.props.onLeftPress} style={styles.lrIconView} >
   				<Icon name={this.props.leftIconName} size={size}/>
   			</PanButton>
 			);
   	} else {
-  		return (<View/>);
+  		return (<View style={styles.lrIconView}/>);
   	}
   }
   renderRightIcon() {
-  	if (this.props.rightIconName) {
+  	if (this.props.rightIconName && this.props.rightIconName!='') {
   		return (
-  			<PanButton name="PopupRightI" onPress={this.props.onRightPress} >
+  			<PanButton name="PopupRightI" onPress={this.props.onRightPress} style={styles.lrIconView} >
   				<Icon name={this.props.rightIconName} size={size}/>
   			</PanButton>
 			)
   	} else {
-  		return (<View/>);
+  		return (<View style={styles.lrIconView}/>);
   	}
   }
   show() {
@@ -161,7 +163,13 @@ const styles = StyleSheet.create({
 	name: {
 		fontSize: MinUnit*2,
     fontWeight: 'bold',
-	}
+	},
+  lrIconView: {
+    width: size,
+    height: size,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 

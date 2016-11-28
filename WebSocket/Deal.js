@@ -140,14 +140,14 @@ function Deal() {
 			data: data,
 		}
 		var _index = 0;
-		client.query('update forumuser set username = ? where userid = ?', [data.username, data.userid], function(err, rows, fields) {
-			if (err) {
-				json.data = "修改失败";
-				callback(json);
-				return;
-			}
-			success();
-		});
+		// client.query('update forumuser set username = ? where userid = ?', [data.username, data.userid], function(err, rows, fields) {
+		// 	if (err) {
+		// 		json.data = "修改失败";
+		// 		callback(json);
+		// 		return;
+		// 	}
+		// 	success();
+		// });
 		client.query('update forumuser set password = ? where userid = ?', [data.password, data.userid], function(err, rows, fields) {
 			if (err) {
 				json.data = '修改失败';
@@ -159,7 +159,7 @@ function Deal() {
 
 		function success(rows) {
 			_index += 1;
-			if (_index == 2) {
+			if (_index == 1) {
 				json.msg = MSG_K.SUCCESS;
 				callback(json);
 			}

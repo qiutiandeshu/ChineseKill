@@ -45,17 +45,34 @@ function SocketLink(app) {
   // 用户注册
 	this.userSignUp = function(_id, _password, callback, _fromServer) {
 		this.fromServer = _fromServer;
+    var date = new Date();
+    var timer = date.getTime();
 		var data = {
 			userid: _id,
       password: _password,
       username: _id,
+      create: timer,
+      time: timer,
 		};
 		if (this.sendToSocket('New', 'helloworld', data)) {
 			callback('success');
 		} else {
-			callback('fail')
+			callback('fail');
 		}
 	}
+  // 用户信息修改
+  this.userChangePassword = function(_id, callback, _fromServer) {
+    this.fromServer = _fromServer;
+    var data = {
+      userid: app.storageUserInfo.userid,
+      password: _id,
+    };
+    if (this.sendToSocket('Update', 'helloworld', data)) {
+      callback('success');
+    } else {
+      callback('fail');
+    }
+  }
   // 用户登录
   this.userSignIn = function(_id, _password, callback, _fromServer) {
     this.fromServer = _fromServer;
@@ -69,6 +86,26 @@ function SocketLink(app) {
       callback('fail');
     }
   }
+  // 默认登陆 用户信息验证，更新
+  this.verifyUserInfo = function(obj) {
+    this.userSignIn(obj.userid, obj.password, function(msg) {
+      if (msg == 'fail') {
+        this.fromServer = null;
+      }
+    }, this.updateUserInfo.bind(this));
+  }
+  this.updateUserInfo = function(json) {
+    if (json.msg == '成功') {
+      if (app.storageUserInfo.blnSign) {
+        if (parseInt(json.data.time) != app.storageUserInfo.time) {
+          app.storageUserInfo = json.data;
+          app.storageUserInfo.blnSign = true;
+          app.saveUserInfo(app.storageUserInfo);
+        }
+      }
+    }
+  }
+
   // 客户端向服务器发送消息
 	this.sendToSocket = function(_from, _msg, _data) {
 		var json = {
