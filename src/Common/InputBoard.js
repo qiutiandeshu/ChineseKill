@@ -27,6 +27,7 @@ export default class InputBoard extends Component {
         type: LayoutAnimation.Types.easeInEaseOut,
       }
     };
+    this.basePos = null;
   }
   static propTypes = {
     spaceHeight: PropTypes.number, //固定增加高度
@@ -38,20 +39,55 @@ export default class InputBoard extends Component {
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow.bind(this));
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide.bind(this));
   }
+  componentDidMount() {
+    if (this.root){
+      this.root.measure((ox, oy, width, height, px, py)=>{
+        this.basePos = {
+          ox: ox,
+          oy: oy,
+          width: width,
+          height: height,
+          px: px,
+          py: py
+        };
+        console.log(this.basePos);
+      });
+    } 
+  }
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
   }
   _keyboardDidShow(e) {//当键盘弹起来
     this.keyboardShow = true;
-    let moveY = -(e.startCoordinates.height-this.baseLayout.y-this.baseLayout.height-this.props.spaceHeight);
-    if (moveY > 0){
-      console.log("did show", e, 'move y: ' + moveY);
-      LayoutAnimation.configureNext(this.config);
-      this.setState({
-        marginTop: moveY 
-      });
-    }
+    // let moveY = -(e.startCoordinates.height-this.baseLayout.y-this.baseLayout.height-this.props.spaceHeight);
+    // if (moveY > 0){
+    //   console.log("did show", e, 'move y: ' + moveY);
+    //   LayoutAnimation.configureNext(this.config);
+    //   this.setState({
+    //     marginTop: moveY 
+    //   });
+    // }
+
+    this.root.measure((ox, oy, width, height, px, py)=>{
+      if (this.basePos)
+      this.basePos = {
+        ox: ox,
+        oy: oy,
+        width: width,
+        height: height,
+        px: px,
+        py: py
+      };
+      let moveY = -(e.startCoordinates.height-this.basePos.py-this.props.spaceHeight);
+      if (moveY > 0){
+        console.log("did show", e, 'move y: ' + moveY);
+        LayoutAnimation.configureNext(this.config);
+        this.setState({
+          marginTop: moveY 
+        });
+      }
+    });
   }
   _keyboardDidHide(e) {//当键盘收起后
     this.keyboardShow = false;

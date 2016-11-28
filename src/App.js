@@ -14,6 +14,7 @@ import {RouteList, RouteIndex} from './AppRoutes'
 const defaultStatusBar = false; //默认的状态栏属性
 import SocketLink from './Component/SocketLink.js'
 import {Chivox, cv} from './Utils/Chivox.js';
+import FBLogin from './Utils/FBLogin.js';
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -63,6 +64,10 @@ export default class App extends Component {
         this.chivox = Chivox.Instance();//调用初始化静态函数
         //这里需要设置回调函数，评测回调，录音音量回调，录音播放回调（播放进度）
         this.chivox.setCallback(this.iseCallback.bind(this), this.volCallback.bind(this), this.pcmCallback.bind(this));
+
+        //login
+        this.fbLogin = FBLogin.Instance();
+        this.fbLogin.SetCallback(this.fbCallback.bind(this));
     }
 
     componentDidMount() {
@@ -80,8 +85,35 @@ export default class App extends Component {
         socket.stopLink();
 
         //驰声接口
-        Chivox.Remove();//需要将接口释放。
+        Chivox.Remove();//需要将接口释放.
+        this.chivox = null;
+
+        //login
+        FBLogin.Remove();
+        this.fbLogin = null;
     }
+
+    /*--------------------------Login start-----------------------*/
+    onLoginFB(){
+        this.fbLogin.Login([
+            'public_profile',
+            'email'
+        ]);
+    }
+    fbCallback(data){
+        if (parseInt(data.code) == FBLogin.CB_Error){
+            alert('登录FB出错:' +  data.err_msg);
+        }else if (parseInt(data.code)== FBLogin.CB_Expired){
+            alert('token未过期，直接登录!');
+        }else if (parseInt(data.code) == FBLogin.CB_GetInfo){
+            alert('欢迎回来，' + data.result.name + '!');
+        }else if (parseInt(data.code) == FBLogin.CB_Login){
+            alert('登录成功，获取个人信息！');
+        }else if (parseInt(data.code) == FBLogin.CB_Logout){
+            alert('退出登录！');
+        }
+    }
+    /*--------------------------Login start-----------------------*/
     
     /*--------------------------驰声接口 start-----------------------*/
     onPressChivox(){//开始评测，这里的设置可根据需要进行设置，说明看下方对应条目

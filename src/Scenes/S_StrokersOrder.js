@@ -14,6 +14,7 @@ import {
   NativeModules,
   Animated,
   TextInput,
+  Image,
 } from 'react-native';
 import PanView from '../UserInfo/PanView';
 import PanButton from '../UserInfo/PanButton';
@@ -241,13 +242,16 @@ export default class StrokersOrder extends Component {
     //       <Icon name="volume-up" size={MinUnit*10} style={{color: '#AAF'}} />
     //     </PanButton>
 
-    // <TextInput style={styles.textInput} />
-    //     <View style={{width: ScreenWidth, height: 200, backgroundColor: '#111'}} />
-    //     <InputBoard spaceHeight={44 - 200}/>
+    // <Image source={{uri: 'http://192.169.1.19:8080/ChineseSkill/Pics/5.jpg'}}
+    //      style={{width: 200, height: 150, backgroundColor: '#AAA'}}
+    //      resizeMode={'stretch'} />
     return (
       <View name='StrokersOrderBack' style={styles.container}>
         {this.renderTop()}
         {this.renderBody()}
+        <TextInput style={styles.textInput} />
+        <View style={{width: ScreenWidth, height: 200, backgroundColor: '#111'}} />
+        <InputBoard spaceHeight={44-200}/>
       </View>
     );
   }
