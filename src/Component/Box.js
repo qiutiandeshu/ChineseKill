@@ -69,7 +69,7 @@ class LogoutBox extends Box {
         <View style={{flex: 1, backgroundColor: '#E2E2E2',}}>
           <PanView name={"v_logout_userinfo"} style={[styles.userInfoView, styles.center]}>
             <IconButton panName={'b_logout_userImage'} name={'user-circle'} size={MinUnit*12} />
-            <Text style={styles.userInfoT}>{app.storageUserInfo.userid}</Text>
+            <Text style={styles.userInfoT}>{app.storageUserInfo? app.storageUserInfo.userid:''}</Text>
           </PanView>
           <PanButton name={'b_logout_cp'} style={styles.userInfoB} onPress={this.onChangePassword.bind(this)} >
             <IconText text={'Change Password'} />
