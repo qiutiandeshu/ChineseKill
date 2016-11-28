@@ -16,7 +16,8 @@ export default class QuestionThree_PX extends Component {
     constructor(props) {
         super(props);
         //..this.arrContent = props.questionData.Q_Centents
-        this.arrContent = this.getRndContent(props.questionData.Q_Centents)
+
+        this.arrContent = this.getRndContent(props.questionData.Q_Contents)
         this.arrSelectTrueIndex = [];//记录被选中的box 实际的index
         this.state = {
             arrSelected: [],
@@ -33,6 +34,7 @@ export default class QuestionThree_PX extends Component {
     static defaultProps = {};
 
     getRndContent = (data)=>{
+        console.log("数据是?",data)
         let dataLength = data.length
         for(var i=0;i<dataLength;i++){
             let rnd = parseInt(dataLength * Math.random())
@@ -48,7 +50,7 @@ export default class QuestionThree_PX extends Component {
     componentWillUpdate(nProps,nState) {
         if(nProps.questionData != this.props.questionData){
             this.arrContent = []
-            this.arrContent = this.getRndContent(nProps.questionData.Q_Centents)
+            this.arrContent = this.getRndContent(nProps.questionData.Q_Contents)
             this.arrSelectTrueIndex = []
             this.setState({
                 arrSelected:[],

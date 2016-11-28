@@ -15,13 +15,7 @@ export default class QuestionRender extends Component {
     constructor(props) {
         super(props);
         this.state = {};
-        this.wordCount = 0; //词汇数量
-        this.arrWordStart = [];//词汇的起始位置
-        this.arrWordLength = [];//词汇长度
-        this.arrWord = [];//每个词汇的内容
-        this.arrSyllableWord = [];//每个音节汉字的内容
-        this.arrSyllablePY = [];//每个音节的拼音
-        this.setSyllable(props.question,this.props.pinyin);
+        this.initSyllabel(props)
     }
     static propTypes = {
         question:PropTypes.string.isRequired,
@@ -29,8 +23,19 @@ export default class QuestionRender extends Component {
         sound:PropTypes.string,
     }
 
+    initSyllabel = (props)=>{
+        this.wordCount = 0; //词汇数量
+        this.arrWordStart = [];//词汇的起始位置
+        this.arrWordLength = [];//词汇长度
+        this.arrWord = [];//每个词汇的内容
+        this.arrSyllableWord = [];//每个音节汉字的内容
+        this.arrSyllablePY = [];//每个音节的拼音
+        this.setSyllable(props.question,props.pinyin);
+    }
+
     shouldComponentUpdate(nProps,nStates) {
         if(this.props.question != nProps.question){
+            this.initSyllabel(nProps)
             return true
         }
         if(this.state != nStates){
@@ -39,9 +44,9 @@ export default class QuestionRender extends Component {
         return false;//这是一个不用刷新的组件
     }
 
-    setSyllable = (words,pinyins)=>{
+    setSyllable = (words,pinyins)=>{         
         if(!pinyins)return;//如果没有拼音数据,就不往下进行了
-        
+
         var dataSentWords = words;
         var dataSentPys = pinyins; //先获取到数据中的数值
         var sentWords = dataSentWords.split("_");//汉字内容第一层解析

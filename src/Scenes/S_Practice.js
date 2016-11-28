@@ -10,6 +10,9 @@ import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from
 import QuestionOne_XZ from '../Component/QuestionOne_XZ'
 import QuestionTwo_TK from '../Component/QuestionTwo_TK'
 import QuestionThree_PX from '../Component/QuestionThree_PX'
+import QuestionFour_MH from '../Component/QuestionFour_MH'
+import QuestionFive_PC from '../Component/QuestionFive_PC'
+import InputBoard from '../Common/InputBoard'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 export default class S_Practice extends Component {
@@ -34,16 +37,16 @@ export default class S_Practice extends Component {
     static propTypes = {
         blnGate: PropTypes.bool,//标记是否为闯关,因为涉及到life属性的处理和显示的问题还有练习结果页面
         questionData: PropTypes.array.isRequired,
-        newCardInfo:PropTypes.object.isRequired,
-        lessonInfo:PropTypes.object,
-        chapterRecord:PropTypes.object
+        newCardInfo: PropTypes.object.isRequired,
+        lessonInfo: PropTypes.object,
+        chapterRecord: PropTypes.object
     }
     static defaultProps = {
         blnGate: true,
         //questionData: [],
     }
 
-    setCheckBtn = (blnOpen)=> {        
+    setCheckBtn = (blnOpen)=> {
         this.setState({
             canCheck: blnOpen
         })
@@ -68,9 +71,9 @@ export default class S_Practice extends Component {
             answerColor[index] = "#E68A58"
             this.wrongQuestion[wrongCount] = this.props.questionData[index]
         }
-        if(index == this.questionCount-1){
+        if (index == this.questionCount - 1) {
             this.practiceTime = new Date() - this.practiceTime
-            console.log("花费的时间为:",this.practiceTime)
+            console.log("花费的时间为:", this.practiceTime)
         }
         this.setState({
             life: life,
@@ -82,14 +85,14 @@ export default class S_Practice extends Component {
 
     nextQuestion = ()=> {
         let {index, canCheck, showGameOver} = this.state
-        
+
         index += 1
         canCheck = false
         if (this.state.life < 0) {
             showGameOver = "Fail"
         } else {
-            if (index == this.questionCount) {                
-                if (this.props.blnGate) {                    
+            if (index == this.questionCount) {
+                if (this.props.blnGate) {
                     this.saveLearning()
                     showGameOver = "Success"
                 } else {
@@ -105,67 +108,73 @@ export default class S_Practice extends Component {
         })
     }
 
-    saveLearning = ()=>{
+    saveLearning = ()=> {
         let nowScore = this.state.score
         let nowUseTime = this.practiceTime
-        const{chapterState,chapterScore,chapterTime}=this.props.chapterRecord
-        const{lessonId,chapterIndex} = this.props.lessonInfo        
-        
+        const {chapterState, chapterScore, chapterTime}=this.props.chapterRecord
+        const {lessonId, chapterIndex} = this.props.lessonInfo
+
         let blnSave = false
-        if(chapterScore < nowScore){ //如果记录的得分小于当前得分,确定要保存            
+        if (chapterScore < nowScore) { //如果记录的得分小于当前得分,确定要保存
             blnSave = true
-        }else{//如果记录的分数大于或等于当前得分,那就重新赋值,以便后面可能会保存
+        } else {//如果记录的分数大于或等于当前得分,那就重新赋值,以便后面可能会保存
             nowScore = chapterScore
         }
-        if(chapterTime == 0){
+        if (chapterTime == 0) {
             blnSave = true
-        }else{
-            if(chapterTime > nowUseTime ){
+        } else {
+            if (chapterTime > nowUseTime) {
                 blnSave = true
-            }else{
+            } else {
                 nowUseTime = chapterTime
-            }    
-        }
-        
-        if(blnSave){ //如果要保存
-            app.saveLearningStorage(lessonId,chapterIndex,{
-                state:"passed",
-                score:nowScore,
-                time:nowUseTime,
-            })            
+            }
         }
 
-        if(chapterState != "passed"){//如果当前关卡不是已经打通的,那就需要将下一关卡解锁
+        if (blnSave) { //如果要保存
+            app.saveLearningStorage(lessonId, chapterIndex, {
+                state: "passed",
+                score: nowScore,
+                time: nowUseTime,
+            })
+        }
+
+        if (chapterState != "passed") {//如果当前关卡不是已经打通的,那就需要将下一关卡解锁
             let unlockLesson = lessonId
             let unlockChapter = chapterIndex + 1
-            if(unlockChapter == app.getChapterCount(unlockLesson)){
+            if (unlockChapter == app.getChapterCount(unlockLesson)) {
                 unlockChapter = 0
                 unlockLesson += 1
             }
-            if(unlockLesson < app.getLessonCount()){
-                app.saveLearningStorage(unlockLesson,unlockChapter,{
-                    state:"unlocked",
-                    score:0,
-                    time:0,
+            if (unlockLesson < app.getLessonCount()) {
+                app.saveLearningStorage(unlockLesson, unlockChapter, {
+                    state: "unlocked",
+                    score: 0,
+                    time: 0,
                 })
                 LessonMenu.updateRender(app.getStorageLearning()[lessonId])
-                Home.changeDataSource(unlockLesson,unlockChapter,{
-                    state:"unlocked",
-                    score:0,
-                    time:0,
+                Home.changeDataSource(unlockLesson, unlockChapter, {
+                    state: "unlocked",
+                    score: 0,
+                    time: 0,
                 })
             }
             this.saveCardInfo()
-        }
+        }       
     }
 
-    saveCardInfo = ()=>{
-        const{lessonId,chapterIndex} = this.props.lessonInfo
+    saveCardInfo = ()=> {
+        const {lessonId, chapterIndex} = this.props.lessonInfo
         let serverList = []
-        for(let i=0;i<this.questionCount;i++){
-            serverList[i] = this.props.questionData[i].Q_Service
+        for (let i = 0; i < this.questionCount; i++) {
+            const {Q_ZiCards,Q_CiCards,Q_JuCards} = this.props.questionData[i]
+            let service = {
+                ziCards:Q_ZiCards,
+                ciCards:Q_CiCards,
+                juCards:Q_JuCards,
+            }
+            serverList[i] = service
         }
-        app.saveCardInfo(this.props.newCardInfo,serverList,lessonId,chapterIndex)
+        app.saveCardInfo(this.props.newCardInfo, serverList, lessonId, chapterIndex)
     }
 
     shouldComponentUpdate(nProps, nStates) {
@@ -178,20 +187,24 @@ export default class S_Practice extends Component {
     render() {
         if (this.state.showGameOver != "") {
             return (
-                <PanView style={styles.container} name="s_practiceOver">
+                <PanView style={[styles.container]} name="s_practiceOver">
                     {this.renderGameOverTitle()}
                     {this.renderGameOver()}
                     {this.renderBottomBtn()}
                 </PanView>
             )
         }
+
         return (
-            <PanView style={styles.container} name="s_practice">
-                {this.renderTop()}
-                {this.renderQuestion()}
-                {this.renderBtnCheck()}
+            <View style={{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'#fff'}}>
+                <PanView style={styles.container} name="s_practice">
+                    {this.renderTop()}
+                    {this.renderQuestion()}
+                    {this.renderBtnCheck()}
+                </PanView>
+                {<InputBoard spaceHeight={0}/>}
                 {this.renderQuestionResult()}
-            </PanView>
+            </View>
         );
     }
 
@@ -233,6 +246,12 @@ export default class S_Practice extends Component {
     }
 
     renderBtnCheck = ()=> {//显示答题页面中的check按钮
+        let question = this.props.questionData[this.state.index];
+        if (!this.state.canCheck) {
+            if (question.Q_Type === 3 || question.Q_Type === 4) {
+                return this.renderSkipCheck()
+            }
+        }
         return (
             <PanButton name="btnCheckAnswer"
                        style={[styles.btnCheck,{backgroundColor:this.state.canCheck?'#4BCFE1':'#ADADAD'}]}
@@ -241,6 +260,21 @@ export default class S_Practice extends Component {
                 <Text style={[UtilStyles.fontSmall,{color:'white'}]}>CHECK</Text>
             </PanButton>
         );
+    }
+
+    renderSkipCheck = ()=> {
+        return (
+            <View
+                style={{flexDirection:'row',width:ScreenWidth*0.8,justifyContent:'space-between',alignItems:'center'}}>
+                <PanButton name="btnNextQuestion" disabled={true}
+                           style={[styles.btnCheck,{backgroundColor:'#ADADAD',width:ScreenWidth*0.6}]}>
+                    <Text style={[UtilStyles.fontSmall,{color:'white'}]}>NEXT</Text>
+                </PanButton>
+                <PanButton name="btnSkipQuestion" onPress={this.checkAnswer.bind(this)}>
+                    <Text style={[UtilStyles.fontSmall,{color:'#ADADAD'}]}>SKIP</Text>
+                </PanButton>
+            </View>
+        )
     }
 
     renderQuestion = ()=> {//显示答题页面中要回答的问题
@@ -262,6 +296,14 @@ export default class S_Practice extends Component {
                                       setCheckBtn={this.setCheckBtn.bind(this)}
                                       questionData={question}
             />)
+        } else if (question.Q_Type === 3) {
+            return (<QuestionFour_MH ref="nowQuestion"
+                                     setCheckBtn={this.setCheckBtn.bind(this)}
+                                     questionData={question}/>)
+        } else if (question.Q_Type == 4) {
+            return (<QuestionFive_PC ref="nowQuestion"
+                                     setCheckBtn={this.setCheckBtn.bind(this)}
+                                     questionData={question}/>)
         }
     }
     renderQuestionResult = ()=> {//显示当前答题的对错
@@ -300,45 +342,48 @@ export default class S_Practice extends Component {
         }
     }
 
-    renderGameOverTitle = ()=>{ //显示结束界面的顶部
+    renderGameOverTitle = ()=> { //显示结束界面的顶部
         let title = ""
-        if(this.state.showGameOver == "TheEnd"){
+        if (this.state.showGameOver == "TheEnd") {
             title = "Practice"
-        }else if(this.state.showGameOver == "Success"){
+        } else if (this.state.showGameOver == "Success") {
             title = "Success"
-        }else if(this.state.showGameOver == "Fail"){
+        } else if (this.state.showGameOver == "Fail") {
             title = "Fail"
         }
         return (
-            <View style={{width:ScreenWidth*0.8,height:MinUnit*4,marginTop:MinUnit*2,justifyContent:'center',alignItems:'center'}}>
+            <View
+                style={{width:ScreenWidth*0.8,height:MinUnit*4,marginTop:MinUnit*2,justifyContent:'center',alignItems:'center'}}>
                 <Text style={[UtilStyles.fontNormal]}>{title}</Text>
             </View>
         )
     }
 
-    tempRenderGameOver = ()=>{
+    tempRenderGameOver = ()=> {
         let rightCount = this.rightQuestion.length
         let wrongCount = this.wrongQuestion.length
-        if(this.state.showGameOver=="TheEnd"){
+        if (this.state.showGameOver == "TheEnd") {
             return <Text>恭喜你练习结束啦</Text>
-        }else if(this.state.showGameOver == "Fail"){
+        } else if (this.state.showGameOver == "Fail") {
             return <Text>您已经挂掉了心碎人亡</Text>
-        }else if(this.state.showGameOver == "Success"){
-            return(
-            <View>
-                <Text>此时此刻你不是一个人,分数:{this.state.score},耗时:{this.practiceTime.toString()}毫秒,做对了{rightCount}个题,做错了{wrongCount}
-                    个题,正确率:自己算去</Text>
-                {rightCount>0&&<PanButton name="btnReViewRight" onPress={this.onPressReview.bind(this,this.rightQuestion)}>
-                    <Text>吃饱了撑的</Text>
-                </PanButton >}
-                {wrongCount>0&&<PanButton name="btnReViewWrong" onPress={this.onPressReview.bind(this,this.wrongQuestion)}>
-                    <Text>死磕到底</Text>
-                </PanButton>}
-            </View>)
+        } else if (this.state.showGameOver == "Success") {
+            return (
+                <View>
+                    <Text>此时此刻你不是一个人,分数:{this.state.score},耗时:{this.practiceTime.toString()}毫秒,做对了{rightCount}个题,做错了{wrongCount}
+                        个题,正确率:自己算去</Text>
+                    {rightCount > 0 &&
+                    <PanButton name="btnReViewRight" onPress={this.onPressReview.bind(this,this.rightQuestion)}>
+                        <Text>吃饱了撑的</Text>
+                    </PanButton >}
+                    {wrongCount > 0 &&
+                    <PanButton name="btnReViewWrong" onPress={this.onPressReview.bind(this,this.wrongQuestion)}>
+                        <Text>死磕到底</Text>
+                    </PanButton>}
+                </View>)
         }
     }
 
-    onPressReview = (data)=>{
+    onPressReview = (data)=> {
 
     }
 
@@ -362,11 +407,14 @@ export default class S_Practice extends Component {
             return (
                 <View style={{flexDirection:'row',width:ScreenWidth*0.8,height:MinUnit*15,
                                 borderTopColor:'#e6e6e6',borderBottomColor:'#e6e6e6',borderTopWidth:MinWidth,borderBottomWidth:MinWidth}}>
-                    <View style={{width:ScreenWidth*0.4,height:MinUnit*15,alignItems:'center',justifyContent:'space-around'}}>
+                    <View
+                        style={{width:ScreenWidth*0.4,height:MinUnit*15,alignItems:'center',justifyContent:'space-around'}}>
 
                     </View>
-                    <View style={{width:ScreenWidth*0.4,height:MinUnit*15,borderLeftColor:'#e6e6e6',borderLeftWidth:MinWidth}}>
-                        <View style={{width:ScreenWidth*0.4,height:MinUnit*5,paddingHorizontal:MinUnit*2,paddingVertical:MinUnit}}>
+                    <View
+                        style={{width:ScreenWidth*0.4,height:MinUnit*15,borderLeftColor:'#e6e6e6',borderLeftWidth:MinWidth}}>
+                        <View
+                            style={{width:ScreenWidth*0.4,height:MinUnit*5,paddingHorizontal:MinUnit*2,paddingVertical:MinUnit}}>
                             <View style={{flexDirection:'row',width:ScreenWidth*0.1,justifyContent:'space-between'}}>
                                 <Text>Right</Text>
                                 <Text>10</Text>
@@ -379,7 +427,8 @@ export default class S_Practice extends Component {
                                 <Text>0</Text>
                             </View>
                         </View>
-                        <View style={{width:ScreenWidth*0.4,height:MinUnit*5,paddingHorizontal:MinUnit*2,paddingVertical:MinUnit}}>
+                        <View
+                            style={{width:ScreenWidth*0.4,height:MinUnit*5,paddingHorizontal:MinUnit*2,paddingVertical:MinUnit}}>
                             <View>
                                 <Text>Accuracy</Text>
                                 <Text>90%</Text>
@@ -464,11 +513,13 @@ class QuestionResult extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        //flex: 1,
         backgroundColor: '#ffffff',
         paddingHorizontal: MinUnit * 8,
         paddingVertical: MinUnit * 2,
         justifyContent: 'space-between',
+        width:ScreenWidth,
+        height:ScreenHeight - MinUnit*10,
     },
     top: {
         flexDirection: 'row',

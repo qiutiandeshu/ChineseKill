@@ -132,7 +132,6 @@ export default class QuestionOne_XZ extends Component {
     }
 
     render() {
-        console.log("Render QuestionOne:",this.props.questionData)
         return (
             <View style={styles.container}>
                 {this.renderTitle()}
@@ -150,7 +149,7 @@ export default class QuestionOne_XZ extends Component {
         );
     }
 
-    renderQuestion = ()=> {
+    renderQuestion = ()=> {        
         const {Q_Question, Q_Question_PY, Q_Sound} = this.props.questionData
         return (
             <QuestionRender sound={Q_Sound} question={Q_Question} pinyin={Q_Question_PY}/>

@@ -75,7 +75,6 @@ export default class App extends Component {
         AppState.addEventListener('change', this._handleAppStateChange.bind(this));
         global.UB = new UserBehavior(this, require('react-native-device-info'));
         //this.removeAllStorageData()
-        
     }
 
     componentWillUnMount() {
@@ -327,6 +326,7 @@ export default class App extends Component {
             switch (err.name) {
                 case 'NotFoundError'://没有找到相关数据
                     console.log("没有找到CardInfo相关数据")
+                    this.noneCardInfoStorage()
                     break;
                 case 'ExpiredError'://相关数据已过期
                     console.log("CardInfo数据过期了")
@@ -359,19 +359,22 @@ export default class App extends Component {
     }
 
     saveCardInfo = (newLearnCards,newQuestions,lessonId,chapterId)=>{
+        console.log("newLearnCards:",newLearnCards)
+        console.log("newQuestions:",newQuestions)
         const {cardZis,cardCis,cardJus} = newLearnCards
         if(cardZis){
-            this.storageCardInfo.learnCards.ziKey.concat(cardZis)
+            this.storageCardInfo.learnCards.ziKey = this.storageCardInfo.learnCards.ziKey.concat(cardZis)
         }
         if(cardCis){
-            this.storageCardInfo.learnCards.ciKey.concat(cardCis)
+            this.storageCardInfo.learnCards.ciKey = this.storageCardInfo.learnCards.ciKey.concat(cardCis)
         }
         if(cardJus){
-            this.storageCardInfo.learnCards.juKey.concat(cardJus)
+            this.storageCardInfo.learnCards.juKey = this.storageCardInfo.learnCards.juKey.concat(cardJus)
         }
         for(let i=0;i<newQuestions.length;i++){
             if(newQuestions[i]){
                 const {ziCards,ciCards,juCards} = newQuestions[i]
+                console.log("newQuestion",i,":",newQuestions[i])
                 let practice = {
                     lessonId:lessonId,
                     chapterId:chapterId,
@@ -379,25 +382,26 @@ export default class App extends Component {
                 } //记录题目的信息
                 if(ziCards){
                     for(let i=0;i<ziCards.length;i++){
-                        this.storageCardInfo.cardQuestion.ziCards[ziCards[i]].concat(practice)
+                        this.storageCardInfo.cardQuestion.ziCards[ziCards[i]] = this.storageCardInfo.cardQuestion.ziCards[ziCards[i]].concat(practice)
                     }
                 }
                 if(ciCards){
-                    for (let i=0;i<ziCards.length;i++){
-                        this.storageCardInfo.cardQuestion.ciCards[ciCards[i]].concat(practice)
+                    for (let i=0;i<ciCards.length;i++){
+                        this.storageCardInfo.cardQuestion.ciCards[ciCards[i]] = this.storageCardInfo.cardQuestion.ciCards[ciCards[i]].concat(practice)
                     }
                 }
                 if(juCards){
                     for(let i=0;i<juCards.length;i++){
-                        this.storageCardInfo.cardQuestion.juCards[juCards[i]].concat(practice)
+                        this.storageCardInfo.cardQuestion.juCards[juCards[i]] = this.storageCardInfo.cardQuestion.juCards[juCards[i]].concat(practice)
                     }
                 }
             }
         }
+
         this.storage.save({
             key:'CardInfo',
             rawData:this.storageCardInfo,
-            expires:expires
+            expires:null
         })
     }
 

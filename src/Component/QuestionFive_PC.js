@@ -1,6 +1,7 @@
 /**
- * Created by tangweishu on 16/11/22.
+ * Created by tangweishu on 16/11/28.
  */
+
 
 import React, {Component, PropTypes} from 'react'
 import PanView from '../UserInfo/PanView'
@@ -12,12 +13,11 @@ import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from
 import Icon from 'react-native-vector-icons/FontAwesome'
 import QuestionRender from '../Common/QuestionRender'
 
-export default class QuestionTwo_TK extends Component {
+export default class QuestionFive_PC extends Component {
     constructor(props) {
-        super(props);         
+        super(props);
         this.state = {
         };
-        this.writeText = ""
     }
 
     static propTypes = {
@@ -28,11 +28,12 @@ export default class QuestionTwo_TK extends Component {
 
     componentWillUpdate(nProps,nState) {
         if(nProps.questionData != this.props.questionData){
-            this.writeText = ""
-            this.refs.input.clear()
+
         }
     }
-
+    
+    
+    
     render() {
         return (
             <View style={styles.container}>
@@ -60,51 +61,18 @@ export default class QuestionTwo_TK extends Component {
 
     renderContents = ()=> {
         return (
-            <TextInput style={styles.textInput}
-                multiline={true} ref = "input"
-                       onChangeText = {this.onChangeText.bind(this)}
-                       placeholder = {this.props.questionData.A_Tips}
-                       placeholderTextColor = "#ABABAB"
-                       onEndEditing = {()=>{console.log("输入结束")}}
-                       blurOnSubmit = {true}
-                       returnKeyType = "done"
-            />
+            <Text>评测咧~</Text>
         );
-    }
-    onChangeText = (text)=>{
-        let preText = this.writeText
-        this.writeText = text;
-        if(preText == ""){
-            if(this.writeText != ""){
-                this.props.setCheckBtn(true)
-            }
-        }else{
-            if(this.writeText == ""){
-                this.props.setCheckBtn(false)
-            }
-        }
     }
 
     checkAnswer = ()=>{
-        let answerData = this.props.questionData.Q_Answer
-        let checkAnswer = this.writeText
-        checkAnswer = checkAnswer.replace(/\s/g,"")
-        checkAnswer = checkAnswer.toLowerCase()
-        console.log("我的答案:",checkAnswer,"正确答案:",answerData)
-        for(let i=0;i<answerData.length;i++){
-            let answer = answerData[i].toLowerCase()
-            if(answer == checkAnswer){
-                return "Right";
-            }
-        }
-        return "Wrong"
+        return "Right"
     }
-} 
+}
 
 const styles = StyleSheet.create({
     container: {
         height: ScreenHeight * 0.7,
-        //backgroundColor: '#ffff00',
     },
     textInput:{
         height:MinUnit*14,
