@@ -173,7 +173,7 @@ class Chivox{
   //  SAMPLE_RATE: '16000',//采样率，16000即可，不需要调整
   //  WAV_PATH: ''//如果传递了录音文件保存路径，则使用传入的地址，否则默认路径保存在Caches文件夹下面
   //};
-  async initPcm(initInfo, callback){
+  async initPcm(initInfo, callback){//初始化录音播放接口，带回调函数，返回音频文件的播放总时长
     try {
       var ret = await ChivoxISE.initPcm(initInfo);
       this.audioCurrentTime = 0;
@@ -192,7 +192,7 @@ class Chivox{
       });
     }
   }
-  async getCurrentTime(callback) {
+  async getCurrentTime(callback) {//获取播放录音最新播放进度，做播放进度条用，带一个回调函数
     try {
       if (this.playerState == cv.PLAYER_STOP || this.playerState == cv.PLAYER_NOT) {
         callback({
@@ -214,7 +214,7 @@ class Chivox{
       });
     }
   }
-  playPcm(){
+  playPcm(){//播放录音文件
     if (this.playerState == cv.PLAYER_NOT){
       console.log('this pcm is not init, please initPcm first!');
     }
@@ -223,13 +223,13 @@ class Chivox{
       this.playerState = cv.PLAYER_PLAY;
     }
   }
-  stopPcm(){
+  stopPcm(){//停止播放
     if (this.playerState == cv.PLAYER_PLAY || this.playerState == cv.PLAYER_PAUSE){
       ChivoxISE.stopPcm();
       this.playerState = cv.PLAYER_STOP;
     }
   }
-  pausePcm(){
+  pausePcm(){//暂停播放
     if (this.playerState == cv.PLAYER_PLAY){    
       ChivoxISE.pausePcm();
       this.playerState = cv.PLAYER_PAUSE;
@@ -250,17 +250,17 @@ class Chivox{
   //   //WAV_PATH: ''//如果传递了录音文件保存路径，则使用传入的地址，否则默认路径保存在Caches文件夹下面
   // }
   //iseCb: 评测的回调, volCb: 音量回调
-  startISE(data){
+  startISE(data){//开始评测，各参数看上面
     ChivoxISE.start(data, ''+data.index, data.ISE_CATEGORY);//这里使用和讯飞一样的字段，后面两个的作用参考LiuliSpeak@唐
   }
-  stopISE(){
+  stopISE(){//中途如果录音了，则不会停止这次评测，只是停止录音
     ChivoxISE.stop();
   }
-  cancelISE(){
+  cancelISE(){//取消本次评测，调用后，本次评测取消，录音停止，不会得到评测结果
     ChivoxISE.cancel();
   }
 }
-var chivoxErr = {
+var chivoxErr = {//返回错误码，可以对应该错误码进行log或者提示。
   40001: '未指定请求参数',
   40002: '未在参数中添加request参数项',
   40092: '传输的音频时长超限',

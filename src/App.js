@@ -13,6 +13,7 @@ import UserBehavior from './UserInfo/UserBehavior'
 import {RouteList, RouteIndex} from './AppRoutes'
 const defaultStatusBar = false; //默认的状态栏属性
 import SocketLink from './Component/SocketLink.js'
+import {Chivox, cv} from './Utils/Chivox.js';
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -53,10 +54,15 @@ export default class App extends Component {
     componentWillMount() {
         // 连接服务器
         global.socket = new SocketLink(this);
-        this.getLessonDate()
-        this.initUserInfoByStorage()
-        this.initLearningByStorage()
-        this.initCardInfoByStorage()
+        this.getLessonDate();
+        this.initUserInfoByStorage();
+        this.initLearningByStorage();
+        this.initCardInfoByStorage();
+
+        //驰声接口
+        this.chivox = Chivox.Instance();//调用初始化静态函数
+        //这里需要设置回调函数，评测回调，录音音量回调，录音播放回调（播放进度）
+        this.chivox.setCallback(this.iseCallback.bind(this), this.volCallback.bind(this), this.pcmCallback.bind(this));
     }
 
     componentDidMount() {
@@ -64,8 +70,119 @@ export default class App extends Component {
         AppState.addEventListener('change', this._handleAppStateChange.bind(this));
         global.UB = new UserBehavior(this, require('react-native-device-info'));
         //this.removeAllStorageData()
+        
     }
 
+    componentWillUnMount() {
+        console.log("App is closed");
+        AppState.removeEventListener('change', this._handleAppStateChange.bind(this));
+        // stop服务器连接
+        socket.stopLink();
+
+        //驰声接口
+        Chivox.Remove();//需要将接口释放。
+    }
+    
+    /*--------------------------驰声接口 start-----------------------*/
+    onPressChivox(){//开始评测，这里的设置可根据需要进行设置，说明看下方对应条目
+        this.chivox.startISE({
+            VOLUME_TS: 0.7,//音量超过多少则表示检测到说话了，最大值为1
+            VAD_BOS: 3600,//静音超时时间，即用户多长时间不说话则当做超时处理vad_bos 毫秒 ms
+            VAD_EOS: 1800,//后端点静音检测时间，即用户停止说话多长时间内即认为不再输入，自动停止录音 毫秒 ms
+            ISE_CATEGORY: 'word',//评测模式：word 字词, sent 句子
+            SPEECH_TIMEOUT: '10000',//录音超时，录音达到时限时自动触发vad，停止录音，默认-1（无超时）
+            TEXT: 'jin1 tian1',//需要评测的内容，带后标声调的拼音数据
+            ISE_AUDIO_PATH: 'pcm',//录音文件的名称，不带后缀，默认为wav
+            SAMPLE_RATE: '16000',//采样率，16000即可，不需要调整
+            USER_ID: 'jld-9527',//userID
+            index: 0,
+            //WAV_PATH: ''//如果传递了录音文件保存路径，则使用传入的地址，否则默认路径保存在Caches文件夹下面
+        });
+    }
+    onPressPlay(){//播放录音，在播放之前一定要init才可以
+        this.chivox.playPcm();
+    }
+    iseCallback(data){//评测的返回回调函数，在这里处理返回的信息，大部分处理同讯飞，只是最后的结果格式不同
+    if (data.code == cv.CB_CODE_RESULT) {//返回结果
+      console.log('have result!');
+      //下面是在得到评测结果之后，初始化录音，这样可以直接调用this.chivox.playPCM，具体参数可以看Chivox.js
+      //这里可以根据需要，看是否需要初始化
+      this.chivox.initPcm({
+        FILE_PATH:'pcm',
+        SAMPLE_RATE: '16000'
+      }, (data)=>{
+        if (data.error){
+          console.log(data.err_msg);
+        }else{
+          console.log('pcm time: ' + data.audioTime);//init录音之后可以得到录音的总时长
+        }
+      });
+      this.resultParse(data.result);
+    }
+    else if (data.code == cv.CB_CODE_ERROR) {//返回错误
+      if (data.result.match("-20161015_")){
+        var r = data.result.split('_');
+        var ret = JSON.parse(r[1]);
+        console.log(ret);//里面包含errorid 和 error的描述
+        if (chivoxErr[ret.errId]){//errorid 可以在chivox.js文件中看，在头部导入chivoxErr就可以使用了
+          console.log(chivoxErr[ret.errId]);
+        }else{
+          console.log(`${ret.errId}，未知错误！`);
+        }
+        // ret.errId;//id
+        // ret.error;//描述
+      }else{
+        console.log('error', data.result);
+      }
+    }
+    else if (data.code == chivoxErr.CB_CODE_STATUS) {//正在录音等的引擎状态返回，可根据返回状态修改对应的button变化
+      console.log('status', data.result);
+      if (data.result == chivoxErr.SPEECH_START) {//已经开始
+        //
+      } else if (data.result == chivoxErr.SPEECH_WORK) {//工作中...
+        //
+      } else if (data.result == chivoxErr.SPEECH_STOP) {//手动停止
+        //
+      } else if (data.result == chivoxErr.SPEECH_RECOG) {//识别中...
+        //
+      } else if (data.result == chivoxErr.SPEECH_PRESTART) {//启动前...
+        //整个时候还不能说话
+      }
+    }
+    else {//..真的是未知的错误
+      console.log('传回其他参数', data.result);
+    }
+  }
+  resultParse(result){//解析最终的评测结果，详情在details里面
+    var obj = eval('(' + result + ')');
+    console.log(obj);
+    if (obj.error){
+      // console.log('评测错误', obj.errId, obj.error);
+      //已经在原生端处理了，这里只是加个保险。
+    }else{
+      var result = obj.result;
+      console.log('总分：' + result.overall);
+      console.log('无调分：' + result.phn);
+      console.log('带调分：' + result.pron);
+      console.log('声调分：' + result.tone);
+      console.log('详情：', result.details);
+    }
+  }
+  volCallback(data){//录音音量的返回值，做动画用到
+    console.log(data);
+  }
+  pcmCallback(data){//播放录音的返回结果，主要的使用是播放完毕的回调。
+    if (data.status == cv.PCM_TOTALTIME) {
+      //
+    } else if (data.status == cv.PCM_PLAYOVER) {
+      console.log('play over! ' + data.msg);
+    } else if (data.status == cv.PCM_CURRENTTIME) {
+      //
+    } else if (data.status == cv.PCM_ERROR) {
+      //
+    }
+  }
+  /*--------------------------驰声接口 end-----------------------*/
 
     /*--------------------------本地数据存储部分 Start-----------------------*/
     initUserInfoByStorage = ()=>{
@@ -352,13 +469,6 @@ export default class App extends Component {
         //console.log("App Instance ID", DeviceInfo.getInstanceID());//ANDROID ONLY
     }
 
-    componentWillUnMount() {
-        console.log("App is closed");
-        AppState.removeEventListener('change', this._handleAppStateChange.bind(this));
-        // stop服务器连接
-        socket.stopLink();
-    }
-
     _handleAppStateChange = (state)=> {
         console.log("当前APP的状态是:", state)
         if (state == 'inactive') {//由active到background的过渡状态
@@ -525,7 +635,10 @@ export default class App extends Component {
                     break;
             }
         }
-        return configure;
+        return {
+            ...configure,
+            gestures: {}
+        };
     }
 
     objectIsEqual = (object1, object2)=> {//比较两个对象值是否全等
