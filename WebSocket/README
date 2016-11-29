@@ -1,8 +1,0 @@
-WebSocket为使用node创建的服务器
-
-需要安装插件 ws mysql
-npm install ws -save,
-npm install mysql -save,
-（已在package.json信息中添加）
-
-服务器运行方式：cd到server.js位置下，使用命令：node server.js
