@@ -1,81 +1,691 @@
 {
-  "lessonId": "1",
-  "lessonTitle": "Basics1",
-  "lessonIcon": "titleIcon1",
+  "lessonId": 1, 
+  "lessonTitle": "person", 
   "chapters": [
     {
-      "word": "人;男人;女人;男孩;女孩",
-      "cardZis":[7],
-      "cardCis":[1,2,3,4],
-      "cardJus":[1,99],
+      "cardZis": [
+        482, 
+        411, 
+        425
+      ], 
+      "word": "人；男人；女人", 
+      "cardCis": [
+        5261, 
+        4532, 
+        4650
+      ], 
       "practices": [
         {
-          "Q_Type": 0,
-          "Q_Service":{"ziCards":[],"ciCards":[],"juCards":[]},
-          "Q_Title": "choose a correct picture",
-          "Q_Question": "我_*_中国_人",
-          "Q_Question_PY":"wo_*_zhong guo_ren",
-          "Q_Sound": "人.mp3",
+          "Q_CiCards": [
+            5261
+          ], 
           "Q_Pics": [
-            "fish",
-            "mother",
-            "cat",
-            "dog"
-          ],
+            "sky.jpg", 
+            "water.jpg", 
+            "people.jpg", 
+            "bigfish.jpg"
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "choose the correct picture", 
           "Q_Contents": [
-            "鱼 / yu",
-            "妈妈 / ma ma",
-            "猫 / mao",
-            "狗 / gou"
-          ],
-          "Q_Answer": "妈妈 / ma ma"
+            "天/tiān", 
+            "水/shuǐ", 
+            "人/rén", 
+            "鱼/yú"
+          ], 
+          "Q_Answer": "人/rén", 
+          "Q_Sound": "ren2.mp3", 
+          "Q_ZiCards": [
+            482
+          ], 
+          "Q_Question": "people"
+        }, 
+        {
+          "Q_CiCards": [
+            5261
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "choose the correct word", 
+          "Q_Contents": [
+            "sky", 
+            "fish", 
+            "dog", 
+            "people"
+          ], 
+          "Q_Answer": "people", 
+          "Q_Question_PY": "rén", 
+          "Q_Sound": "ren2.MP3", 
+          "Q_ZiCards": [
+            482
+          ], 
+          "Q_Question": "人"
+        }, 
+        {
+          "Q_CiCards": [
+            4650
+          ], 
+          "Q_Title": "choose the correct picture", 
+          "Q_Type": 0, 
+          "Q_Pics": [
+            "man.jpg", 
+            "woman.jpg", 
+            "boy1.jpg", 
+            "girl1.jpg"
+          ], 
+          "Q_Contents": [
+            "男人/nán rén", 
+            "女人/nǚ rén", 
+            "男孩/nán hái", 
+            "女孩/nǚ hái"
+          ], 
+          "Q_Answer": "女人/nǚ rén", 
+          "Q_Question": "woman", 
+          "Q_Sound": "nvren.MP3"
+        }, 
+        {
+          "Q_CiCards": [
+            4532
+          ], 
+          "Q_Title": "choose the correct picture", 
+          "Q_Type": 0, 
+          "Q_Pics": [
+            "man.jpg", 
+            "woman.jpg", 
+            "boy1.jpg", 
+            "girl1.jpg"
+          ], 
+          "Q_Contents": [
+            "男人/nán rén", 
+            "女人/nǚ rén", 
+            "男孩/nán hái", 
+            "女孩/nǚ hái"
+          ], 
+          "Q_Answer": "男人/nán rén", 
+          "Q_Question": "man", 
+          "Q_Sound": "nanren.MP3"
+        }, 
+        {
+          "Q_ZiCards": [
+            482
+          ], 
+          "Q_Type": 3, 
+          "Q_Question": "人", 
+          "Q_Title": "trace the arrow to write"
+        }, 
+        {
+          "Q_ZiCards": [
+            411
+          ], 
+          "Q_Type": 3, 
+          "Q_Question": "男", 
+          "Q_Title": "trace the arrow to write"
+        }, 
+        {
+          "Q_ZiCards": [
+            425
+          ], 
+          "Q_Type": 3, 
+          "Q_Question": "女", 
+          "Q_Title": "trace the arrow to write"
+        }, 
+        {
+          "Q_CiCards": [
+            4532
+          ], 
+          "Q_ZiCards": [
+            482, 
+            411
+          ], 
+          "Q_Type": 4, 
+          "Q_Title": "speak the sentence", 
+          "Q_Answer": "nan2 ren2", 
+          "Q_Question_PY": "nán rén", 
+          "Q_Question": "男人", 
+          "Q_Sound": "nanren.MP3"
+        }, 
+        {
+          "Q_CiCards": [
+            4560
+          ], 
+          "Q_ZiCards": [
+            425
+          ], 
+          "Q_Type": 4, 
+          "Q_Title": "speak the sentence", 
+          "Q_Answer": "nv3 ren2", 
+          "Q_Question_PY": "nǚ rén", 
+          "Q_Question": "女人", 
+          "Q_Sound": "nvren.MP3"
+        }, 
+        {
+          "Q_CiCards": [
+            4532
+          ], 
+          "Q_Type": 1, 
+          "Q_Title": "write down the translation", 
+          "Q_Answer": [
+            "man"
+          ], 
+          "Q_Question_PY": "nán rén", 
+          "Q_Sound": "nanren.MP3", 
+          "Q_ZiCards": [
+            411
+          ], 
+          "Q_Question": "男人", 
+          "A_Tips": "write down the translation"
+        }, 
+        {
+          "Q_CiCards": [
+            4532
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "select the missing character", 
+          "Q_Contents": [
+            "女/nǚ", 
+            "男/nán", 
+            "大/dà", 
+            "小/xiǎo"
+          ], 
+          "Q_Answer": "男/nán", 
+          "Q_Question_PY": "*_rén", 
+          "Q_Sound": "nanren.MP3", 
+          "Q_ZiCards": [
+            411
+          ], 
+          "Q_Question": "*_人"
+        }, 
+        {
+          "Q_CiCards": [
+            4560
+          ], 
+          "Q_ZiCards": [
+            425
+          ], 
+          "Q_Type": 1, 
+          "A_Tips": "write the chinese translation using pinyin or characters.you may write pinyin in one of the following three types:nan ren/nan2 ren2/男人", 
+          "Q_Title": "write the chinese translation", 
+          "Q_Answer": [
+            "nvren", 
+            "nv3ren2", 
+            "女人"
+          ], 
+          "Q_Question": "woman", 
+          "Q_Sound": "nvren.MP3"
+        }, 
+        {
+          "Q_CiCards": [
+            4560
+          ], 
+          "Q_Type": 2, 
+          "Q_Title": "select a correct translation", 
+          "Q_Contents": [
+            "woman", 
+            "man", 
+            "boy", 
+            "girl", 
+            "people"
+          ], 
+          "Q_Answer": [
+            "woman"
+          ], 
+          "Q_Question_PY": "nǚ rén", 
+          "Q_Sound": "nvren.MP3", 
+          "Q_ZiCards": [
+            425, 
+            482
+          ], 
+          "Q_Question": "女人"
+        }, 
+        {
+          "Q_CiCards": [
+            5261
+          ], 
+          "Q_Type": 2, 
+          "Q_Title": "select a correct translation", 
+          "Q_Contents": [
+            "woman", 
+            "man", 
+            "boy", 
+            "girl", 
+            "people"
+          ], 
+          "Q_Answer": [
+            "people"
+          ], 
+          "Q_Question_PY": "rén", 
+          "Q_Sound": "ren2.MP3", 
+          "Q_ZiCards": [
+            482
+          ], 
+          "Q_Question": "人"
+        }, 
+        {
+          "Q_CiCards": [
+            4532
+          ], 
+          "Q_ZiCards": [
+            411
+          ], 
+          "Q_Type": 1, 
+          "A_Tips": "write the chinese translation using pinyin or characters.you may write pinyin in one of the following three types:nan ren/nan2 ren2/男人", 
+          "Q_Title": "write the chinese translation", 
+          "Q_Answer": [
+            "nanren", 
+            "nan2ren2", 
+            "男人"
+          ], 
+          "Q_Question": "man", 
+          "Q_Sound": "nanren.MP3"
+        }, 
+        {
+          "Q_CiCards": [
+            4532
+          ], 
+          "Q_Type": 2, 
+          "Q_Title": "select a correct translation", 
+          "Q_Contents": [
+            "woman", 
+            "man", 
+            "boy", 
+            "girl", 
+            "people"
+          ], 
+          "Q_Answer": [
+            "man"
+          ], 
+          "Q_Question_PY": "nán rén", 
+          "Q_Sound": "nanren.MP3", 
+          "Q_ZiCards": [
+            411
+          ], 
+          "Q_Question": "男人"
+        }, 
+        {
+          "Q_CiCards": [
+            4560
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "select the missing character", 
+          "Q_Contents": [
+            "女/nǚ", 
+            "男/nán", 
+            "大/dà", 
+            "小/xiǎo"
+          ], 
+          "Q_Answer": "女/nǚ", 
+          "Q_Question_PY": "*_rén", 
+          "Q_Sound": "nvren.mp3", 
+          "Q_ZiCards": [
+            425
+          ], 
+          "Q_Question": "*_人"
         }
       ]
-    },
-
+    }, 
     {
-      "word": "我;你;她;他们;是",
-      "sentence": "Subject+Vebr是+Object;",
-      "practices":[
+      "practices": [
         {
-          "Q_Type": 1,
-          "Q_Title": "write down the word's translation",
-          "Q_Question": "女孩/nv hai",
-          "Q_Sound": "女孩.mp3",
-          "A_Tips":"Write down the translation",
+          "Q_CiCards": [
+            9443, 
+            9448
+          ], 
+          "Q_Pics": [
+            "girl1.jpg", 
+            "boy1.jpg", 
+            "man.jpg", 
+            "woman.jpg"
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "choose the correct picture", 
+          "Q_Contents": [
+            "女孩/nǚ hái", 
+            "男孩/nán hái", 
+            "男人/nán rén", 
+            "女人/nǚ rén"
+          ], 
+          "Q_Answer": "女孩/nǚ hái", 
+          "Q_Sound": "nvhai.mp3", 
+          "Q_ZiCards": [
+            202, 
+            425, 
+            411
+          ], 
+          "Q_Question": "girl"
+        }, 
+        {
+          "Q_CiCards": [
+            9443, 
+            9448
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "choose the correct word", 
+          "Q_Contents": [
+            "girl", 
+            "man", 
+            "boy", 
+            "woman"
+          ], 
+          "Q_Answer": "boy", 
+          "Q_Question_PY": "nán_hái", 
+          "Q_Sound": "nanhai.MP3", 
+          "Q_ZiCards": [
+            202, 
+            425, 
+            411
+          ], 
+          "Q_Question": "男_孩"
+        }, 
+        {
+          "Q_CiCards": [
+            4588, 
+            6637
+          ], 
+          "Q_Pics": [
+            "i.jpg", 
+            "ta.jpg", 
+            "ni.jpg", 
+            "ta1.jpg"
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "choose the correct picture", 
+          "Q_Contents": [
+            "我/wǒ", 
+            "他/tā", 
+            "你/nǐ", 
+            "她/tā"
+          ], 
+          "Q_Answer": "你/nǐ", 
+          "Q_Sound": "ni3.mp3", 
+          "Q_ZiCards": [
+            417, 
+            663
+          ], 
+          "Q_Question": "you"
+        }, 
+        {
+          "Q_CiCards": [
+            4588, 
+            6637
+          ], 
+          "Q_Pics": [
+            "i.jpg", 
+            "ta.jpg", 
+            "ni.jpg", 
+            "ta1.jpg"
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "choose the correct picture", 
+          "Q_Contents": [
+            "我/wǒ", 
+            "他/tā", 
+            "你/nǐ", 
+            "她/tā"
+          ], 
+          "Q_Answer": "我/wǒ", 
+          "Q_Sound": "wo3.mp3", 
+          "Q_ZiCards": [
+            417, 
+            663
+          ], 
+          "Q_Question": "i"
+        }, 
+        {
+          "Q_CiCards": [
+            6066, 
+            6071
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "choose the correct word", 
+          "Q_Contents": [
+            "i", 
+            "you", 
+            "she", 
+            "he"
+          ], 
+          "Q_Answer": "he", 
+          "Q_Question_PY": "tā", 
+          "Q_Sound": "ta1.MP3", 
+          "Q_ZiCards": [
+            558, 
+            560
+          ], 
+          "Q_Question": "他"
+        }, 
+        {
+          "Q_CiCards": [
+            6066, 
+            6071
+          ], 
+          "Q_Type": 0, 
+          "Q_Title": "choose the correct word", 
+          "Q_Contents": [
+            "i", 
+            "you", 
+            "she", 
+            "he"
+          ], 
+          "Q_Answer": "she", 
+          "Q_Question_PY": "tā", 
+          "Q_Sound": "ta1.MP3", 
+          "Q_ZiCards": [
+            558, 
+            560
+          ], 
+          "Q_Question": "她"
+        }, 
+        {
+          "Q_ZiCards": [
+            417
+          ], 
+          "Q_Type": 3, 
+          "Q_Question": "你", 
+          "Q_Title": "trace the arrow to write"
+        }, 
+        {
+          "Q_ZiCards": [
+            613
+          ], 
+          "Q_Type": 3, 
+          "Q_Question": "我", 
+          "Q_Title": "trace the arrow to write"
+        }, 
+        {
+          "Q_CiCards": [
+            4588, 
+            6637, 
+            6066, 
+            6071, 
+            4588, 
+            6637, 
+            6066, 
+            6071
+          ], 
+          "Q_Type": 0, 
+          "Q_Contents": [
+            "I am a woman.", 
+            "I am a girl.", 
+            "I am a man.", 
+            "I am a boy."
+          ], 
+          "Q_Answer": "I am a girl.", 
+          "Q_Question_PY": "wǒ_shì_nǚ hái", 
+          "Q_Sound": "woshinvhai.mp3", 
+          "Q_Title": "choose a correct translation", 
+          "Q_Question": "我_是_女孩", 
+          "Q_JuCards": [
+            0
+          ]
+        }, 
+        {
+          "Q_CiCards": [
+            4588, 
+            6637, 
+            6066, 
+            6071
+          ], 
+          "Q_Type": 0, 
+          "Q_Contents": [
+            "我/wǒ", 
+            "你/nǐ", 
+            "他/tā", 
+            "她/tā"
+          ], 
+          "Q_Answer": "他/tā", 
+          "Q_Question_PY": "*_shì_nán hái.", 
+          "Q_Sound": "tashinvhai.mp3", 
+          "Q_Title": "select the missing character", 
+          "Q_Question": "*_是_男孩。", 
+          "Q_JuCards": [
+            0
+          ]
+        }, 
+        {
+          "Q_CiCards": [
+            4588, 
+            6637, 
+            6066, 
+            6071, 
+            9443, 
+            9448
+          ], 
+          "Q_Type": 2, 
+          "Q_Contents": [
+            "woman", 
+            "man", 
+            "boy", 
+            "girl", 
+            "she", 
+            "is", 
+            "a"
+          ], 
           "Q_Answer": [
-            "girl",
-            "unboy",
-            "small women"
+            "she", 
+            "is", 
+            "a", 
+            "woman"
+          ], 
+          "Q_Question_PY": "tā_shì_nǚ rén.", 
+          "Q_Sound": "tashinvren.MP3", 
+          "Q_Title": "select a correct translation", 
+          "Q_Question": "她_是_女人。", 
+          "Q_JuCards": [
+            0
+          ]
+        }, 
+        {
+          "Q_ZiCards": [
+            524
+          ], 
+          "Q_Type": 3, 
+          "Q_Question": "她", 
+          "Q_Title": "trace the arrow to write"
+        }, 
+        {
+          "Q_ZiCards": [
+            560
+          ], 
+          "Q_Type": 3, 
+          "Q_Question": "他", 
+          "Q_Title": "trace the arrow to write"
+        }, 
+        {
+          "Q_CiCards": [
+            6637, 
+            5575, 
+            9448
+          ], 
+          "Q_Title": "speak the sentence", 
+          "Q_Type": 4, 
+          "Q_Answer": "wo3 shi4 nv3 hai2", 
+          "Q_Question_PY": "wǒ_shì_nǚ hái.", 
+          "Q_Question": "我_是_女孩。", 
+          "Q_Sound": "woshinvhai.MP3", 
+          "Q_JuCards": [
+            0
+          ]
+        }, 
+        {
+          "Q_CiCards": [
+            6066, 
+            5575, 
+            9443
+          ], 
+          "Q_Title": "speak the sentence", 
+          "Q_Type": 4, 
+          "Q_Answer": "ta1 shi4 nan2 hai2", 
+          "Q_Question_PY": "tā_shì_nán hái.", 
+          "Q_Question": "他_是_男孩。", 
+          "Q_Sound": "tashinanhai.MP3", 
+          "Q_JuCards": [
+            0
+          ]
+        }, 
+        {
+          "Q_CiCards": [
+            6637, 
+            5431, 
+            4532
+          ], 
+          "Q_Type": 1, 
+          "Q_Answer": [
+            "I", 
+            "am", 
+            "a", 
+            "man"
+          ], 
+          "Q_Question_PY": "wǒ_shì_nán rén", 
+          "Q_Sound": "woshinanren.MP3", 
+          "Q_Title": "write down the translation", 
+          "Q_Question": "我_是_男人", 
+          "A_Tips": "write down the translation", 
+          "Q_JuCards": [
+            0
+          ]
+        }, 
+        {
+          "Q_CiCards": [
+            9448
+          ], 
+          "Q_Type": 0, 
+          "Q_Contents": [
+            "男人/nán rén", 
+            "女人/nǚ rén", 
+            "男孩/nán hái", 
+            "女孩/nǚ hái"
+          ], 
+          "Q_Answer": "女孩/nǚ hái", 
+          "Q_Question_PY": "tā_shì_*.", 
+          "Q_Sound": "tashinvhai.mp3", 
+          "Q_Title": "select the missing character", 
+          "Q_Question": "她_是_*。", 
+          "Q_JuCards": [
+            0
           ]
         }
-      ]
-    },{
-      "word": "我;你;她;他们;是",
-      "sentence": "Subject+Vebr是+Object;",
-      "practices":[
-        {
-          "Q_Type": 0,
-          "Q_Service":{"ziCards":[],"ciCards":[],"juCards":[]},
-          "Q_Title": "choose a correct picture",
-          "Q_Question": "我_*_中国_人",
-          "Q_Question_PY":"wo_*_zhong guo_ren",
-          "Q_Sound": "人.mp3",
-          "Q_Pics": [
-            "fish",
-            "mother",
-            "cat",
-            "dog"
-          ],
-          "Q_Contents": [
-            "鱼 / yu",
-            "妈妈 / ma ma",
-            "猫 / mao",
-            "狗 / gou"
-          ],
-          "Q_Answer": "妈妈 / ma ma"
-        }
+      ], 
+      "word": "你；我；他；她；是；男孩；女孩", 
+      "sentence": "subject+是+object", 
+      "cardZis": [
+        417, 
+        613, 
+        558, 
+        560, 
+        524, 
+        202
+      ], 
+      "cardCis": [
+        4588, 
+        6637, 
+        6066, 
+        6071, 
+        5775, 
+        9443, 
+        9448
+      ], 
+      "cardJus": [
+        0
       ]
     }
-  ]
+  ], 
+  "lessonIcon": "titleIcon_person.jpg"
 }
