@@ -66,7 +66,6 @@ var rowData = [
 var itemHeight = MinUnit * 7;
 
 import InputBoard from '../Common/InputBoard.js';
-// import {Chivox, cv, chivoxErr} from '../Utils/Chivox.js';
 
 export default class StrokersOrder extends Component {
   constructor(props) {
@@ -92,7 +91,7 @@ export default class StrokersOrder extends Component {
           data: rowData[this.rowCount % rowData.length]
         };
         this.rowCount++;
-        if (i < tempCount){//一开是关闭的，所以不管子项有多少都要增加
+        if (i < tempCount){//最开始是关闭的，所以不管子项有多少都要增加
           this.firstRenderCount++;
         }
       }
@@ -122,113 +121,12 @@ export default class StrokersOrder extends Component {
       dataSource: this.state.dataSource.cloneWithRowsAndSections(this.dataBlob, this.sectionIDs, this.rowIDs)
     });
   }
-  
   componentWillMount() {
-    // this.chivox = Chivox.Instance();
-    // this.chivox.setCallback(this.iseCallback.bind(this), this.volCallback.bind(this), this.pcmCallback.bind(this));
-    // console.log('chivox', this.chivox);
     UIManager.setLayoutAnimationEnabledExperimental &&
       UIManager.setLayoutAnimationEnabledExperimental(true);
   }
   componentWillUnmount() {
-    // Chivox.Remove();
   }
-  // onPressChivox(){
-  //   this.chivox.startISE({
-  //     VOLUME_TS: 0.7,//音量超过多少则表示检测到说话了，最大值为1
-  //     VAD_BOS: 3600,//静音超时时间，即用户多长时间不说话则当做超时处理vad_bos 毫秒 ms
-  //     VAD_EOS: 1800,//后端点静音检测时间，即用户停止说话多长时间内即认为不再输入，自动停止录音 毫秒 ms
-  //     ISE_CATEGORY: 'word',//评测模式：word 字词, sent 句子
-  //     SPEECH_TIMEOUT: '10000',//录音超时，录音达到时限时自动触发vad，停止录音，默认-1（无超时）
-  //     TEXT: 'jin1 tian1',//需要评测的内容，带后标声调的拼音数据
-  //     ISE_AUDIO_PATH: 'pcm',//录音文件的名称，不带后缀，默认为wav
-  //     SAMPLE_RATE: '16000',//采样率，16000即可，不需要调整
-  //     USER_ID: 'jld-9527',//userID
-  //     index: 0,
-  //     //WAV_PATH: ''//如果传递了录音文件保存路径，则使用传入的地址，否则默认路径保存在Caches文件夹下面
-  //   });
-  // }
-  // iseCallback(data){
-  //   if (data.code == cv.CB_CODE_RESULT) {
-  //     console.log('have result!');
-  //     this.chivox.initPcm({
-  //       FILE_PATH:'pcm',
-  //       SAMPLE_RATE: '16000'
-  //     }, (data)=>{
-  //       if (data.error){
-  //         console.log(data.err_msg);
-  //       }else{
-  //         console.log('pcm time: ' + data.audioTime);
-  //       }
-  //     });
-  //     this.resultParse(data.result);
-  //   }
-  //   else if (data.code == cv.CB_CODE_ERROR) {
-  //     if (data.result.match("-20161015_")){
-  //       var r = data.result.split('_');
-  //       var ret = JSON.parse(r[1]);
-  //       console.log(ret);//里面包含errorid 和 error的描述
-  //       if (chivoxErr[ret.errId]){
-  //         console.log(chivoxErr[ret.errId]);
-  //       }else{
-  //         console.log(`${ret.errId}，未知错误！`);
-  //       }
-  //       // ret.errId;//id
-  //       // ret.error;//描述
-  //     }else{
-  //       console.log('error', data.result);
-  //     }
-  //   }
-  //   else if (data.code == chivoxErr.CB_CODE_STATUS) {//正在录音
-  //     console.log('status', data.result);
-  //     if (data.result == chivoxErr.SPEECH_START) {//已经开始
-  //       //
-  //     } else if (data.result == chivoxErr.SPEECH_WORK) {//工作中...
-  //       //
-  //     } else if (data.result == chivoxErr.SPEECH_STOP) {//手动停止
-  //       //
-  //     } else if (data.result == chivoxErr.SPEECH_RECOG) {//识别中...
-  //       //
-  //     } else if (data.result == chivoxErr.SPEECH_PRESTART) {//启动前...
-  //       //整个时候还不能说话
-  //     }
-  //   }
-  //   else {//..真的是未知的错误
-  //     console.log('传回其他参数', data.result);
-  //   }
-  // }
-  // resultParse(result){
-  //   var obj = eval('(' + result + ')');
-  //   console.log(obj);
-  //   if (obj.error){
-  //     // console.log('评测错误', obj.errId, obj.error);
-  //     //已经在原生端处理了，这里只是加个保险。
-  //   }else{
-  //     var result = obj.result;
-  //     console.log('总分：' + result.overall);
-  //     console.log('无调分：' + result.phn);
-  //     console.log('带调分：' + result.pron);
-  //     console.log('声调分：' + result.tone);
-  //     console.log('详情：', result.details);
-  //   }
-  // }
-  // volCallback(data){
-  //   console.log(data);
-  // }
-  // pcmCallback(data){
-  //   if (data.status == cv.PCM_TOTALTIME) {
-  //     //
-  //   } else if (data.status == cv.PCM_PLAYOVER) {
-  //     console.log('play over! ' + data.msg);
-  //   } else if (data.status == cv.PCM_CURRENTTIME) {
-  //     //
-  //   } else if (data.status == cv.PCM_ERROR) {
-  //     //
-  //   }
-  // }
-  // onPressPlay(){
-  //   this.chivox.playPcm();
-  // }
   render() {
     // <TextInput style={styles.textInput}/>
     //     <PanButton name="btnTestChivox" 
@@ -245,21 +143,21 @@ export default class StrokersOrder extends Component {
     // <Image source={{uri: 'http://192.169.1.19:8080/ChineseSkill/Pics/5.jpg'}}
     //      style={{width: 200, height: 150, backgroundColor: '#AAA'}}
     //      resizeMode={'stretch'} />
+
+    // <TextInput style={styles.textInput} />
+    //     <View style={{width: ScreenWidth, height: 200, backgroundColor: '#111'}} />
+    //     <InputBoard spaceHeight={44-200}/>
     return (
-      <View name='StrokersOrderBack' style={styles.container}>
+      <PanView name='StrokersOrderBack' style={styles.container}>
         {this.renderTop()}
         {this.renderBody()}
-        <TextInput style={styles.textInput} />
-        <View style={{width: ScreenWidth, height: 200, backgroundColor: '#111'}} />
-        <InputBoard spaceHeight={44-200}/>
-      </View>
+      </PanView>
     );
   }
   onBackScene(){
     this.props.navigator.pop();
   }
   onPressSetting(){
-    // app.setTest('nnn');
   }
   onItemPress(sectionID){//小项打开或关闭
     var newBlob = this.dataBlob.slice();
@@ -309,7 +207,7 @@ export default class StrokersOrder extends Component {
   }
   renderBody(){
     return (
-      <View name='StrokersOrderBodyView' style={styles.bodyViewBack}>
+      <PanView name='StrokersOrderBodyView' style={styles.bodyViewBack}>
         <PanListView 
           name='StrokersOrderListView'
           style={styles.bodyListView}
@@ -319,7 +217,7 @@ export default class StrokersOrder extends Component {
           initialListSize={this.firstRenderCount}
           scrollRenderAheadDistance={500}
         />
-      </View>
+      </PanView>
     );
   }
   renderSectionHeader(sectionData, sectionID){

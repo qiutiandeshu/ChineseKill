@@ -119,7 +119,8 @@ export default class S_Home extends Component {
                 <MenuLeft sideMenuAnim={this.state.sideMenuAnim} onCancel={this.closeSideMenu.bind(this)}/>}
                 {this.state.menuState == 'right' &&
                 <MenuRight sideMenuAnim={this.state.sideMenuAnim} onCancel={this.closeSideMenu.bind(this)}
-                           onPressOrder = {this._onPressOrder.bind(this)}/>}
+                           onPressOrder = {this._onPressOrder.bind(this)}
+                           onPressPinyin= {this._onPressPinyin.bind(this)} />}
                 <Box.SettingBox ref={'Setting'} />
                 <Box.LoginBox ref={'Login'} />
 
@@ -205,6 +206,9 @@ export default class S_Home extends Component {
 
     _onPressOrder(){
         this.props.navigator.push(app.getRoute('StrokersOrder'));
+    }
+    _onPressPinyin(){
+        this.props.navigator.push(app.getRoute('PinyinChart'));
     }
 
     // 控制弹出框显示/隐藏

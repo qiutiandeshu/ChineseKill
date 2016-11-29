@@ -5,8 +5,9 @@ import Home from './Scenes/S_Home'
 import LessonMenus from './Scenes/S_LessonMenus'
 import StrokersOrder from './Scenes/S_StrokersOrder';
 import StrokersWrite from './Scenes/S_StrokersWrite';
-import Practice from './Scenes/S_Practice'
-import Test from './Scenes/S_Test'
+import Practice from './Scenes/S_Practice';
+import PinyinChart from './Scenes/S_PinyinChart';
+import Test from './Scenes/S_Test';
 
 let RouteList = [
     {
@@ -41,9 +42,15 @@ let RouteList = [
         configure: 'FFR',
     },
     {
+        name:'StrokersWrite',
+        component: PinyinChart,
+        index: 5,
+        configure: 'FFB',
+    },
+    {
         name:'Test',
         component:Test,
-        index:5,
+        index:6,
         showStatusBar:false,
     },
 
@@ -55,7 +62,8 @@ let RouteIndex = {
     Practice:2,
     StrokersOrder: 3,
     StrokersWrite: 4,
-    Test:5,
+    PinyinChart: 5,
+    Test:6,
 }
  
 module.exports = {RouteList,RouteIndex};
