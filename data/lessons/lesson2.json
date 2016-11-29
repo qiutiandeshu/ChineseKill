@@ -1,4 +1,4 @@
-{
+﻿{
   "lessonId": 2, 
   "lessonTitle": "number", 
   "chapters": [
@@ -76,7 +76,9 @@
           "Q_Sound": "wugenvhai.mp3", 
           "Q_Title": "select a correct translation", 
           "Q_Question": "五_个_女孩。", 
-          "Q_JuCards": 1
+          "Q_JuCards": [
+		1
+	],
         }, 
         {
           "Q_CiCards": [
@@ -90,15 +92,16 @@
             177
           ], 
           "Q_Answer": [
-            "one", 
-            "man"
+            "one man"
           ], 
           "Q_Question_PY": "yī_gè_nán rén", 
           "Q_Sound": "yigenanren.MP3", 
           "Q_Title": "write down the translation", 
           "Q_Question": "一_个_男人", 
           "A_Tips": "write down the translation", 
-          "Q_JuCards": 1
+          "Q_JuCards": [
+		1
+	],
         }, 
         {
           "Q_CiCards": [
@@ -200,7 +203,9 @@
           "Q_Sound": "sangenanren.mp3", 
           "Q_Title": "select a correct translation", 
           "Q_Question": "三_个_男人。", 
-          "Q_JuCards": 1
+          "Q_JuCards":[
+		1
+	],
         }, 
         {
           "Q_CiCards": [
@@ -623,8 +628,7 @@
           ], 
           "Q_Type": 1, 
           "Q_Answer": [
-            "eight", 
-            "girls"
+            "eight girls"
           ], 
           "Q_Question_PY": "bā_gè_nǚ hái", 
           "Q_Sound": "bagenvhai.MP3", 
@@ -939,12 +943,7 @@
             87
           ], 
           "Q_Type": 1, 
-          "Q_Answer": [
-            "Five", 
-            "thousand", 
-            "eight", 
-            "hundred"
-          ], 
+          "Q_Answer": "Five thousand eight hundred", 
           "Q_Question_PY": "wǔ qiān_bà bǎi", 
           "Q_Sound": "5800.MP3", 
           "Q_Title": "write down the translation", 
