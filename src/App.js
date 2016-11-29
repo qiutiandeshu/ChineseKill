@@ -100,14 +100,16 @@ export default class App extends Component {
         ]);
     }
     fbCallback(data){
+        console.log(data);
         if (parseInt(data.code) == FBLogin.CB_Error){
             alert('登录FB出错:' +  data.err_msg);
         }else if (parseInt(data.code)== FBLogin.CB_Expired){
             alert('token未过期，直接登录!');
         }else if (parseInt(data.code) == FBLogin.CB_GetInfo){
-            alert('欢迎回来，' + data.result.name + '!');
+            var json = data.result;
+            socket.facebookSignUp(json.email, json.name);
         }else if (parseInt(data.code) == FBLogin.CB_Login){
-            alert('登录成功，获取个人信息！');
+            this.fbLogin.GetInfo();
         }else if (parseInt(data.code) == FBLogin.CB_Logout){
             alert('退出登录！');
         }
@@ -221,6 +223,7 @@ export default class App extends Component {
             ret=>{
                 console.log("读取到UserInfo:",ret)
                 this.storageUserInfo = ret
+                socket.verifyUserInfo(this.storageUserInfo);
             }
         ).catch (err=>{
             switch (err.name) {

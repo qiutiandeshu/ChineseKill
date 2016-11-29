@@ -2,7 +2,7 @@
  * Created by tangweishu on 16/9/18.
  */
 import React, {Component, PropTypes} from 'react'
-import {View,Text, StyleSheet, Animated, Modal} from 'react-native'
+import {View,Text, StyleSheet, Animated, Modal, Alert} from 'react-native'
 import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import {ScreenWidth,ScreenHeight,MinUnit,MinWidth,IconSize,UtilStyles} from '../AppStyles'
@@ -104,12 +104,16 @@ export default class HomeSideMenuLeft extends Component {
     }
     // 记忆库信息
     renderMemoryMenu = ()=>{
+        var card = null;
+        if (app.storageCardInfo) {
+            card = app.storageCardInfo.learnCards;
+        }
         return (
             <PanView name='memoryMenu' style={[styles.memoryMenu, ]}>
-                <MemoryFrame onPress={this._onPopupBoxShow.bind(this, 'FlashCard')} />
-                <MemoryFrame name={'Character'} color={'#E57C86'} onPress={this._onPopupBoxShow.bind(this, "Character")} />
-                <MemoryFrame name={'Word'} color={'#5ABD5A'} onPress={this._onPopupBoxShow.bind(this, 'Word')} />
-                <MemoryFrame name={'Sentence'} color={'#F4B460'} onPress={this._onPopupBoxShow.bind(this, 'Sentence')} />
+                <MemoryFrame onPress={this._onPopupBoxShow.bind(this, 'FlashCard')} number={card?card.ziKey.length+card.ciKey.length+card.juKey.length:0} />
+                <MemoryFrame name={'Character'} color={'#E57C86'} number={card?card.ziKey.length:0} onPress={this._onPopupBoxShow.bind(this, "Character")} />
+                <MemoryFrame name={'Word'} color={'#5ABD5A'} number={card?card.ciKey.length:0} onPress={this._onPopupBoxShow.bind(this, 'Word')} />
+                <MemoryFrame name={'Sentence'} color={'#F4B460'} number={card?card.juKey.length:0} onPress={this._onPopupBoxShow.bind(this, 'Sentence')} />
             </PanView>
         );
     }
@@ -130,9 +134,9 @@ class MemoryFrame extends Component {
     render() {
         return (
             <View style={[styles.memoryFrame, ]}>
-                <PanButton name={'b_memoryIcon_'+this.props.name} style={[styles.memoryIcon, {backgroundColor: this.props.color}]} onPress={this.props.onPress} >
+                <PanButton name={'b_memoryIcon_'+this.props.name} style={[styles.memoryIcon, {backgroundColor: this.props.color}]} onPress={this.onPress.bind(this)} >
                 </PanButton>
-                <PanButton name={'b_memoryText_'+this.props.name} style={{width: LineWidth}} onPress={this.props.onPress} >
+                <PanButton name={'b_memoryText_'+this.props.name} style={{width: LineWidth}} onPress={this.onPress.bind(this)} >
                     <View style={styles.numberView}>
                         <Text style={[styles.memoryNumber, {color: this.props.color}]} >{this.props.number}</Text>
                         <Icon name={'angle-right'} size={MinUnit*2.8} color={this.props.color} />
@@ -141,6 +145,16 @@ class MemoryFrame extends Component {
                 </PanButton>
             </View>
         );
+    }
+    onPress() {
+        if (this.props.number == 0) {
+            Alert.alert(
+                '警告',
+                '卡片数量为0，请学习后再来'
+            );
+        } else {
+            this.props.onPress();
+        }
     }
 }
 // 下方标有直线的Text（跟带下滑线的text不同）

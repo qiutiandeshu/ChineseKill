@@ -10,7 +10,7 @@ var SERVER_K = {
 function SocketLink(app) {
   // 连接服务器
 	this.startLink = function() {
-		app.ws = new WebSocket('ws://192.168.1.111:1111');
+		app.ws = new WebSocket('ws://192.168.1.110:1111');
     this.server_k = SERVER_K.START;
 
     app.ws.onopen = (e) => {
@@ -53,6 +53,7 @@ function SocketLink(app) {
       username: _id,
       create: timer,
       time: timer,
+      kind: 'create',
 		};
 		if (this.sendToSocket('New', 'helloworld', data)) {
 			callback('success');
@@ -60,6 +61,22 @@ function SocketLink(app) {
 			callback('fail');
 		}
 	}
+  // 第三方facebook登陆
+  this.facebookSignUp = function(_email, _name) {
+    var date = new Date();
+    var timer = date.getTime();
+    app.storageUserInfo = {
+      userid: _email,
+      password: '',
+      username: _name,
+      create: timer,
+      time: timer,
+      kind: 'facebook',
+    };
+    this.sendToSocket('Login', 'helloworld', app.storageUserInfo);
+    app.storageUserInfo.blnSign = true;
+    app.saveUserInfo(app.storageUserInfo);
+  }
   // 用户信息修改
   this.userChangePassword = function(_id, callback, _fromServer) {
     this.fromServer = _fromServer;
@@ -88,20 +105,41 @@ function SocketLink(app) {
   }
   // 默认登陆 用户信息验证，更新
   this.verifyUserInfo = function(obj) {
-    this.userSignIn(obj.userid, obj.password, function(msg) {
-      if (msg == 'fail') {
-        this.fromServer = null;
-      }
-    }, this.updateUserInfo.bind(this));
-  }
-  this.updateUserInfo = function(json) {
-    if (json.msg == '成功') {
-      if (app.storageUserInfo.blnSign) {
-        if (parseInt(json.data.time) != app.storageUserInfo.time) {
-          app.storageUserInfo = json.data;
-          app.storageUserInfo.blnSign = true;
-          app.saveUserInfo(app.storageUserInfo);
+    if (obj.kind == 'create') {
+      this.userSignIn(obj.userid, obj.password, (msg)=>{
+        if (msg == 'fail') {
+          this.fromServer = null;
         }
+      }, (json)=>{
+        if (json.msg == '成功') {
+          if (app.storageUserInfo.blnSign) {
+            if (parseInt(json.data.time) != app.storageUserInfo.time) {
+              app.storageUserInfo = json.data;
+              app.storageUserInfo.blnSign = true;
+              app.saveUserInfo(app.storageUserInfo);
+            }
+          }
+        }
+      });
+    } else if (obj.kind == 'facebook') {
+
+    }
+  }
+  // 从服务器获得card信息
+  this.getCardMsg = function(kind, data, callback, _fromServer) {
+    if (kind == 'Character') {
+      this.fromServer = _fromServer;
+      if (this.sendToSocket('GetCardMsg', 'Character', data)) {
+        callback('success');
+      } else {
+        callback('fail');
+      }
+    } else if (kind == 'Word') {
+      this.fromServer = _fromServer;
+      if (this.sendToSocket('GetCardMsg', 'Word', data)) {
+        callback('success');
+      } else {
+        callback('fail');
       }
     }
   }

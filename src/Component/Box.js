@@ -213,7 +213,7 @@ class LoginBox extends Box {
   }
 	render() {
 		return (
-			<PopupBox ref={'PopupBox'} name={'Sign In / Sign Up'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)}>
+			<PopupBox ref={'PopupBox'} name={'Sign In / Sign Up'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)} hiddenAnimatedEnd={this.hiddenAnimatedEnd.bind(this)}>
 				<PanView name={'v_login'} style={styles.Login}>
 	        <IconInput name={'p_login_email'} iconName={'envelope'} placeholder={'Email'} clearButtonMode={"unless-editing"} onChangeText={this.onEmailChange.bind(this)} />
 	        <IconInput name={'p_login_password'} iconName={'lock'} placeholder={'You password'} secureTextEntry={true} onChangeText={this.onPasswordChange.bind(this)} />
@@ -239,6 +239,11 @@ class LoginBox extends Box {
       </PopupBox>
 		);
 	}
+  hiddenAnimatedEnd(bln) {
+    this.setState({
+      blnWait: false,
+    });
+  }
   onFacebookLogin() {
     app.onLoginFB();
   }
@@ -742,6 +747,7 @@ class CardBox extends SoundBox {
       selectData: null,
       blnShowLoop: false,
     };
+    this.jsonList = null;
   }
   init() {
     this.num = 0;
@@ -827,25 +833,39 @@ class CardBox extends SoundBox {
     });
   }
   showEnd(bln) {
-    this.timer = setTimeout(this.getCharacterMsg.bind(this), 500);
+    var data = null;
+    if (this.props.kind == 'Character') {
+      data = app.storageCardInfo.learnCards.ziKey;
+    } else if (this.props.kind == 'Word') {
+      data = app.storageCardInfo.learnCards.ciKey;
+    } else if (this.props.kind == 'Sentence') {
+      data = app.storageCardInfo.learnCards.juKey;
+    }
+    socket.getCardMsg(this.props.kind, data, (msg)=>{
+      console.log(msg)
+    },(json)=>{
+      if (json.data != '失败') {
+        this.jsonList = json.data;
+        this.timer = setTimeout(this.getCharacterMsg.bind(this), 500);
+      }
+    });
   }
   hiddenEnd(bln) {
     this.init();
   }
-  getCharacterMsg() {
+  getCharacterMsg(json) {
     var array = [];
-    for (var i=0;i<CharacterList.length;i++) {
-      var _key = CharacterList[i];
-      var _data = yxMsg[_key-1];
-      var obj = {
-        character: _data['汉字内容'],
-        pyin: _data['拼音内容'],
-      };
-      if (_data['义项翻译']) {
-        obj['yxstr'] = _data['义项翻译'];
-      } else {
-        obj['yxstr'] = 'HelloWorld, this is a hz from china, learn it very easy use this tool';
+    for (var i=0;i<this.jsonList.length;i++) {
+      var obj = this.jsonList[i];
+      var _str = obj['yx_c'];
+      if (obj['yx_e'] != null) {
+        _str = obj['yx_e'];
       }
+      var obj = {
+        character: obj['zx'],
+        pyin: obj['py'],
+        yxstr: _str
+      };
       array.push(obj);
     }
     this.setState({

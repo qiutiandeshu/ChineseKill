@@ -3,6 +3,12 @@ var Deal = require('./Deal.js');
 var server = new WebSocketServer({
 	port: 1111,
 });
+
+// var Search = require('./Data/Search.js');
+// var search = new Search();
+var CardMsg =require('./Data/CardMsg.js');
+var cardMsg = new CardMsg();
+
 // 处理客户端端发送的请求
 var work = new Deal();
 server.on('connection', function(socket) {
@@ -11,10 +17,14 @@ server.on('connection', function(socket) {
 	socket.on('message', function(data) {
 		var json = JSON.parse(data);
 		console.log('得到客户端信息');
-		work.getMsg(json, function(_json) {
+		if (json.from == 'GetCardMsg') {
+			var _json = cardMsg.foundCardMsg(json);
 			socket.send(JSON.stringify(_json));
-			console.log(_json);
-		})
+		} else {
+			work.getMsg(json, function(_json) {
+				socket.send(JSON.stringify(_json));
+			})
+		}
 	});
 
 	socket.on('close', function() {
