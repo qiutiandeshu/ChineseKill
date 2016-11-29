@@ -14,6 +14,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <Fabric/Fabric.h>
 #import <TwitterKit/TwitterKit.h>
+#import <GoogleSignIn/GoogleSignIn.h>
 
 @implementation AppDelegate
 
@@ -31,11 +32,18 @@
   [[FBSDKApplicationDelegate sharedInstance] application:application
                            didFinishLaunchingWithOptions:launchOptions];
   [Fabric with:@[[Twitter class]]];
+  [GIDSignIn sharedInstance].clientID = @"988467646069-reuhiiug8buc7oi9derggin2lllhgnnr.apps.googleusercontent.com";
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
-  self.window.rootViewController = rootViewController;
+  
+  self.navigationController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
+  [self.navigationController setNavigationBarHidden:YES];
+  [self.navigationController setToolbarHidden:YES];
+  
+  self.window.rootViewController = self.navigationController;
+  
   [self.window makeKeyAndVisible];
   return YES;
 }
@@ -46,9 +54,11 @@
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
-  return [[FBSDKApplicationDelegate sharedInstance] application:application
+  BOOL fb = [[FBSDKApplicationDelegate sharedInstance] application:application
                                                         openURL:url
                                               sourceApplication:sourceApplication
                                                      annotation:annotation];
+  BOOL gg =[[GIDSignIn sharedInstance]handleURL:url sourceApplication:sourceApplication annotation:annotation];
+  return fb || gg;
 }
 @end

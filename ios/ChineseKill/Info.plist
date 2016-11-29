@@ -26,6 +26,26 @@
 				<string>fb336481933387118</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.googleusercontent.apps.988467646069-reuhiiug8buc7oi9derggin2lllhgnnr</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.988467646069-reuhiiug8buc7oi9derggin2lllhgnnr</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.jld.rn.ChineseKill</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.jld.rn.ChineseKill</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>

@@ -45,6 +45,13 @@
 		90274BFB1DED1C34002C9AA9 /* TwitterLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 90274BFA1DED1C34002C9AA9 /* TwitterLogin.m */; };
 		90274BFD1DED1CBE002C9AA9 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90274BFC1DED1CBE002C9AA9 /* SafariServices.framework */; };
 		90274BFE1DED2028002C9AA9 /* TwitterKitResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 90274BF61DED1AA5002C9AA9 /* TwitterKitResources.bundle */; };
+		90274C041DED48BA002C9AA9 /* GoogleAppUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90274BFF1DED48BA002C9AA9 /* GoogleAppUtilities.framework */; };
+		90274C051DED48BA002C9AA9 /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 90274C001DED48BA002C9AA9 /* GoogleSignIn.bundle */; };
+		90274C061DED48BA002C9AA9 /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90274C011DED48BA002C9AA9 /* GoogleSignIn.framework */; };
+		90274C071DED48BA002C9AA9 /* GoogleSignInDependencies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90274C021DED48BA002C9AA9 /* GoogleSignInDependencies.framework */; };
+		90274C081DED48BA002C9AA9 /* GoogleSymbolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90274C031DED48BA002C9AA9 /* GoogleSymbolUtilities.framework */; };
+		90274C0B1DED48EB002C9AA9 /* GoogleLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 90274C0A1DED48EB002C9AA9 /* GoogleLogin.m */; };
+		90274C0D1DED4978002C9AA9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 90274C0C1DED4978002C9AA9 /* GoogleService-Info.plist */; };
 		90638DBE1DE298500037994B /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90EE719B1DDEEA0D005B6662 /* libART.a */; };
 		90F3B59B1DE6E4C3004B01AC /* PcmPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B5991DE6E4C3004B01AC /* PcmPlayer.m */; };
 		90F3B59E1DE6E4DD004B01AC /* ChivoxISE.m in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B59D1DE6E4DD004B01AC /* ChivoxISE.m */; };
@@ -252,6 +259,14 @@
 		90274BF91DED1C34002C9AA9 /* TwitterLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TwitterLogin.h; path = ChineseKill/TwitterLogin.h; sourceTree = "<group>"; };
 		90274BFA1DED1C34002C9AA9 /* TwitterLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TwitterLogin.m; path = ChineseKill/TwitterLogin.m; sourceTree = "<group>"; };
 		90274BFC1DED1CBE002C9AA9 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
+		90274BFF1DED48BA002C9AA9 /* GoogleAppUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleAppUtilities.framework; sourceTree = "<group>"; };
+		90274C001DED48BA002C9AA9 /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = GoogleSignIn.bundle; sourceTree = "<group>"; };
+		90274C011DED48BA002C9AA9 /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleSignIn.framework; sourceTree = "<group>"; };
+		90274C021DED48BA002C9AA9 /* GoogleSignInDependencies.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleSignInDependencies.framework; sourceTree = "<group>"; };
+		90274C031DED48BA002C9AA9 /* GoogleSymbolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleSymbolUtilities.framework; sourceTree = "<group>"; };
+		90274C091DED48EB002C9AA9 /* GoogleLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleLogin.h; path = ChineseKill/GoogleLogin.h; sourceTree = "<group>"; };
+		90274C0A1DED48EB002C9AA9 /* GoogleLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GoogleLogin.m; path = ChineseKill/GoogleLogin.m; sourceTree = "<group>"; };
+		90274C0C1DED4978002C9AA9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		90EE71961DDEEA0D005B6662 /* ART.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ART.xcodeproj; path = "../node_modules/react-native/Libraries/ART/ART.xcodeproj"; sourceTree = "<group>"; };
 		90F3B5981DE6E4C3004B01AC /* PcmPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmPlayer.h; sourceTree = "<group>"; };
 		90F3B5991DE6E4C3004B01AC /* PcmPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PcmPlayer.m; sourceTree = "<group>"; };
@@ -299,7 +314,9 @@
 				90F3B5C01DE6E60A004B01AC /* AudioToolbox.framework in Frameworks */,
 				90F3B5BE1DE6E604004B01AC /* UIKit.framework in Frameworks */,
 				9017EAA11DEC015100BFB09A /* FBSDKShareKit.framework in Frameworks */,
+				90274C071DED48BA002C9AA9 /* GoogleSignInDependencies.framework in Frameworks */,
 				90F3B5BC1DE6E5FF004B01AC /* CoreFoundation.framework in Frameworks */,
+				90274C041DED48BA002C9AA9 /* GoogleAppUtilities.framework in Frameworks */,
 				90F3B5BA1DE6E5F6004B01AC /* Foundation.framework in Frameworks */,
 				90F3B5B81DE6E5EE004B01AC /* AVFoundation.framework in Frameworks */,
 				90274BF71DED1AA5002C9AA9 /* TwitterKit.framework in Frameworks */,
@@ -307,8 +324,10 @@
 				90F3B5B51DE6E5D1004B01AC /* libiconv.2.dylib in Frameworks */,
 				90F3B5B61DE6E5D1004B01AC /* libz.1.dylib in Frameworks */,
 				90638DBE1DE298500037994B /* libART.a in Frameworks */,
+				90274C081DED48BA002C9AA9 /* GoogleSymbolUtilities.framework in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
+				90274C061DED48BA002C9AA9 /* GoogleSignIn.framework in Frameworks */,
 				90F3B5AC1DE6E501004B01AC /* libaiengine.a in Frameworks */,
 				9017EA9F1DEC015100BFB09A /* FBSDKCoreKit.framework in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -409,6 +428,9 @@
 		13B07FAE1A68108700A75B9A /* ChineseKill */ = {
 			isa = PBXGroup;
 			children = (
+				90274C0C1DED4978002C9AA9 /* GoogleService-Info.plist */,
+				90274C091DED48EB002C9AA9 /* GoogleLogin.h */,
+				90274C0A1DED48EB002C9AA9 /* GoogleLogin.m */,
 				90274BF91DED1C34002C9AA9 /* TwitterLogin.h */,
 				90274BFA1DED1C34002C9AA9 /* TwitterLogin.m */,
 				90274BF41DED170A002C9AA9 /* ChineseKill.entitlements */,
@@ -566,6 +588,11 @@
 		90F3B5B01DE6E538004B01AC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				90274BFF1DED48BA002C9AA9 /* GoogleAppUtilities.framework */,
+				90274C001DED48BA002C9AA9 /* GoogleSignIn.bundle */,
+				90274C011DED48BA002C9AA9 /* GoogleSignIn.framework */,
+				90274C021DED48BA002C9AA9 /* GoogleSignInDependencies.framework */,
+				90274C031DED48BA002C9AA9 /* GoogleSymbolUtilities.framework */,
 				90274BFC1DED1CBE002C9AA9 /* SafariServices.framework */,
 				90274BF51DED1AA5002C9AA9 /* TwitterKit.framework */,
 				90274BF61DED1AA5002C9AA9 /* TwitterKitResources.bundle */,
@@ -887,11 +914,13 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				5A20B10A1DDACD5E00F2EB54 /* FontAwesome.ttf in Resources */,
 				5A20B1091DDACD5E00F2EB54 /* EvilIcons.ttf in Resources */,
+				90274C0D1DED4978002C9AA9 /* GoogleService-Info.plist in Resources */,
 				5A20B10C1DDACD5E00F2EB54 /* Ionicons.ttf in Resources */,
 				5A20B1101DDACD5E00F2EB54 /* Zocial.ttf in Resources */,
 				5A20B10B1DDACD5E00F2EB54 /* Foundation.ttf in Resources */,
 				5A20B10F1DDACD5E00F2EB54 /* SimpleLineIcons.ttf in Resources */,
 				5A20B1081DDACD5E00F2EB54 /* Entypo.ttf in Resources */,
+				90274C051DED48BA002C9AA9 /* GoogleSignIn.bundle in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -947,6 +976,7 @@
 				90274BFB1DED1C34002C9AA9 /* TwitterLogin.m in Sources */,
 				90F3B59B1DE6E4C3004B01AC /* PcmPlayer.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				90274C0B1DED48EB002C9AA9 /* GoogleLogin.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
