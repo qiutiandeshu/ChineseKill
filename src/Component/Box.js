@@ -240,6 +240,7 @@ class LoginBox extends Box {
 		);
 	}
   onFacebookLogin() {
+    app.onLoginFB();
   }
   onTwitterLogin() {
   }
