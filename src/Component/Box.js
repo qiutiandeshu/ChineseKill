@@ -748,6 +748,7 @@ class CardBox extends SoundBox {
       blnShowLoop: false,
     };
     this.jsonList = null;
+    this.selectId = 0;
   }
   init() {
     this.num = 0;
@@ -763,7 +764,7 @@ class CardBox extends SoundBox {
     return (
       <PopupBox ref={'PopupBox'} name={_name}
         leftIconName={'close'} onLeftPress={this.hidden.bind(this, "Character")} 
-        rightIconName={'pencil-square-o'} 
+        rightIconName={'pencil-square-o'} onRightPress={this.onPracticePress.bind(this)}
         showAnimatedEnd={this.showEnd.bind(this)} hiddenAnimatedEnd={this.hiddenEnd.bind(this)} >
         <PanListView
           name={'l_characterBox'}
@@ -775,6 +776,70 @@ class CardBox extends SoundBox {
         {this.renderWait(this.state.blnWait)}
       </PopupBox>
     );
+  }
+  onPracticePress() {
+    var practiceList = [];
+    if (this.props.kind == 'Character') {
+      var _ziKey = app.storageCardInfo.learnCards.ziKey[this.selectId];
+      var list = app.storageCardInfo.cardQuestion.ziCards[_ziKey];
+      practiceList = this.randomList(list);
+    } else if (this.props.kind == 'Word') {
+      var _ciKey = app.storageCardInfo.learnCards.ciKey[this.selectId];
+      var list = app.storageCardInfo.cardQuestion.ciCards[_ciKey];
+      practiceList = this.randomList(list);
+    } else if (this.props.kind == 'Sentence') {
+
+    }
+    var practices = this.getPracticesList(practiceList);
+
+    //开始练习
+    app.setNextRouteProps({
+      questionData:practices,
+    });
+    Home.props.navigator.push(app.getRoute("Practice"));
+  }
+  
+  getPracticesList(_list) {
+    var practices = []
+    var json = {
+      lessonId: -1,
+      data: null
+    };
+    _list.forEach(function(_json) {
+      if (_json.lessonId != json.lessonId) {
+        json.lessonId = _json.lessonId;
+        json.data = app.allLessonData[_json.lessonId];
+      }
+      var _chapter = json.data['chapters'][_json.chapterId];
+      var _practice = _chapter['practices'][_json.practiceId];
+      practices.push(_practice);
+    });
+    console.log(practices);
+    return practices;
+  }
+  randomList(_list) {
+    if (_list.length <= 15) return _list;
+
+    var array = _list;
+    var list = [];
+    for (var i=0;i<15;i++) {
+      var index = Math.floor((Math.random()*array.length));
+      list.push(array[index]);
+      array.splice(index, 1);
+    }
+
+    list.sort((a, b)=>{
+      if (a.lessonId != b.lessonId) {
+        return a.lessonId - b.lessonId;
+      }
+      if (a.chapterId != b.chapterId) {
+        return a.chapterId - b.chapterId;
+      }
+      if (a.practiceId != b.practiceId) {
+        return a.practiceId - b.practiceId;
+      }
+    });
+    return _list;
   }
   renderMsg() {
     if (this.props.kind == 'Character') {
@@ -824,13 +889,14 @@ class CardBox extends SoundBox {
   }
   renderRow(data, s_id, r_id) {
     return (
-      <ListItem name={this.props.kind} kind={this.props.kind} rowId={parseInt(r_id)} data={data} onPress={this.changeItem.bind(this, data)} />
+      <ListItem name={this.props.kind} kind={this.props.kind} rowId={parseInt(r_id)} data={data} onPress={this.changeItem.bind(this, data, r_id)} />
     );
   }
-  changeItem(data) {
+  changeItem(data, id) {
     this.setState({
       selectData: data,
     });
+    this.selectId = id;
   }
   showEnd(bln) {
     var data = null;
@@ -842,7 +908,15 @@ class CardBox extends SoundBox {
       data = app.storageCardInfo.learnCards.juKey;
     }
     socket.getCardMsg(this.props.kind, data, (msg)=>{
-      console.log(msg)
+      if (msg == 'fail') {
+        this.setState({
+          blnWait: false,
+        });
+        Alert.alert(
+          '失败',
+          '服务器连接失败，请稍后再试',
+        );
+      }
     },(json)=>{
       if (json.data != '失败') {
         this.jsonList = json.data;
