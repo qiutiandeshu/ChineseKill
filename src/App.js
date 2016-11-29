@@ -21,7 +21,7 @@ export default class App extends Component {
         // 初始状态
         this.state = {
             blnShowStatusBar: defaultStatusBar, //是否显示状态栏
-            blnLoading:true,
+            blnLoading: true,
         };
         this.blnUpdate = false; //一个标记是否上传了用户操作数据的变量,作用是在用户恢复app时,检测算新启动还是只算从后台恢复
         this.appState = 'active';//初始的app状态
@@ -30,7 +30,7 @@ export default class App extends Component {
         global.logf = this.Logf.bind(this);//重写的一个log函数,方便调试用
         this.allLessonData = [];
         this.lessonChapterCount = [];
-        this.routeProps = {allLessonData:this.allLessonData};//页面跳转时,从A页面到B页面需要传递的消息
+        this.routeProps = {allLessonData: this.allLessonData};//页面跳转时,从A页面到B页面需要传递的消息
         this.routeStackNowIndex = 0;//route堆栈的序号,其实现在只会一条堆栈的导航,还不会多条堆栈的
         this.initRouteName = "Home";//初始页面的名称
         this.nowSceneName = "";
@@ -44,12 +44,17 @@ export default class App extends Component {
                 enableCache: true,//读写时在内存中缓存数据.默认启用
             }
         );
-       
+
         /*-----------本地存储数据有关的变量 Start--------------*/
         this.storageUserInfo = null;//用户信息
         this.storageLearning = [];//学习进度
         this.storageCardInfo = null;//卡片情况
+        this.storageReview = null;//用户复习
         /*-----------本地存储数据有关的变量 End--------------*/
+
+        this.blnChivoxWorking = false //驰声引擎是否在工作的标志位
+        this.callBackChivox = null
+        this.callBackPlayRecord = null
     }
 
     componentWillMount() {
@@ -93,12 +98,13 @@ export default class App extends Component {
     }
 
     /*--------------------------Login start-----------------------*/
-    onLoginFB(){
+    onLoginFB() {
         this.fbLogin.Login([
             'public_profile',
             'email'
         ]);
     }
+
     fbCallback(data){
         console.log(data);
         if (parseInt(data.code) == FBLogin.CB_Error){
@@ -115,117 +121,244 @@ export default class App extends Component {
         }
     }
     /*--------------------------Login start-----------------------*/
-    
+
     /*--------------------------驰声接口 start-----------------------*/
-    onPressChivox(){//开始评测，这里的设置可根据需要进行设置，说明看下方对应条目
+    onStartChivox(param, callBack) {//开始评测，这里的设置可根据需要进行设置，说明看下方对应条目
+        console.log("开始评测:",this.blnChivoxWorking)
+        if (this.blnChivoxWorking) return false;//如果引擎正在工作,返回错误
+        const {gategory, text, audioName}=param
         this.chivox.startISE({
             VOLUME_TS: 0.7,//音量超过多少则表示检测到说话了，最大值为1
             VAD_BOS: 3600,//静音超时时间，即用户多长时间不说话则当做超时处理vad_bos 毫秒 ms
             VAD_EOS: 1800,//后端点静音检测时间，即用户停止说话多长时间内即认为不再输入，自动停止录音 毫秒 ms
-            ISE_CATEGORY: 'word',//评测模式：word 字词, sent 句子
+            ISE_CATEGORY: gategory,//,'word',//评测模式：word 字词, sent 句子
             SPEECH_TIMEOUT: '10000',//录音超时，录音达到时限时自动触发vad，停止录音，默认-1（无超时）
-            TEXT: 'jin1 tian1',//需要评测的内容，带后标声调的拼音数据
-            ISE_AUDIO_PATH: 'pcm',//录音文件的名称，不带后缀，默认为wav
+            TEXT: text,//'jin1 tian1',//需要评测的内容，带后标声调的拼音数据
+            ISE_AUDIO_PATH: audioName,//录音文件的名称，不带后缀，默认为wav
             SAMPLE_RATE: '16000',//采样率，16000即可，不需要调整
             USER_ID: 'jld-9527',//userID
             index: 0,
             //WAV_PATH: ''//如果传递了录音文件保存路径，则使用传入的地址，否则默认路径保存在Caches文件夹下面
         });
+        this.blnChivoxWorking = true
+        this.callBackChivox = callBack
+        return true
     }
-    onPressPlay(){//播放录音，在播放之前一定要init才可以
-        this.chivox.playPcm();
+
+    onStopChivox() {
+        this.chivox.stopISE()
     }
-    iseCallback(data){//评测的返回回调函数，在这里处理返回的信息，大部分处理同讯飞，只是最后的结果格式不同
-    if (data.code == cv.CB_CODE_RESULT) {//返回结果
-      console.log('have result!');
-      //下面是在得到评测结果之后，初始化录音，这样可以直接调用this.chivox.playPCM，具体参数可以看Chivox.js
-      //这里可以根据需要，看是否需要初始化
-      this.chivox.initPcm({
-        FILE_PATH:'pcm',
-        SAMPLE_RATE: '16000'
-      }, (data)=>{
-        if (data.error){
-          console.log(data.err_msg);
-        }else{
-          console.log('pcm time: ' + data.audioTime);//init录音之后可以得到录音的总时长
+
+    onCancelChivox() {
+        this.chivox.cancelISE()
+    }
+
+    onPlayRecord(){
+        this.chivox.playPcm()
+        this.getPlayRecordTime = setInterval(this.getCurrentTime.bind(this),100)
+    }
+
+    getCurrentTime(){
+        this.chivox.getCurrentTime(
+            (data)=>{
+                if(data.error){
+                    console.log(data.error)
+                }else{
+                    console.log(data.audioCurrentTime)
+                }
+            }
+        )
+    }
+
+    initPlayRecord(audioName, callBack) {//播放录音，在播放之前一定要init才可以
+        this.callBackPlayRecord = callBack
+        this.chivox.initPcm({
+            FILE_PATH: audioName,
+            SAMPLE_RATE: '16000'
+        }, (data)=> {
+            if (data.error) {
+                console.log(data.err_msg);
+            } else {
+                console.log('pcm time: ' + data.audioTime);//init录音之后可以得到录音的总时长
+                if (this.callBackPlayRecord) {
+                    this.callBackPlayRecord({type:'audioTime',audioTime: data.audioTime})
+                }
+            }
+        });
+    }
+
+    iseCallback(data) {//评测的返回回调函数，在这里处理返回的信息，大部分处理同讯飞，只是最后的结果格式不同
+        if (data.code == cv.CB_CODE_RESULT) {//返回结果
+            console.log('have result!');
+            //下面是在得到评测结果之后，初始化录音，这样可以直接调用this.chivox.playPCM，具体参数可以看Chivox.js
+            //这里可以根据需要，看是否需要初始化
+            this.resultParse(data.result);
+            this.onChivoxEndOfWork()
         }
-      });
-      this.resultParse(data.result);
-    }
-    else if (data.code == cv.CB_CODE_ERROR) {//返回错误
-      if (data.result.match("-20161015_")){
-        var r = data.result.split('_');
-        var ret = JSON.parse(r[1]);
-        console.log(ret);//里面包含errorid 和 error的描述
-        if (chivoxErr[ret.errId]){//errorid 可以在chivox.js文件中看，在头部导入chivoxErr就可以使用了
-          console.log(chivoxErr[ret.errId]);
-        }else{
-          console.log(`${ret.errId}，未知错误！`);
+        else if (data.code == cv.CB_CODE_ERROR) {//返回错误
+            if (data.result.match("-20161015_")) {
+                var r = data.result.split('_');
+                var ret = JSON.parse(r[1]);
+                console.log(ret);//里面包含errorid 和 error的描述
+                if (chivoxErr[ret.errId]) {//errorid 可以在chivox.js文件中看，在头部导入chivoxErr就可以使用了
+                    console.log(chivoxErr[ret.errId]);
+                } else {
+                    console.log(`${ret.errId}，未知错误！`);
+                }
+                // ret.errId;//id
+                // ret.error;//描述
+            } else {
+                console.log('error', data.result);
+            }
+            if (this.callBackChivox) {
+                this.callBackChivox({type: 'error', error: data.result})
+            }
+            this.onChivoxEndOfWork()
         }
-        // ret.errId;//id
-        // ret.error;//描述
-      }else{
-        console.log('error', data.result);
-      }
+        else if (data.code == cv.CB_CODE_STATUS) {//正在录音等的引擎状态返回，可根据返回状态修改对应的button变化
+            console.log('status', data.result);
+            let workState = ''
+            if (data.result == cv.SPEECH_START) {//已经开始
+                workState = 'start'//
+            } else if (data.result == cv.SPEECH_WORK) {//工作中...
+                workState = 'work'//
+            } else if (data.result == cv.SPEECH_STOP) {//手动停止
+                workState = 'stop'//
+            } else if (data.result == cv.SPEECH_RECOG) {//识别中...
+                workState = 'recog'//
+            } else if (data.result == cv.SPEECH_PRESTART) {//启动前...
+                workState = 'restart'//这个时候还不能说话
+            }
+            if (this.callBackChivox) {
+                this.callBackChivox({type: 'working', working: workState})
+            }
+        }
+        else {//..真的是未知的错误
+            console.log('传回其他参数', data.result);
+            if (this.callBackChivox) {
+                this.callBackChivox({type: 'superErr', superErr: data.result})
+            }
+            this.onChivoxEndOfWork()
+        }
     }
-    else if (data.code == chivoxErr.CB_CODE_STATUS) {//正在录音等的引擎状态返回，可根据返回状态修改对应的button变化
-      console.log('status', data.result);
-      if (data.result == chivoxErr.SPEECH_START) {//已经开始
-        //
-      } else if (data.result == chivoxErr.SPEECH_WORK) {//工作中...
-        //
-      } else if (data.result == chivoxErr.SPEECH_STOP) {//手动停止
-        //
-      } else if (data.result == chivoxErr.SPEECH_RECOG) {//识别中...
-        //
-      } else if (data.result == chivoxErr.SPEECH_PRESTART) {//启动前...
-        //整个时候还不能说话
-      }
+
+    resultParse(result) {//解析最终的评测结果，详情在details里面
+        var obj = eval('(' + result + ')');
+        console.log(obj);
+        if (obj.error) {
+            // console.log('评测错误', obj.errId, obj.error);
+            //已经在原生端处理了，这里只是加个保险。
+        } else {             
+            let result = {
+                overallScore:obj.result.overall,//总分
+                phnScore:obj.result.phn,//无调得分
+                pronScore:obj.result.pron,//带调得分
+                toneScore:obj.result.tone,//声调得分
+                details:this.getDetails(obj.result.details)
+            }
+            if (this.callBackChivox) {
+                this.callBackChivox({type: 'result', result: result})
+            }
+        }
     }
-    else {//..真的是未知的错误
-      console.log('传回其他参数', data.result);
+
+    getDetails(details){
+        console.log("获取详情:",details)
+        var detailList = [];
+        if (details){
+            for(let i=0;i<details.length;i++){
+                let toneIndex = 0;
+                let tmpScore = 0;
+                for(let j=0;j<details[i].confidence.length;j++){
+                    if (tmpScore < details[i].confidence[j]){
+                        tmpScore = details[i].confidence[j];
+                        toneIndex = j;
+                    }
+                }//获取用户读的音调值
+                let detail = {
+                    content:details[i].char,//内容
+                    overallScore:details[i].overall,//评测分数
+                    phnScore:details[i].phn,
+                    pronScore:details[i].pron,
+                    toneScore:details[i].tonescore,
+                    originalTone:details[i].tone,
+                    recordTone:toneIndex
+                }
+                detailList[i] = detail
+            }
+        }
+        console.log("获取详情:",detailList)
+        return detailList;
     }
-  }
-  resultParse(result){//解析最终的评测结果，详情在details里面
-    var obj = eval('(' + result + ')');
-    console.log(obj);
-    if (obj.error){
-      // console.log('评测错误', obj.errId, obj.error);
-      //已经在原生端处理了，这里只是加个保险。
-    }else{
-      var result = obj.result;
-      console.log('总分：' + result.overall);
-      console.log('无调分：' + result.phn);
-      console.log('带调分：' + result.pron);
-      console.log('声调分：' + result.tone);
-      console.log('详情：', result.details);
+
+    onChivoxEndOfWork() {
+        this.blnChivoxWorking = false
+        this.callBackChivox = null
     }
-  }
-  volCallback(data){//录音音量的返回值，做动画用到
-    console.log(data);
-  }
-  pcmCallback(data){//播放录音的返回结果，主要的使用是播放完毕的回调。
-    if (data.status == cv.PCM_TOTALTIME) {
-      //
-    } else if (data.status == cv.PCM_PLAYOVER) {
-      console.log('play over! ' + data.msg);
-    } else if (data.status == cv.PCM_CURRENTTIME) {
-      //
-    } else if (data.status == cv.PCM_ERROR) {
-      //
+
+    volCallback(data) {//录音音量的返回值，做动画用到
+        //console.log(data);
+        if (this.callBackChivox) {
+            this.callBackChivox({type: 'volume', volume: data.volume})
+        }
     }
-  }
-  /*--------------------------驰声接口 end-----------------------*/
+
+    pcmCallback(data) {//播放录音的返回结果，主要的使用是播放完毕的回调。
+        console.log("会不会走到这里来呢")
+        let workState = ''
+        if (data.status == cv.PCM_TOTALTIME) {
+            workState = 'totalTime'+ data.msg//
+        } else if (data.status == cv.PCM_PLAYOVER) {
+            workState = 'playover' + data.msg
+            console.log('play over! ' + data.msg);
+            this.getPlayRecordTime&&clearInterval(this.getPlayRecordTime)
+        } else if (data.status == cv.PCM_CURRENTTIME) {
+            workState = 'currenttime' + data.msg//
+        } else if (data.status == cv.PCM_ERROR) {
+            workState = 'error' + data.msg//
+        }
+        if (this.callBackPlayRecord) {
+            this.callBackPlayRecord({type: 'working', working: workState})
+        }
+    }
+
+    /*--------------------------驰声接口 end-----------------------*/
 
     /*--------------------------本地数据存储部分 Start-----------------------*/
-    initUserInfoByStorage = ()=>{
-        this.storage.load({key:'UserInfo'}).then(
+    initReviewByStorage = ()=>{
+        this.storage.load({key:'Review'}).then(
             ret=>{
-                console.log("读取到UserInfo:",ret)
+                console.log("读取到Review:",ret)
+                this.storageReview = ret;
+            }
+        ).catch(err=> {
+            switch (err.name) {
+                case 'NotFoundError'://没有找到相关数据
+                    console.log("没有找到Review相关数据")
+                    break;
+                case 'ExpiredError'://相关数据已过期
+                    console.log("Review数据过期了")
+                    break;
+            }
+        })
+    }
+
+    saveReview = (saveData,expires = null)=>{
+        this.storage.save({
+            key:'Review',
+            rowData:saveData,
+            expires:expires
+        })
+    }
+
+    initUserInfoByStorage = ()=> {
+        this.storage.load({key: 'UserInfo'}).then(
+            ret=> {
+                console.log("读取到UserInfo:", ret)
                 this.storageUserInfo = ret
                 socket.verifyUserInfo(this.storageUserInfo);
             }
-        ).catch (err=>{
+        ).catch(err=> {
             switch (err.name) {
                 case 'NotFoundError'://没有找到相关数据
                     console.log("没有找到UserInfo相关数据")
@@ -234,59 +367,59 @@ export default class App extends Component {
                     console.log("UserInfo数据过期了")
                     break;
             }
-        })       
-    }
-
-    noneUserInfoStorage = ()=>{
-
-    }
-
-    saveUserInfo = (saveData,expires=null)=>{
-        this.storage.save({
-            key:'UserInfo',
-            rawData:saveData,
-            expires:expires
         })
     }
 
-    initLearningByStorage = ()=>{
+    noneUserInfoStorage = ()=> {
+
+    }
+
+    saveUserInfo = (saveData, expires = null)=> {
+        this.storage.save({
+            key: 'UserInfo',
+            rawData: saveData,
+            expires: expires
+        })
+    }
+
+    initLearningByStorage = ()=> {
         this.storage.getAllDataForKey('Learning').then(
-            ret =>{
-                console.log("读取到Learning:",ret)
-                if(ret.length != this.allLessonData.length){//如果这个key里面没有数据,则初始化以下
+            ret => {
+                console.log("读取到Learning:", ret)
+                if (ret.length != this.allLessonData.length) {//如果这个key里面没有数据,则初始化以下
                     this.noneLearningStorage(ret)
-                }else{
+                } else {
                     this.storageLearning = ret //赋值
 
                 }
-                this.setState({blnLoading:false})
+                this.setState({blnLoading: false})
             }
         )
     }
 
-    noneLearningStorage = (retData)=>{//传入已经保存的数据
-        console.log("None Learning Storage:",retData)
-        for(let i=0;i<this.allLessonData.length;i++){
+    noneLearningStorage = (retData)=> {//传入已经保存的数据
+        console.log("None Learning Storage:", retData)
+        for (let i = 0; i < this.allLessonData.length; i++) {
             //console.log("检查index:",i)
             this.storageLearning[i] = {
-                chapterStates:[],
-                chapterScores:[],
-                chapterTimes:[],
+                chapterStates: [],
+                chapterScores: [],
+                chapterTimes: [],
             }
-            if(i<retData.length){//当前的是已经存在本地的数据
+            if (i < retData.length) {//当前的是已经存在本地的数据
                 let data = retData[i]
-                for(let j=0;j<data.chapterStates.length;j++){
+                for (let j = 0; j < data.chapterStates.length; j++) {
                     this.storageLearning[i].chapterStates[j] = data.chapterStates[j]
                     this.storageLearning[i].chapterScores[j] = data.chapterScores[j]
                     this.storageLearning[i].chapterTimes[j] = data.chapterTimes[j]
                 }
-            }else{
+            } else {
                 let data = this.allLessonData[i]
                 //console.log("show data:",data,i);
-                for(let j=0;j<data.chapters.length;j++){
-                    if(i==0&&j==0){
+                for (let j = 0; j < data.chapters.length; j++) {
+                    if (i == 0 && j == 0) {
                         this.storageLearning[i].chapterStates[j] = 'unlocked'
-                    }else{
+                    } else {
                         this.storageLearning[i].chapterStates[j] = 'locked'
                     }
                     this.storageLearning[i].chapterScores[j] = 0
@@ -294,38 +427,38 @@ export default class App extends Component {
                 }
             }
             this.storage.save({
-                key:'Learning',
-                id:this.getSaveId(i),
-                rawData:this.storageLearning[i],
-                expires:null,
+                key: 'Learning',
+                id: this.getSaveId(i),
+                rawData: this.storageLearning[i],
+                expires: null,
             })
         }
     }
-    
-    getStorageLearning = ()=>{
+
+    getStorageLearning = ()=> {
         return this.storageLearning
     }
 
-    saveLearningStorage = (lessonId,chapterId,saveData)=>{
-        const {state,score,time} = saveData
+    saveLearningStorage = (lessonId, chapterId, saveData)=> {
+        const {state, score, time} = saveData
         this.storageLearning[lessonId].chapterStates[chapterId] = state;
         this.storageLearning[lessonId].chapterScores[chapterId] = score;
         this.storageLearning[lessonId].chapterTimes[chapterId] = time;
         this.storage.save({
-            key:'Learning',
-            id:this.getSaveId(lessonId),
-            rawData:this.storageLearning[lessonId],
-            expires:null,//永不过期
+            key: 'Learning',
+            id: this.getSaveId(lessonId),
+            rawData: this.storageLearning[lessonId],
+            expires: null,//永不过期
         })
     }
 
-    initCardInfoByStorage = ()=>{
-        this.storage.load({key:'CardInfo'}).then(
-            ret=>{
-                console.log("读取到CardInfo:",ret)
+    initCardInfoByStorage = ()=> {
+        this.storage.load({key: 'CardInfo'}).then(
+            ret=> {
+                console.log("读取到CardInfo:", ret)
                 this.storageCardInfo = ret
             }
-        ).catch (err=>{
+        ).catch(err=> {
             switch (err.name) {
                 case 'NotFoundError'://没有找到相关数据
                     console.log("没有找到CardInfo相关数据")
@@ -338,63 +471,63 @@ export default class App extends Component {
         })
     }
 
-    noneCardInfoStorage = ()=>{
+    noneCardInfoStorage = ()=> {
         let maxZiCard = 3000;
         let maxCiCard = 10000;
         let maxJuCard = 1000; //临时的卡片最大值,实际应该数据给或者从服务器获取,并且在读取数据时,还得检测才行做好扩容的预算
 
         this.storageCardInfo = {
-            learnCards:{
-                ziKey:[],
-                ciKey:[],
-                juKey:[],
+            learnCards: {
+                ziKey: [],
+                ciKey: [],
+                juKey: [],
             },//存储已经学习的卡片
-            cardQuestion:{
-                ziCards:Array.from({length:maxZiCard}, ()=>[]),
-                ciCards:Array.from({length:maxCiCard}, ()=>[]),
-                juCards:Array.from({length:maxJuCard}, ()=>[]),
+            cardQuestion: {
+                ziCards: Array.from({length: maxZiCard}, ()=>[]),
+                ciCards: Array.from({length: maxCiCard}, ()=>[]),
+                juCards: Array.from({length: maxJuCard}, ()=>[]),
             }//用来记录所有卡片的题目,对象的属性是一个二维的数组,通过key值来索引到第二维数据
         }
     }
 
-    getCardInfo =()=>{
+    getCardInfo = ()=> {
         return this.storageCardInfo
     }
 
-    saveCardInfo = (newLearnCards,newQuestions,lessonId,chapterId)=>{
-        console.log("newLearnCards:",newLearnCards)
-        console.log("newQuestions:",newQuestions)
-        const {cardZis,cardCis,cardJus} = newLearnCards
-        if(cardZis){
+    saveCardInfo = (newLearnCards, newQuestions, lessonId, chapterId)=> {
+        console.log("newLearnCards:", newLearnCards)
+        console.log("newQuestions:", newQuestions)
+        const {cardZis, cardCis, cardJus} = newLearnCards
+        if (cardZis) {
             this.storageCardInfo.learnCards.ziKey = this.storageCardInfo.learnCards.ziKey.concat(cardZis)
         }
-        if(cardCis){
+        if (cardCis) {
             this.storageCardInfo.learnCards.ciKey = this.storageCardInfo.learnCards.ciKey.concat(cardCis)
         }
-        if(cardJus){
+        if (cardJus) {
             this.storageCardInfo.learnCards.juKey = this.storageCardInfo.learnCards.juKey.concat(cardJus)
         }
-        for(let i=0;i<newQuestions.length;i++){
-            if(newQuestions[i]){
-                const {ziCards,ciCards,juCards} = newQuestions[i]
-                console.log("newQuestion",i,":",newQuestions[i])
+        for (let i = 0; i < newQuestions.length; i++) {
+            if (newQuestions[i]) {
+                const {ziCards, ciCards, juCards} = newQuestions[i]
+                console.log("newQuestion", i, ":", newQuestions[i])
                 let practice = {
-                    lessonId:lessonId,
-                    chapterId:chapterId,
-                    practiceId:i,
+                    lessonId: lessonId,
+                    chapterId: chapterId,
+                    practiceId: i,
                 } //记录题目的信息
-                if(ziCards){
-                    for(let i=0;i<ziCards.length;i++){
+                if (ziCards) {
+                    for (let i = 0; i < ziCards.length; i++) {
                         this.storageCardInfo.cardQuestion.ziCards[ziCards[i]] = this.storageCardInfo.cardQuestion.ziCards[ziCards[i]].concat(practice)
                     }
                 }
-                if(ciCards){
-                    for (let i=0;i<ciCards.length;i++){
+                if (ciCards) {
+                    for (let i = 0; i < ciCards.length; i++) {
                         this.storageCardInfo.cardQuestion.ciCards[ciCards[i]] = this.storageCardInfo.cardQuestion.ciCards[ciCards[i]].concat(practice)
                     }
                 }
-                if(juCards){
-                    for(let i=0;i<juCards.length;i++){
+                if (juCards) {
+                    for (let i = 0; i < juCards.length; i++) {
                         this.storageCardInfo.cardQuestion.juCards[juCards[i]] = this.storageCardInfo.cardQuestion.juCards[juCards[i]].concat(practice)
                     }
                 }
@@ -402,25 +535,25 @@ export default class App extends Component {
         }
 
         this.storage.save({
-            key:'CardInfo',
-            rawData:this.storageCardInfo,
-            expires:null
+            key: 'CardInfo',
+            rawData: this.storageCardInfo,
+            expires: null
         })
     }
 
-    getSaveId = (id,blnStartOne=true)=>{ //默认传进来的id都会+1,
+    getSaveId = (id, blnStartOne = true)=> { //默认传进来的id都会+1,
         let size = 2000
         let saveId = size + id
-        if(blnStartOne){
+        if (blnStartOne) {
             saveId += 1
         }
-        return saveId+""
+        return saveId + ""
     }
 
-    removeStorageData = (key,id)=> {// 删除单个数据
+    removeStorageData = (key, id)=> {// 删除单个数据
         this.storage.remove({
-            key:{key},
-            id:{id}
+            key: {key},
+            id: {id}
         })
     }
 
@@ -429,24 +562,24 @@ export default class App extends Component {
     }
 
 
-/*--------------------------本地数据存储部分End-----------------------*/
+    /*--------------------------本地数据存储部分End-----------------------*/
 
-    getLessonDate = ()=>{
+    getLessonDate = ()=> {
         this.allLessonData[0] = require('../data/lessons/lesson1.json')
         this.allLessonData[1] = require('../data/lessons/lesson2.json')
         this.allLessonData[2] = require('../data/lessons/lesson3.json')
         this.allLessonData[3] = require('../data/lessons/lesson4.json')
 
-        for(let i=0;i<this.allLessonData.length;i++){
+        for (let i = 0; i < this.allLessonData.length; i++) {
             this.lessonChapterCount[i] = this.allLessonData[i].chapters.length
         }
     }
 
-    getLessonCount = ()=>{
+    getLessonCount = ()=> {
         return this.allLessonData.length
     }
-    
-    getChapterCount = (lessonId)=>{
+
+    getChapterCount = (lessonId)=> {
         return this.lessonChapterCount[lessonId]
     }
 
@@ -532,7 +665,7 @@ export default class App extends Component {
 
     render() {
         //console.log("APP Render",this.state.blnLoading)
-        if(this.state.blnLoading){
+        if (this.state.blnLoading) {
             return (<View/>)
         }
         return (
@@ -719,6 +852,4 @@ export default class App extends Component {
     }
 }
 
-const styles = StyleSheet.create({
-    
-});
+const styles = StyleSheet.create({});

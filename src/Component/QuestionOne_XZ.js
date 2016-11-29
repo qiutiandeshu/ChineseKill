@@ -6,7 +6,7 @@ import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView'
 
-import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView} from 'react-native'
+import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView, Image} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import QuestionRender from '../Common/QuestionRender'
@@ -167,8 +167,9 @@ export default class QuestionOne_XZ extends Component {
     }
     renderOpition = (rowData, sectionID, rowID)=> {
         const {content, blnSelect, pic} = rowData
+
         if (this.props.questionData.Q_Pics) {
-            return <PhotoOpition blnSelect={blnSelect} content={content}
+            return <PhotoOpition blnSelect={blnSelect} content={content} imageName = {pic}
                                  opitionId={Number(rowID)} _onPress={this.onPressOpition.bind(this)}/>
         } else {
             return <TextOpition blnSelect={blnSelect} content={content}
@@ -199,6 +200,7 @@ class TextOpition extends Component {
         content: PropTypes.string.isRequired,
         opitionId: PropTypes.number.isRequired,
         _onPress: PropTypes.func.isRequired,
+
     }
 
     render() {
@@ -232,15 +234,19 @@ class PhotoOpition extends Component {
         content: PropTypes.string.isRequired,
         opitionId: PropTypes.number.isRequired,
         _onPress: PropTypes.func.isRequired,
+        imageName:PropTypes.string,
     }
 
     render() {
+        console.log("图片名称:",this.props.imageName)
+        const uri = "http://192.169.1.19:8080/ChineseSkill/Pics/"+this.props.imageName
         return (
             <PanButton name={"btnOpition"+this.props.opitionId}
                        onPress={this.onPressOpition.bind(this)}
                        style={[styles.photoOpition,this.props.blnSelect&&styles.photoSelect]}
             >
-                <View style={{flexDirection:'row'}}>
+                <Image source = {{uri:uri}} style={styles.image}/>
+                <View style={{flexDirection:'row',height:MinUnit*3,alignItems:'center',paddingHorizontal:MinUnit}}>
                     <Icon name={this.props.blnSelect?"check-circle-o":"circle-o"}
                           size={IconSize*0.5} style={{marginRight:MinUnit*1}}
                           color={this.props.blnSelect?"white":"gray"}
@@ -279,11 +285,16 @@ const styles = StyleSheet.create({
         borderBottomWidth: MinWidth,
     },
     photoOpition: {
+        width: ScreenWidth * 0.2+2*MinWidth,
+        height: ScreenWidth * 0.2 + MinUnit*3,
+        borderRadius: 10,
+        backgroundColor: '#EAEAEA',
+        padding:MinWidth,
+    },
+    image:{
         width: ScreenWidth * 0.2,
         height: ScreenWidth * 0.2,
-        borderRadius: 10,
-        padding: MinUnit,
-        backgroundColor: '#EAEAEA',
+        borderRadius: 5,
     },
     photoSelect: {
         backgroundColor: '#4BCFE1',

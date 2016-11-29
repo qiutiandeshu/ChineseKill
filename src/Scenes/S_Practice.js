@@ -278,7 +278,9 @@ export default class S_Practice extends Component {
     }
 
     renderQuestion = ()=> {//显示答题页面中要回答的问题
+        const {lessonId, chapterIndex} = this.props.lessonInfo        
         let question = this.props.questionData[this.state.index];
+        let questionInfo = lessonId + "_" + chapterIndex + "_" + this.state.index
         if (question.Q_Type === 0) {
             return (
                 <QuestionOne_XZ ref="nowQuestion"
@@ -301,7 +303,7 @@ export default class S_Practice extends Component {
                                      setCheckBtn={this.setCheckBtn.bind(this)}
                                      questionData={question}/>)
         } else if (question.Q_Type == 4) {
-            return (<QuestionFive_PC ref="nowQuestion"
+            return (<QuestionFive_PC ref="nowQuestion" questionInfo={questionInfo}
                                      setCheckBtn={this.setCheckBtn.bind(this)}
                                      questionData={question}/>)
         }
