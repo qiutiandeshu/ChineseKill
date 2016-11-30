@@ -26,18 +26,17 @@ export default class GGLogin{
     ggLogin.remove();
     ggLogin = null;
   }
-  static CB_Error = 0;
-  static CB_Login = 1;
-  static CB_Logout = 2;
-  static CB_Expired = 3;
-  static CB_GetInfo = 4;
+  static CB_CODE_ERROR = GoogleLogin.CB_CODE_ERROR;
+  static CB_CODE_LOGIN = GoogleLogin.CB_CODE_LOGIN;
+  static CB_CODE_LOGOUT = GoogleLogin.CB_CODE_LOGOUT;
+  static CB_CODE_EXPIRED = GoogleLogin.CB_CODE_EXPIRED;
+  static CB_CODE_DISCONNECT = GoogleLogin.CB_CODE_DISCONNECT;
 
-  static ERR_Login = 1;
-  static ERR_Logout = 2;
-  static ERR_Expired = 3;
-  static ERR_Cancel = 4;
-  static ERR_IsExpired = 5;
-  static ERR_GetInfo = 6;
+  static ERROR_LOGIN = GoogleLogin.ERROR_LOGIN;
+  static ERROR_DISCONNECT = GoogleLogin.ERROR_DISCONNECT;
+
+  static EXPIRED_OUT = GoogleLogin.EXPIRED_OUT;
+  static EXPIRED_IN = GoogleLogin.EXPIRED_IN;
 
   constructor(){
     this.ggListener = glLoginCB.addListener('gglCallback', this.gglCallback.bind(this));

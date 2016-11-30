@@ -13,8 +13,10 @@ import UserBehavior from './UserInfo/UserBehavior'
 import {RouteList, RouteIndex} from './AppRoutes'
 const defaultStatusBar = false; //默认的状态栏属性
 import SocketLink from './Component/SocketLink.js'
-import {Chivox, cv} from './Utils/Chivox.js';
+import {Chivox, cv, chivoxErr} from './Utils/Chivox.js';
 import FBLogin from './Utils/FBLogin.js';
+import TWLogin from './Utils/TWLogin.js';
+import GGLogin from './Utils/GGLogin.js';
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -73,6 +75,10 @@ export default class App extends Component {
         //login
         this.fbLogin = FBLogin.Instance();
         this.fbLogin.SetCallback(this.fbCallback.bind(this));
+        this.twLogin = TWLogin.Instance();
+        this.twLogin.SetCallback(this.twCallback.bind(this));
+        this.ggLogin = GGLogin.Instance();
+        this.ggLogin.SetCallback(this.ggCallback.bind(this));
     }
 
     componentDidMount() {
@@ -95,14 +101,59 @@ export default class App extends Component {
         //login
         FBLogin.Remove();
         this.fbLogin = null;
+        TWLogin.Remove();
+        this.twLogin = null;
+        GGLogin.Remove();
+        this.ggLogin = null;
     }
 
     /*--------------------------Login start-----------------------*/
-    onLoginFB() {
-        this.fbLogin.Login([
-            'public_profile',
-            'email'
-        ]);
+    onLoginThird(name) {
+        if (name == 'facebook'){
+            this.fbLogin.Login([
+                'public_profile',
+                'email'
+            ]);
+        }else if (name == 'twitter'){
+            this.twLogin.Login();
+        }else if (name == 'google'){
+            this.ggLogin.Login();
+        }else{
+            console.log('not set this param of name');
+        }
+    }
+    onLogoutThird(name){
+        if (name == 'facebook'){
+            this.fbLogin.Logout();
+        }else if (name == 'twitter'){
+            this.twLogin.Logout();
+        }else if (name == 'google'){
+            this.ggLogin.Logout();
+        }else{
+            console.log('not set this param of name');
+        }
+    }
+    onExpiredThird(name){
+        if (name == 'facebook'){
+            this.fbLogin.Expired();
+        }else if (name == 'twitter'){
+            this.twLogin.Expired();
+        }else if (name == 'google'){
+            this.ggLogin.Expired();
+        }else{
+            console.log('not set this param of name');
+        }
+    }
+    onGetInfoThird(name){
+        if (name == 'facebook'){
+            this.fbLogin.GetInfo();
+        }else if (name == 'twitter'){
+            this.twLogin.GetInfo();
+        }else if (name == 'google'){
+            this.ggLogin.LoginSilently();
+        }else{
+            console.log('not set this param of name');
+        }
     }
 
     fbCallback(data){
@@ -118,6 +169,99 @@ export default class App extends Component {
             this.fbLogin.GetInfo();
         }else if (parseInt(data.code) == FBLogin.CB_Logout){
             alert('退出登录！');
+        }
+    }
+    twCallback(data){
+        console.log(data);
+        if (data.code == TWLogin.CB_CODE_ERROR){
+            var ret = JSON.parse(data.result);
+            if (ret.id == TWLogin.ERROR_LOGIN){
+                console.log('登录失败：' + ret.dsc);
+            }else if (ret.id == TWLogin.ERROR_EXPIRED){
+                console.log('验证有效期失败：' + ret.dsc);
+                // this.twLogin.Login();
+            }else if (ret.id == TWLogin.ERROR_GETINFO){
+                console.log('获取信息失败：' + ret.dsc);
+            }else if (ret.id == TWLogin.ERROR_NOTLOGIN){
+                console.log('你还未登录呢！');
+                // this.twLogin.Login();
+            }else {
+                console.log("未知错误！");
+            }
+        }else if (data.code == TWLogin.CB_CODE_LOGIN){
+            var ret = JSON.parse(data.result);
+            console.log('登录成功：' + ret.userName + '!');
+            // this.twLogin.GetInfo();
+        }else if (data.code == TWLogin.CB_CODE_LOGOUT){
+            var ret = JSON.parse(data.result);
+            // this.setState({
+            //   twName: '',
+            //   twLoginStatus: false,
+            //   twIcon: null,
+            // });
+            console.log('登出成功：' + ret.userID);
+        }else if (data.code == TWLogin.CB_CODE_EXPIRED){
+            if (data.result == TWLogin.EXPIRED_OUT){
+                console.log('登录已经过期');
+                // this.twLogin.Login();
+            }else {
+                console.log('登录成功！');
+                // this.twLogin.GetInfo();
+            }
+        }else if (data.code == TWLogin.CB_CODE_GETINFO){
+            var ret = JSON.parse(data.result);
+            console.log(ret);
+            // this.setState({
+            //   twName: ret.name,
+            //   twLoginStatus: true,
+            //   twIcon: ret.profile_image_url,
+            // });
+            console.log('欢迎回来，' + ret.name + '!');
+        }
+    }
+    ggCallback(data){
+        console.log(data);
+        if (data.code == GGLogin.CB_CODE_ERROR){
+            var ret = JSON.parse(data.result);
+            if (ret.id == GGLogin.ERROR_LOGIN){
+                console.log('登录失败：' + ret.dsc);
+            }else if (ret.id == GGLogin.ERROR_DISCONNECT){
+                console.log('断开连接失败：' + ret.dsc);
+            }else {
+                console.log("未知错误！");
+            }
+        }else if (data.code == GGLogin.CB_CODE_LOGIN){
+            var ret = JSON.parse(data.result);
+            console.log('登录成功：' + ret.fullName + '!');
+            // this.setState({
+            //   glName: ret.fullName,
+            //   glEmail: ret.email,
+            //   glLoginStatus: true
+            // });
+            console.log('欢迎回来，' + ret.fullName + '!');
+            //谷歌登录后会直接返回个人信息
+        }else if (data.code == GGLogin.CB_CODE_LOGOUT){
+            // this.setState({
+            //   glName: '',
+            //   glEmail: '',
+            //   glLoginStatus: false,
+            // });
+            console.log('登出成功！');
+        }else if (data.code == GGLogin.CB_CODE_EXPIRED){
+            if (data.result == GGLogin.EXPIRED_OUT){
+                console.log('登录已经过期');
+                // this.Login();
+            }else {
+                console.log('登录成功！');
+                // this.LoginSilently();
+            }
+        }else if (data.code == GGLogin.CB_CODE_DISCONNECT){
+            // this.setState({
+            //   glName: '',
+            //   glEmail: '',
+            //   glLoginStatus: false,
+            // });
+            console.log('登出成功：' + ret.fullName);
         }
     }
     /*--------------------------Login start-----------------------*/
