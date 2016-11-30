@@ -136,7 +136,8 @@ export default class S_Home extends Component {
                     <PanButton name="btnDeleteSave" style={styles.delBtn} onPress={()=>{
                     app.removeAllStorageData()
                     app.removeStorageData('UserInfo')
-                     app.removeStorageData('UserInfo')
+                     app.removeStorageData('CardInfo')
+                     app.removeStorageData('Review')
                     }}>
                     <Text>删除存档</Text>
                     </PanButton>}

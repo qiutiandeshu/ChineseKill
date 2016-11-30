@@ -25,6 +25,7 @@ export default class App extends Component {
             blnShowStatusBar: defaultStatusBar, //是否显示状态栏
             blnLoading: true,
         };
+        this.loadIndex = 0;
         this.blnUpdate = false; //一个标记是否上传了用户操作数据的变量,作用是在用户恢复app时,检测算新启动还是只算从后台恢复
         this.appState = 'active';//初始的app状态
         this.closeTime = null;//计时器, 当用户在后台多长时间后,就当做用户已经退出,并上传本次使用情况
@@ -66,7 +67,7 @@ export default class App extends Component {
         this.initUserInfoByStorage();
         this.initLearningByStorage();
         this.initCardInfoByStorage();
-
+        this.initReviewByStorage()
         //驰声接口
         this.chivox = Chivox.Instance();//调用初始化静态函数
         //这里需要设置回调函数，评测回调，录音音量回调，录音播放回调（播放进度）
@@ -105,6 +106,15 @@ export default class App extends Component {
         this.twLogin = null;
         GGLogin.Remove();
         this.ggLogin = null;
+    }
+
+    addLoadingIndex = ()=>{
+        this.loadIndex += 1
+        if(this.loadIndex == 4){
+            this.setState({
+                blnLoading:false,
+            })
+        }
     }
 
     /*--------------------------Login start-----------------------*/
@@ -489,6 +499,7 @@ export default class App extends Component {
             ret=>{
                 console.log("读取到Review:",ret)
                 this.storageReview = ret;
+                this.addLoadingIndex()
             }
         ).catch(err=> {
             switch (err.name) {
@@ -499,13 +510,14 @@ export default class App extends Component {
                     console.log("Review数据过期了")
                     break;
             }
+            this.addLoadingIndex()
         })
     }
 
     saveReview = (saveData,expires = null)=>{
         this.storage.save({
             key:'Review',
-            rowData:saveData,
+            rawData:saveData,
             expires:expires
         })
     }
@@ -516,6 +528,7 @@ export default class App extends Component {
                 console.log("读取到UserInfo:", ret)
                 this.storageUserInfo = ret
                 socket.verifyUserInfo(this.storageUserInfo);
+                this.addLoadingIndex()
             }
         ).catch(err=> {
             switch (err.name) {
@@ -526,6 +539,7 @@ export default class App extends Component {
                     console.log("UserInfo数据过期了")
                     break;
             }
+            this.addLoadingIndex()
         })
     }
 
@@ -551,7 +565,7 @@ export default class App extends Component {
                     this.storageLearning = ret //赋值
 
                 }
-                this.setState({blnLoading: false})
+                this.addLoadingIndex()
             }
         )
     }
@@ -616,6 +630,7 @@ export default class App extends Component {
             ret=> {
                 console.log("读取到CardInfo:", ret)
                 this.storageCardInfo = ret
+                this.addLoadingIndex()
             }
         ).catch(err=> {
             switch (err.name) {
@@ -627,6 +642,7 @@ export default class App extends Component {
                     console.log("CardInfo数据过期了")
                     break;
             }
+            this.addLoadingIndex()
         })
     }
 
@@ -711,15 +727,14 @@ export default class App extends Component {
 
     removeStorageData = (key, id)=> {// 删除单个数据
         this.storage.remove({
-            key: {key},
-            id: {id}
+            key: key,
+            id: id
         })
     }
 
     removeAllStorageData = ()=> {//清空map，移除所有"key-id"数据（但会保留只有key的数据）
         this.storage.clearMap();
     }
-
 
     /*--------------------------本地数据存储部分End-----------------------*/
 
