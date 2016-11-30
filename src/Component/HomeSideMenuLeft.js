@@ -105,12 +105,16 @@ export default class HomeSideMenuLeft extends Component {
     // 记忆库信息
     renderMemoryMenu = ()=>{
         var card = null;
+        var number = 0;
         if (app.storageCardInfo) {
             card = app.storageCardInfo.learnCards;
+            var _number = card.ziKey.length+card.ciKey.length+card.juKey.length;
+            number = _number;
+
         }
         return (
             <PanView name='memoryMenu' style={[styles.memoryMenu, ]}>
-                <MemoryFrame onPress={this._onPopupBoxShow.bind(this, 'FlashCard')} number={card?card.ziKey.length+card.ciKey.length+card.juKey.length:0} />
+                <MemoryFrame onPress={this._onPopupBoxShow.bind(this, 'FlashCard')} number={number} />
                 <MemoryFrame name={'Character'} color={'#E57C86'} number={card?card.ziKey.length:0} onPress={this._onPopupBoxShow.bind(this, "Character")} />
                 <MemoryFrame name={'Word'} color={'#5ABD5A'} number={card?card.ciKey.length:0} onPress={this._onPopupBoxShow.bind(this, 'Word')} />
                 <MemoryFrame name={'Sentence'} color={'#F4B460'} number={card?card.juKey.length:0} onPress={this._onPopupBoxShow.bind(this, 'Sentence')} />
@@ -122,13 +126,12 @@ class MemoryFrame extends Component {
     static propTypes = {
       name: React.PropTypes.string,
       color: React.PropTypes.string,
-      number: React.PropTypes.number,
       onPress: React.PropTypes.func,
     };
     static defaultProps = {
       name: 'FlashCard',
       color: '#1A9FAA',
-      number: 300,
+      number: '30',
       onPress: ()=>{console.log("onPress MemoryFrame")},
     };
     render() {

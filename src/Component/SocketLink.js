@@ -141,6 +141,13 @@ function SocketLink(app) {
       } else {
         callback('fail');
       }
+    } else if (kind == 'All') {
+      this.fromServer = _fromServer;
+      if (this.sendToSocket('GetCardMsg', 'All', data)) {
+        callback('success');
+      } else {
+        callback('fail');
+      }
     }
   }
 
@@ -161,6 +168,106 @@ function SocketLink(app) {
       return false;
     }
 	}
+
+  // 获得时间
+  this.getTime = function() {
+    var date = new Date();
+    var _h = date.getHours();
+    var _m = date.getMinutes();
+    var _s = date.getSeconds();
+    var _ms = date.getMilliseconds();
+    var time = date.getTime() - _h*3600000 - _m*60000 - _s*1000 - _ms;
+    return time;
+  }
+  // 遗忘曲线，获得下次复习时间
+  this.getReviewT = function(_day, _factor, _t) {
+    var delay = Math.abs((this.getTime() - _day - _t)/86400000);
+    var fct = _factor / 1000;
+
+    var review_t = _t/86400000;
+    if (review_t < 0) review_t = 1;
+    var ivl2 = this.constrainedIvl((review_t + parseInt(delay/4))*1.2, review_t);
+    var ivl3 = this.constrainedIvl((review_t + parseInt(delay/2))*fct, ivl2);
+    var ivl4 = this.constrainedIvl((review_t + delay)*fct*1.3, ivl3);
+    var list = [ivl4, ivl3, ivl2];
+    return list;
+  }
+  this.constrainedIvl = function(ivl, prev) {
+    var _review = ivl;
+    if (ivl < prev+1) {
+      _review = prev + 1;
+    }
+    return parseInt(_review);
+  }
+  //得到可复习的card列表
+  this.getReviewList = function(blnC, blnW, blnS) {
+    var json = {
+      cNum: 0,
+      wNum: 0,
+      sNum: 0,
+      list: [],
+    };
+    if (app.storageReview == null) return json;
+    var learn = app.storageCardInfo.learnCards;
+    if (blnC) {
+      learn.ziKey.forEach((key)=>{
+        var obj = app.storageReview['Character'][key];
+        if (obj.review_t < 0) {
+          obj.dis = -9999999;
+          json.list.push(obj);
+          json.cNum += 1;
+        } else {
+          var dis = obj.day + obj.review_t - socket.getTime();
+          if (dis <= 0) {
+            obj.dis = dis;
+            json.list.push(obj)
+            json.cNum += 1;
+          }
+        }
+        obj.blnAgain = false;
+      });
+    }
+    if (blnW) {
+      learn.ciKey.forEach((key)=>{
+        var obj = app.storageReview['Word'][key];
+        if (obj.review_t < 0) {
+          obj.dis = -9999999;
+          json.list.push(obj);
+          json.wNum += 1;
+        } else {
+          var dis = obj.day + obj.review_t - socket.getTime();
+          if (dis <= 0) {
+            obj.dis = dis;
+            json.list.push(obj)
+            json.wNum += 1;
+          }
+        }
+        obj.blnAgain = false;
+      });
+    }
+    if (blnS) {
+      learn.juKey.forEach((key)=>{
+        var obj = app.storageReview['Sentence'][key];
+        if (obj.review_t < 0) {
+          obj.dis = -9999999;
+          json.list.push(obj);
+          json.sNum += 1;
+        } else {
+          var dis = obj.day + obj.review_t - socket.getTime();
+          if (dis <= 0) {
+            obj.dis = dis;
+            json.list.push(obj);
+            json.sNum += 1;
+          }
+        }
+        obj.blnAgain = false;
+      });
+    }
+    json.list.sort((a, b)=>{
+      return a.dis - b.dis;
+    });
+    return json;
+  }
 
 	this.startLink();
 };

@@ -11,6 +11,8 @@ import {
   ActivityIndicator,
   ListView,
   Animated,
+  Slider,
+  Switch,
 } from 'react-native';
 
 import {ScreenWidth,ScreenHeight,MinUnit,MinWidth,IconSize,UtilStyles} from '../AppStyles'
@@ -19,7 +21,9 @@ import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView.js'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import PopupBox from '../Common/PopupBox.js'
+import DrawWord from '../Common/DrawWord.js'
 
+const DAY_TIME = 86400000;
 class Box extends Component {
 	show() {
 		this.refs.PopupBox.show();
@@ -440,8 +444,42 @@ class FlashCardBox extends Box {
       showKind: 1,
       isSetting: false,
       height: new Animated.Value(0),
+      blnWait: true,
+      answerY: new Animated.Value(0),
+
+      blnRefresh: false,
     };
+
     this.state.height.setValue(0);
+    this.state.answerY.setValue(0 - ScreenHeight*0.3);
+    this.reviewList = [];
+    this.displayKind = 1;
+    this.focusedC = true;
+    this.focusedW = true;
+    this.focusedS = true;
+    this.blnAuto = true;
+    this.minNum = 1;
+    this.defaultNum = this.minNum;
+
+    this.keyNum = [0, 0, 0, 0, 0];
+  }
+  initSetting() {
+    var json = socket.getReviewList(true, true, true);
+    this.reviewList = json.list;
+    this.reviewNum = json.cNum + json.wNum + json.sNum;
+    this.getMaxNum();
+    this.defaultNum = this.maxNum;
+    this.testIndex = 0;
+  }
+  Refresh() {
+    this.setState({
+      blnRefresh: !this.state.blnRefresh,
+    });
+    this.reviewList = this.getReviewList();
+  }
+  getMaxNum() {
+    this.maxNum = 0;
+    this.maxNum = this.reviewList.length;
   }
   render() {
     var _name = 'close';
@@ -452,6 +490,7 @@ class FlashCardBox extends Box {
       <PopupBox
         ref={'PopupBox'}
         name={'FlashCard'}
+        showAnimatedEnd={this.showEnd.bind(this)}
         leftIconName={_name} onLeftPress={this.onLeftPress.bind(this)}
         rightIconName={this.state.status=='test'?'':'ellipsis-h'} onRightPressMeasure={this.onRightPress.bind(this)}
         backPress={this.hidden.bind(this)} >
@@ -459,10 +498,85 @@ class FlashCardBox extends Box {
          {this.renderMenu()}
          {this.renderTest()}
         </View>
+        {this.renderWait(this.state.blnWait)}
         {this.renderFlashSetting()}
       </PopupBox>
     );
   }
+  showEnd(bln) {
+    var json = {
+      ziList: [],
+      ciList: [],
+      juList: []
+    };
+    this.jsonList = [];
+    for (var i=0;i<3;i++) {
+      var data = app.storageCardInfo.learnCards.ziKey;
+      var str = 'Character';
+      if (i == 1) {
+        data = app.storageCardInfo.learnCards.ciKey;
+        str = 'Word';
+      } else if (i == 2) {
+        data = app.storageCardInfo.learnCards.juKey;
+        str = 'Sentence';
+      }
+      this.jsonList = this.jsonList.concat(data);
+      data.forEach((key)=>{
+        if (app.storageReview == null) {
+          if (i == 0) json.ziList.push(key);
+          else if (i == 1) json.ciList.push(key);
+          else if (i == 2) json.juList.push(key);
+        } else {
+          if (app.storageReview[str][key] == null) {
+            if (i == 0) json.ziList.push(key);
+            else if (i == 1) json.ciList.push(key);
+            else if (i == 2) json.juList.push(key);
+          }
+        }
+      });
+    }
+    if (json.ziList.length == 0 && json.ciList.length == 0 && json.juList.length == 0) {
+      this.setState({
+        blnWait: false,
+      });
+      this.initSetting();
+      return;
+    }
+    socket.getCardMsg('All', json, (msg)=>{
+      if (msg == 'fail') {
+        this.setState({
+          blnWait: false,
+        });
+      }
+    },(json)=>{
+      this.setState({
+        blnWait: false,
+      });
+      if (json.data != '失败') {
+        if (app.storageReview == null) {
+          app.storageReview = {};
+          app.storageReview['Character'] = {};
+          app.storageReview['Word'] = {};
+          app.storageReview['Sentence'] = {};
+        }
+        json.data.Character.forEach((obj)=>{
+          obj.factor = 2500;
+          obj.day = socket.getTime();
+          obj.review_t = -1 * DAY_TIME;
+          app.storageReview['Character'][obj.key] = obj;
+        });
+        json.data.Word.forEach((obj)=>{
+          obj.factor = 2500;
+          obj.day = socket.getTime();
+          obj.review_t = -1 * DAY_TIME;
+          app.storageReview['Word'][obj.key] = obj;
+        });
+        app.saveReview(app.storageReview);
+        this.initSetting();
+      }
+    });
+  }
+
   renderFlashSetting() {
     if (this.state.isSetting == false) return null;
     return (
@@ -471,19 +585,93 @@ class FlashCardBox extends Box {
         <Animated.View name={'v_flashcard_setting'} style={[styles.flashSetting, {height: this.state.height}]}>
           <PanView style={[styles.setDisplay, styles.bottomLine]} name={'v_flahs_set'} >
             <Text style={styles.setFont}>Display in</Text>
+            <View style={[styles.setButtonList, styles.setButtonListRadius]}>
+              <PanButton name={'b_flashcard_setting_c'} style={[styles.setButton, {backgroundColor: this.displayKind==1?'#6DCFC9':'#FFFFFF'}]} onPress={this.changeDisplay.bind(this, 1)} >
+                <Text style={styles.setFont}>Chinese</Text>
+              </PanButton>
+              <PanButton name={'b_flashcard_setting_e'} style={[styles.setButton, {backgroundColor: this.displayKind==2?'#6DCFC9':'#FFFFFF'}]} onPress={this.changeDisplay.bind(this, 2)} >
+                <Text style={styles.setFont}>English</Text>
+              </PanButton>
+              <PanButton name={'b_flashcard_setting_py'} style={[styles.setButton, {backgroundColor: this.displayKind==3?'#6DCFC9':'#FFFFFF'}]} onPress={this.changeDisplay.bind(this, 3)} >
+                <Text style={styles.setFont}>Pinyin</Text>
+              </PanButton>
+            </View>
           </PanView>
           <PanView style={[styles.setDisplay, styles.bottomLine]} name={'v_flahs_set'} >
-              <Text style={styles.setFont}>Default number: 35</Text>
+              <Text style={styles.setFont}>Default number: {this.defaultNum}</Text>
+              <Slider value={this.defaultNum} onValueChange={this.changeDefaultNum.bind(this)} minimumValue={this.minNum} maximumValue={this.maxNum} step={1} />
           </PanView>
           <PanView style={[styles.setAudio, styles.bottomLine]} name={'v_flahs_set'} >
             <Text style={styles.setFont}>Audio auto play</Text>
+            <Switch value={this.blnAuto} onValueChange={this.changeAuto.bind(this)}/>
           </PanView>
           <PanView style={[styles.setFocuse, ]} name={'v_flahs_set'} >
             <Text style={styles.setFont}>Focused on</Text>
+            <View style={styles.setButtonList}>
+              <PanButton name={'b_flashcard_setting_c'} style={[styles.setButton2, {backgroundColor: this.focusedC?'#6DCFC9':'#FFFFFF'}]} onPress={this.changeFocused.bind(this, 1)} >
+                <Text style={styles.setFont}>Character</Text>
+              </PanButton>
+              <PanButton name={'b_flashcard_setting_e'} style={[styles.setButton2, {backgroundColor: this.focusedW?'#6DCFC9':'#FFFFFF'}]} onPress={this.changeFocused.bind(this, 2)} >
+                <Text style={styles.setFont}>Word</Text>
+              </PanButton>
+              <PanButton name={'b_flashcard_setting_py'} style={[styles.setButton2, {backgroundColor: this.focusedS?'#6DCFC9':'#FFFFFF'}]} onPress={this.changeFocused.bind(this, 3)} >
+                <Text style={styles.setFont}>Sentence</Text>
+              </PanButton>
+            </View>
           </PanView>
         </Animated.View>
       </View>
     );
+  }
+  changeAuto(value) {
+    this.blnAuto = value;
+    this.Refresh();
+  }
+  changeDefaultNum(value) {
+    this.defaultNum = value
+    this.Refresh();
+  }
+  changeDisplay(kind) {
+    this.displayKind = kind,
+    this.Refresh();
+  }
+  changeFocused(kind) {
+    var num = 0;
+    var list = app.storageCardInfo.learnCards;
+    if (this.focusedC && list.ziKey.length > 0) num += 1;
+    if (this.focusedW && list.ciKey.length > 0) num += 1;
+    if (this.focusedS && list.juKey.length > 0) num += 1;
+
+    if (kind == 1) {
+      if (list.ziKey.length == 0) {
+        this.focusedC = !this.focusedC;
+      } else {
+        if (this.focusedC && num == 1) return;
+        this.focusedC = !this.focusedC;
+      }
+    } else if (kind == 2) {
+      if (list.ciKey.length == 0) {
+        this.focusedW = !this.focusedW;
+      } else {
+        if (this.focusedW && num == 1) return;
+        this.focusedW = !this.focusedW;
+      }
+    } else if (kind == 3) {
+      if (list.juKey.length == 0) {
+        this.focusedS = !this.focusedS;
+      } else {
+        if (this.focusedS && num == 1) return;
+        this.focusedS = !this.focusedS;
+      }
+    }
+    this.getMaxNum();
+    if (this.defaultNum < this.minNum) {
+      this.defaultNum = this.minNum;
+    }
+    if (this.defaultNum > this.maxNum) {
+      this.defaultNum = this.maxNum;
+    }
+    this.Refresh();
   }
   onHiddenSetting() {
     Animated.timing(
@@ -529,6 +717,10 @@ class FlashCardBox extends Box {
       inputRange: [0, 1],
       outputRange: [0, -MinUnit*15]
     });
+    var list = [];
+    if (app.storageCardInfo) {
+      list = app.storageCardInfo.learnCards;
+    }
     return (
       <Animated.View style={[styles.flashMenu, {left}]}>
         <PanView name={'v_flashcard_m_SRS'} style={{flex: 1, alignItems: 'center', justifyContent: 'center',}}>
@@ -537,13 +729,14 @@ class FlashCardBox extends Box {
           </PanButton>
         </PanView>
         <PanView name={'v_flashcard_m_msg'} style={[styles.fmList, ]}>
-          <DoubleText />
+          <DoubleText num={list.juKey.length}/>
           {this.renderPlus()}
-          <DoubleText name={"Word"} num={20} color={'#CDECBE'} />
+          <DoubleText name={"Word"} num={list.ciKey.length} color={'#CDECBE'} />
           {this.renderPlus()}
-          <DoubleText name={"Character"} num={15} color={'#F9DFBB'} />
+          <DoubleText name={"Character"} num={list.ziKey.length} color={'#F9DFBB'} />
         </PanView>
         <PanView name={'v_flashcard_m_chart'} style={[styles.fmChart, ]}>
+          {this.renderKeyNum()}
         </PanView>
       </Animated.View>
     );
@@ -556,6 +749,7 @@ class FlashCardBox extends Box {
     );
   }
   showTest() {
+    this.Refresh();
     Animated.timing(
       this.state.moveX,
       {
@@ -563,6 +757,17 @@ class FlashCardBox extends Box {
         duration: 300,
       }
     ).start(this.changeStatus.bind(this, 'test'));
+  }
+  getReviewList() {
+    var _reviewList = [];
+    var json = socket.getReviewList(this.focusedC, this.focusedW, this.focusedS);
+    var list = json.list;
+    if (list.length == this.defaultNum) {
+      _reviewList = list;
+    } else {
+      _reviewList = list.slice(0, this.defaultNum);
+    }
+    return _reviewList;
   }
   changeStatus(_str) {
     if (_str == 'menu') {
@@ -574,21 +779,74 @@ class FlashCardBox extends Box {
       status: _str,
     });
   }
+  renderKeyNum() {
+    var max = 0;
+    this.keyNum.forEach((num)=>{
+      if (max<num) max = num;
+    });
+    if (max == 0) max = 1;
+    var Height = ScreenHeight*0.2;
+    return (
+      <PanView name='v_flashcard_key_num' style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center',}}>
+        <BarShowNum color={'#C8CB7D'} height={Height*this.keyNum[4]/max} num={this.keyNum[4]}/>
+        <BarShowNum color={'#D4CF9C'} height={Height*this.keyNum[3]/max} num={this.keyNum[3]}/>
+        <BarShowNum color={'#E3DEC9'} height={Height*this.keyNum[2]/max} num={this.keyNum[2]}/>
+        <BarShowNum color={'#EACFC7'} height={Height*this.keyNum[1]/max} num={this.keyNum[1]}/>
+        <BarShowNum color={'#DDB0C7'} height={Height*this.keyNum[0]/max} num={this.keyNum[0]}/>
+      </PanView>
+    );
+  }
   renderTest() {
     var left = this.state.moveX.interpolate({
       inputRange: [0, 1],
       outputRange: [FlashWidth, 0]
     });
+    if (this.reviewList.length == 0) {
+      if (this.reviewNum == 0) {
+        return (
+          <Animated.View style={[styles.flashTest, {left}]}>
+            <Text>当前没有可复习的题目</Text>
+          </Animated.View>
+        );
+      }
+      return (
+        <Animated.View style={[styles.flashTest, {left}]}>
+          {this.renderKeyNum()}
+        </Animated.View>
+      );
+    }
+    if (this.reviewList) {
+      var obj = this.reviewList[this.testIndex];
+      var _question = obj.zx;
+      var _answer1 = obj.py;
+      var _answer2 = obj.yx_e;
+      if (this.displayKind == 2) {
+        _question = obj.yx_e;
+        _answer1 = obj.zx;
+        _answer2 = obj.py;
+      } else if (this.displayKind == 3) {
+        _question = obj.py;
+        _answer1 = obj.zx;
+        _answer2 = obj.yx_e;
+      }
+    }
     return (
       <Animated.View style={[styles.flashTest, {left}]}>
         <PanView name={'v_flashcard_test_question'} style={styles.fTQuestion} >
           <View style={[{height: MinUnit*5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: MinUnit}, ]}>
             <View style={{width: MinUnit*5}} />
-            <Text style={{fontSize: MinUnit*3, color: '#FFFFFF'}} >1/3</Text>
-            <IconButton name={'volume-up'} size={MinUnit*4} color={'#FFFFFF'} />
+            <Text style={{fontSize: MinUnit*2.6, color: '#E1E1E1'}} >{this.testIndex+1}/{this.reviewList.length}</Text>
+            <IconButton name={'volume-up'} size={MinUnit*4} color={'#E1E1E1'} />
+          </View>
+          <View style={{flex: 1, alignItems: 'center', justifyContent: 'center',}}>
+            <Text style={{fontSize: MinUnit*3, color: '#FFFFFF'}}>{_question}</Text>
           </View>
         </PanView>
         <PanView name={'v_flashcard_test_answer'} style={styles.fTAnswer} >
+          <Animated.View style={[styles.fTMoveAnswer, {top: this.state.answerY}]}>
+            <Text style={{fontSize: MinUnit*3, color: '#000000'}}>{_answer1}</Text>
+            <Text style={{fontSize: MinUnit*3, color: '#000000'}}>{_answer2}</Text>
+          </Animated.View>
         </PanView>
         {this.renderButtonShow()}
         {this.renderButtonYesOrNo()}
@@ -601,31 +859,61 @@ class FlashCardBox extends Box {
     if (this.state.showKind != 1) return null;
     return (
       <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV} >
-        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} onPress={this.onChangeLeft.bind(this)} />
-        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onChangeRight.bind(this)} />
+        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} onPress={this.onShowAnswer.bind(this)} />
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onShowAnswer.bind(this)} />
       </PanView>
     );
+  }
+  onShowAnswer() {
+    Animated.timing(
+      this.state.answerY,
+      {
+        toValue: 0,
+        duration: 200,
+      }
+    ).start(()=>{
+      this.setState({
+        showKind: 2 
+      });
+    });
   }
   renderButtonYesOrNo() {
     if (this.state.showKind != 2) return null;
     return (
       <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV} >
-        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} onPress={this.onChangeLeft.bind(this)}>
+        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} onPress={this.onChangeRightOrWrong.bind(this, 'right')}>
           <Text>Right</Text>
         </PanButton>
-        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onChangeRight.bind(this)}>
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onChangeRightOrWrong.bind(this, 'wrong')}>
           <Text>Wrong</Text>
         </PanButton>
       </PanView>
     );
   }
+  onChangeRightOrWrong(str) {
+    if (str == 'right') {
+      this.setState({
+        showKind: 3
+      });
+    } else if (str == 'wrong') {
+      this.setState({
+        showKind: 4
+      });
+    }
+  }
   renderButtonRight() {
     if (this.state.showKind != 3) return null;
     return (
       <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV1} >
-        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} />
-        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} />
-        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} />
+        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} onPress={this.onRememberPress.bind(this, 2)}>
+          <Text>Remembered Perfectly</Text>
+        </PanButton>
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onRememberPress.bind(this, 3)}>
+          <Text>Remembered</Text>
+        </PanButton>
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onRememberPress.bind(this, 4)}>
+          <Text>Barely Remembered</Text>
+        </PanButton>
       </PanView>
     );
   }
@@ -633,32 +921,61 @@ class FlashCardBox extends Box {
     if (this.state.showKind != 4) return null;
     return (
       <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV} >
-        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} />
-        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} />
+        <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} onPress={this.onRememberPress.bind(this, 0)} >
+          <Text>Almost Remembered</Text>
+        </PanButton>
+        <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onRememberPress.bind(this, 1)} >
+          <Text>Don't know</Text>
+        </PanButton>
       </PanView>
     );
   }
-  onChangeLeft() {
-    if (this.state.showKind == 1) {
-      this.setState({
-        showKind: 2 
-      });
-    } else if (this.state.showKind == 2) {
-      this.setState({
-        showKind: 3 
-      });
+  onRememberPress(kind) {
+    var obj = this.reviewList[this.testIndex];
+    if (obj.keyList == null) {
+      obj.keyList = [0, 1, 2, 3, 4];
+      obj.keyList.forEach((key)=>{
+        obj.keyList[key] = 0;
+      })
     }
-  }
-  onChangeRight() {
-    if (this.state.showKind == 1) {
-      this.setState({
-        showKind: 2
-      });
-    } else if (this.state.showKind == 2) {
-      this.setState({
-        showKind: 4 
-      });
+    obj.lastKey = kind;
+    obj.keyList[kind] += 1;
+    this.keyNum[kind] += 1;
+    if (kind == 1) {
+      // Again
+      if (obj.blnAgain == false) {
+        obj.factor -= 200;
+        obj.blnAgain = true;
+      }
+    } else if (kind == 0) {
+      // wrong +1
+      obj.factor -= 200;
+      obj.day = socket.getTime();
+      obj.review_t = DAY_TIME;
+    } else {
+      // 正确的处理
+      var list = socket.getReviewT(obj.day, obj.factor, obj.review_t);
+      var c_factor = [150, 0, -150]
+      obj.factor += c_factor[kind - 2];
+      obj.day = socket.getTime();
+      obj.review_t = list[kind - 2];
     }
+    if (obj.factor < 1300) {
+      obj.factor = 1300;
+    }
+    app.saveReview(app.storageReview);
+    if (kind == 1) {
+      // Again处理，复习下一个
+      this.testIndex += 1;
+    } else {
+      this.reviewList.splice(this.testIndex, 1);
+    }
+    if (this.testIndex >= this.reviewList.length) {
+      this.testIndex = 0;
+    }
+    this.setState({
+      showKind: 1,
+    });
   }
 }
 
@@ -798,7 +1115,7 @@ class CardBox extends SoundBox {
     });
     Home.props.navigator.push(app.getRoute("Practice"));
   }
-  
+
   getPracticesList(_list) {
     var practices = []
     var json = {
@@ -907,19 +1224,47 @@ class CardBox extends SoundBox {
     } else if (this.props.kind == 'Sentence') {
       data = app.storageCardInfo.learnCards.juKey;
     }
-    socket.getCardMsg(this.props.kind, data, (msg)=>{
+    var list = [];
+    this.jsonList = data;
+    data.forEach((key)=>{
+      if (app.storageReview == null) {
+        list.push(key);
+      } else {
+        if (app.storageReview[this.props.kind][key] == null) {
+          list.push(key);
+        }
+      }
+    });
+    if (list.length == 0) {
+      this.timer = setTimeout(this.getCharacterMsg.bind(this), 500);
+      return;
+    }
+    socket.getCardMsg(this.props.kind, list, (msg)=>{
       if (msg == 'fail') {
         this.setState({
           blnWait: false,
         });
-        Alert.alert(
-          '失败',
-          '服务器连接失败，请稍后再试',
-        );
+        // Alert.alert(
+        //   '失败',
+        //   '服务器连接失败，请稍后再试',
+        // );
+        this.timer = setTimeout(this.getCharacterMsg.bind(this), 500);
       }
     },(json)=>{
       if (json.data != '失败') {
-        this.jsonList = json.data;
+        if (app.storageReview == null) {
+          app.storageReview = {};
+          app.storageReview['Character'] = {};
+          app.storageReview['Word'] = {};
+          app.storageReview['Sentence'] = {};
+        }
+        json.data.forEach((obj)=>{
+          obj.factor = 2500;
+          obj.day = socket.getTime();
+          obj.review_t = -1 * DAY_TIME;
+          app.storageReview[json.msg][obj.key] = obj;
+        });
+        app.saveReview(app.storageReview);
         this.timer = setTimeout(this.getCharacterMsg.bind(this), 500);
       }
     });
@@ -930,7 +1275,8 @@ class CardBox extends SoundBox {
   getCharacterMsg(json) {
     var array = [];
     for (var i=0;i<this.jsonList.length;i++) {
-      var obj = this.jsonList[i];
+      var obj = app.storageReview[this.props.kind][this.jsonList[i]];
+      if (obj == null) continue;
       var _str = obj['yx_c'];
       if (obj['yx_e'] != null) {
         _str = obj['yx_e'];
@@ -1037,6 +1383,22 @@ class IconButton extends Component {
       <PanButton name={this.props.panName} onPress={this.props.onPress} style={this.props.backStyle} >
         <Icon name={this.props.name} size={this.props.size} color={this.props.color} style={this.props.iconStyle} />
       </PanButton>
+    );
+  }
+}
+class BarShowNum extends Component {
+  static defaultProps = {
+    height: 5,
+    color: '#C4E6D3',
+    num: 5
+  };
+  render() {
+    return (
+      <View style={[styles.barNum,]}>
+        <View style={[styles.bar, {height: this.props.height, backgroundColor: this.props.color}]} />
+        <View style={{flex: 1,}}/>
+        <Text style={{textAlign: 'center', color: '#C7C7C7'}}>{this.props.num}</Text>
+      </View>
     );
   }
 }
@@ -1334,6 +1696,8 @@ const styles = StyleSheet.create({
   },
   fmChart: {
     height: ScreenHeight*0.35,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fTQuestion: {
     width: MinUnit*30,
@@ -1344,6 +1708,16 @@ const styles = StyleSheet.create({
     width: MinUnit*30,
     height: ScreenHeight*0.15,
     backgroundColor: '#E9E9E9',
+    overflow: 'hidden',
+  },
+  fTMoveAnswer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: ScreenHeight*0.15,
+    top: 0 - ScreenHeight*0.15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fTButtonV: {
     width: MinUnit*30,
@@ -1417,7 +1791,9 @@ const styles = StyleSheet.create({
   setAudio: {
     height: MinUnit*4.5,
     paddingHorizontal: MinUnit,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   setFocuse: {
     height: MinUnit*7.5,
@@ -1427,6 +1803,45 @@ const styles = StyleSheet.create({
   setFont: {
     fontSize: MinUnit*1.5,
     color: '#424242',
+  },
+  setButtonList: {
+    height: MinUnit*2.8,
+    marginTop: MinUnit*0.5,
+    overflow: "hidden",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  setButtonListRadius: {
+    borderWidth: MinWidth,
+    borderColor: '#6DCFC9',
+    borderRadius: MinUnit*1.4,
+  },
+  setButton: {
+    flex: 1,
+    height: MinUnit*3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: MinWidth,
+    borderColor: '#6DCFC9',
+  },
+  setButton2: {
+    flex: 1,
+    height: MinUnit*3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: MinUnit*0.5,
+  },
+  barNum: {
+    width: MinUnit*2.5,
+    marginHorizontal: MinUnit*2,
+    height: ScreenHeight*0.25,
+  },
+  bar: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: MinUnit*3,
   }
 });
 
