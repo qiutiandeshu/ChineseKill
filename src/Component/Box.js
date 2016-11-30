@@ -70,6 +70,14 @@ class SettingBox extends Box {
 }
 // 取消登陆
 class LogoutBox extends Box {
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      blnWait: false,
+      blnSuccess: false,
+    };
+  }
   render() {
     return (
       <PopupBox ref={'PopupBox'} name={'Account'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)}>
@@ -81,9 +89,9 @@ class LogoutBox extends Box {
           <PanButton name={'b_logout_cp'} style={styles.userInfoB} onPress={this.onChangePassword.bind(this)} >
             <IconText text={'Change Password'} />
           </PanButton>
-          <PanButton name={'b_logout_cp'} style={styles.userInfoB}>
+          <PanButton name={'b_logout_cp'} style={styles.userInfoB} onPress={this.onUpdate.bind(this)}>
             <IconText name={'cloud-upload'} text={'Upload Progress'} />
-            {<Text>SUCCESS</Text>}
+            {this.state.blnSuccess && <Text>SUCCESS</Text>}
           </PanButton>
           <PanButton name={'b_logout_cp'} style={styles.userInfoB}>
             <IconText name={'trash-o'} text={'Reset Progress'} />
@@ -97,8 +105,34 @@ class LogoutBox extends Box {
             When you login, your learning progerss will be uploaded and synced automatically
           </Text>
         </View>
+        {this.renderWait(this.state.blnWait)}
       </PopupBox>
     );
+  }
+  onUpdate() {
+    this.setState({
+      blnWait: true,
+    });
+    socket.userUpdate((msg)=>{
+      this.setState({
+        blnWait: false,
+      });
+      if (msg == 'fail') {
+        Alert.alert(
+          '警告',
+          '服务器连接失败，请稍后再试'
+        );
+      }
+    },(json)=>{
+      this.setState({
+        blnWait: false,
+      });
+      if (json.msg == '成功') {
+        this.setState({
+          blnSuccess: true,
+        });
+      }
+    })
   }
   onLogoutPress() {
     app.storageUserInfo.blnSign = false;

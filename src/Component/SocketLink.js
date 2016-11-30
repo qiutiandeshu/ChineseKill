@@ -85,7 +85,7 @@ function SocketLink(app) {
       userid: app.storageUserInfo.userid,
       password: _id,
     };
-    if (this.sendToSocket('Update', 'helloworld', data)) {
+    if (this.sendToSocket('ChangePassword', 'helloworld', data)) {
       callback('success');
     } else {
       callback('fail');
@@ -99,6 +99,23 @@ function SocketLink(app) {
       password: _password,
     };
     if (this.sendToSocket('Login', 'helloworld', data)) {
+      callback('success');
+    } else {
+      callback('fail');
+    }
+  }
+  // 用户数据上传
+  this.userUpdate = function(callback, _fromServer) {
+    this.fromServer = _fromServer;
+    var date = new Date();
+    var timer = date.getTime();
+    var data = {
+      userid: app.storageUserInfo.userid,
+      time: timer,
+      flashCard: app.storageReview,
+      learnCards: app.storageCardInfo.learnCards,
+    };
+    if (this.sendToSocket('Update', 'helloworld', data)) {
       callback('success');
     } else {
       callback('fail');
