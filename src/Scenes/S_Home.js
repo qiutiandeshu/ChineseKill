@@ -6,7 +6,7 @@ import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView'
 
-import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView} from 'react-native'
+import {StyleSheet, Text, View, InteractionManager, Animated,Image,TouchableOpacity, ListView} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import MenuLeft from '../Component/HomeSideMenuLeft'
 import MenuRight from '../Component/HomeSideMenuRight'
@@ -191,11 +191,13 @@ export default class S_Home extends Component {
                 passCount += 1
             }
         }
-
+        const uri = "http://192.169.1.19:8080/ChineseSkill/Icon/"+lessonIcon
+        
         return (
             <PanButton  name={"btn"+lessonTitle} style={styles.card} disabled={!canPress}
                         onPress={this._onPressCard.bind(this,this.baseProps.allLessonData[rowID],rowData,parseInt(rowID))}>
-                <Icon name='bug' size={MinUnit*8} color = {color}/>
+                {/*<Icon name='bug' size={MinUnit*8} color = {color}/>*/}
+                <Image source = {{uri:uri}} style={styles.image}/>
                 <Text style={{color}}>{lessonTitle}</Text>
                 <Text style={{color}}>{passCount+"/"+chapters.length}</Text>
             </PanButton>
@@ -257,7 +259,7 @@ const styles = StyleSheet.create({
     card: {
         width: MinUnit * 10,
         height: MinUnit * 12,
-        backgroundColor: 'skyblue',
+        //backgroundColor: 'skyblue',
         marginVertical: MinUnit * 2,
         marginHorizontal: MinUnit * 2,
         justifyContent: 'space-between',
@@ -274,5 +276,9 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         backgroundColor:'gray'
+    },
+    image:{
+        width: MinUnit * 10,
+        height: MinUnit * 10,         
     },
 });

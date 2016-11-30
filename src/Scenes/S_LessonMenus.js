@@ -6,7 +6,7 @@ import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView'
 
-import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView} from 'react-native'
+import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView, Image} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
@@ -69,6 +69,7 @@ export default class S_LessonMenus extends Component {
                 />
             )
         }
+        const uri = "http://192.169.1.19:8080/ChineseSkill/Icon/"+lessonIcon
         return (
             <PanView name = "S_LessonMenus" style={styles.container}>
                 <View style={styles.titleView}>
@@ -78,7 +79,7 @@ export default class S_LessonMenus extends Component {
                     <Text style={[UtilStyles.fontNormal,styles.titleText]}>{lessonTitle}</Text>
                     <View/>
                 </View>
-                <Icon name = "car" size={60} style={{marginTop:MinUnit*5,marginBottom:MinUnit*15}} />
+                <Image source = {{uri:uri}} style={styles.image}/>
                 <View style={{flexDirection:'row'}}>
                     {LessonCards}
                 </View>
@@ -205,6 +206,11 @@ const styles = StyleSheet.create({
     },
     titleText:{
         color:'white',
+    },
+    image:{
+        width: MinUnit * 10,
+        height: MinUnit * 10,
+        marginVertical:MinUnit*4
     },
     card:{
         backgroundColor:'white',
