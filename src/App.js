@@ -108,7 +108,8 @@ export default class App extends Component {
     }
 
     /*--------------------------Login start-----------------------*/
-    onLoginThird(name) {
+    onLoginThird(name, callback) {
+        this.thirdCB = callback;
         if (name == 'facebook'){
             this.fbLogin.Login([
                 'public_profile',
@@ -122,7 +123,8 @@ export default class App extends Component {
             console.log('not set this param of name');
         }
     }
-    onLogoutThird(name){
+    onLogoutThird(name, callback){
+        this.thirdCB = callback;
         if (name == 'facebook'){
             this.fbLogin.Logout();
         }else if (name == 'twitter'){
@@ -133,7 +135,8 @@ export default class App extends Component {
             console.log('not set this param of name');
         }
     }
-    onExpiredThird(name){
+    onExpiredThird(name, callback){
+        this.thirdCB = callback;
         if (name == 'facebook'){
             this.fbLogin.Expired();
         }else if (name == 'twitter'){
@@ -144,7 +147,8 @@ export default class App extends Component {
             console.log('not set this param of name');
         }
     }
-    onGetInfoThird(name){
+    onGetInfoThird(name, callback){
+        this.thirdCB = callback;
         if (name == 'facebook'){
             this.fbLogin.GetInfo();
         }else if (name == 'twitter'){
@@ -155,9 +159,18 @@ export default class App extends Component {
             console.log('not set this param of name');
         }
     }
+    thirdLoginCallback(name, data){
+        if (this.thirdCB){
+            this.thirdCB({
+                name: name,
+                data: data,
+            });
+        }
+    }
 
     fbCallback(data){
         console.log(data);
+        this.thirdLoginCallback('facebook', data);
         if (parseInt(data.code) == FBLogin.CB_Error){
             alert('登录FB出错:' +  data.err_msg);
         }else if (parseInt(data.code)== FBLogin.CB_Expired){
@@ -173,6 +186,7 @@ export default class App extends Component {
     }
     twCallback(data){
         console.log(data);
+        this.thirdLoginCallback('facebook', data);
         if (data.code == TWLogin.CB_CODE_ERROR){
             var ret = JSON.parse(data.result);
             if (ret.id == TWLogin.ERROR_LOGIN){
@@ -221,6 +235,7 @@ export default class App extends Component {
     }
     ggCallback(data){
         console.log(data);
+        this.thirdLoginCallback('facebook', data);
         if (data.code == GGLogin.CB_CODE_ERROR){
             var ret = JSON.parse(data.result);
             if (ret.id == GGLogin.ERROR_LOGIN){
