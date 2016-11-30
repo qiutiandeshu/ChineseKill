@@ -13,6 +13,7 @@ let ScreenHeight = Dimensions.get('window').height;
 let MinWidth = 1/PixelRatio.get();
 var MinUnit = ScreenWidth/100;
 var IconSize = MinUnit*4;
+var SyllableData = require('../data/py/拼音表.json')
 let styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -73,4 +74,5 @@ module.exports = {
     MinUnit,
     MinWidth,
     IconSize,
+    SyllableData,
 };

@@ -7,7 +7,7 @@ import {
     View, Text, Navigator, StyleSheet, StatusBar,
     AppState, AsyncStorage, AlertIOS, Platform
 } from 'react-native'
-import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles} from './AppStyles'
+import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles,SyllableData} from './AppStyles'
 import Storage from 'react-native-storage'
 import UserBehavior from './UserInfo/UserBehavior'
 import {RouteList, RouteIndex} from './AppRoutes'
@@ -436,28 +436,61 @@ export default class App extends Component {
         var detailList = [];
         if (details){
             for(let i=0;i<details.length;i++){
-                let toneIndex = 0;
-                let tmpScore = 0;
-                for(let j=0;j<details[i].confidence.length;j++){
-                    if (tmpScore < details[i].confidence[j]){
-                        tmpScore = details[i].confidence[j];
-                        toneIndex = j;
-                    }
-                }//获取用户读的音调值
                 let detail = {
                     content:details[i].char,//内容
                     overallScore:details[i].overall,//评测分数
                     phnScore:details[i].phn,
                     pronScore:details[i].pron,
                     toneScore:details[i].tonescore,
-                    originalTone:details[i].tone,
-                    recordTone:toneIndex
+                    originalTone:details[i].tone,//正确的音调
+                    recordTone:this.getToneIndex(details[i].confidence),//读的音调
+                    phoneScores:this.getPhoneScore(details[i].char,details[i].phone),
                 }
                 detailList[i] = detail
             }
         }
         console.log("获取详情:",detailList)
         return detailList;
+    }
+
+    getToneIndex = (confidence)=>{//获取用户读的音调值
+        let toneIndex = 0
+        let tmpScore = 0;
+        for(let i=0;i<confidence.length;i++){
+            if (tmpScore < confidence[i]){
+                tmpScore = confidence[i];
+                toneIndex = i;
+            }
+        }
+        return toneIndex
+    }
+
+    getPhoneScore = (content,phone)=>{
+        let pinyin = {}
+        for(let i=0;i<SyllableData.length;i++){
+            let syllable = SyllableData[i]
+            if(syllable.py == content){
+                if(syllable.sm != "无声母"){
+                    pinyin.sm = syllable.sm
+                }
+                pinyin.ym = syllable.ym
+            }
+        }
+
+        if(phone.length == 1){
+            if(pinyin.sm){
+                return {sm:phone[0].score,ym:phone[0].score}
+            }else{
+                return {ym:phone[0].score}
+            }
+        }else if(phone.length == 2){
+            return {
+                sm:phone[0].score,
+                ym:phone[1].score,
+            }
+        }
+        console.log("评测数据有问题,没有返回声母和韵母的情况")
+        return {sm:0,ym:0}
     }
 
     onChivoxEndOfWork() {
