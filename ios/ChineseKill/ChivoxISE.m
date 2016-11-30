@@ -340,7 +340,13 @@ RCT_EXPORT_METHOD(getStatus:(RCTResponseSenderBlock)callback)
 -(void)timeTicked
 {
   double volume = airecorder_getVolume(recorder);
-  volume = ((1.0/160)*(volume + 160) - 0.5) *2;
+//  volume = ((1.0/160)*(volume + 160) - 0.5) *2;
+  volume = (1.0/160)*(volume + 160);
+  volume -= 0.5;
+  if (volume < 0) {
+    volume = 0;
+  }
+  volume *= 2;
   NSLog(@"volume: %f\n", volume);
   [self iseVolume: volume];
   if (blnStart){

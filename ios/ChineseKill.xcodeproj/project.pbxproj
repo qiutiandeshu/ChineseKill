@@ -53,9 +53,9 @@
 		90274C0B1DED48EB002C9AA9 /* GoogleLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = 90274C0A1DED48EB002C9AA9 /* GoogleLogin.m */; };
 		90274C0D1DED4978002C9AA9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 90274C0C1DED4978002C9AA9 /* GoogleService-Info.plist */; };
 		90638DBE1DE298500037994B /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90EE719B1DDEEA0D005B6662 /* libART.a */; };
+		90EB377C1DED729C0060500F /* libaiengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90EB377B1DED729C0060500F /* libaiengine.a */; };
 		90F3B59B1DE6E4C3004B01AC /* PcmPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B5991DE6E4C3004B01AC /* PcmPlayer.m */; };
 		90F3B59E1DE6E4DD004B01AC /* ChivoxISE.m in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B59D1DE6E4DD004B01AC /* ChivoxISE.m */; };
-		90F3B5AC1DE6E501004B01AC /* libaiengine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90F3B5A21DE6E501004B01AC /* libaiengine.a */; };
 		90F3B5AD1DE6E501004B01AC /* aiengine.provision in Resources */ = {isa = PBXBuildFile; fileRef = 90F3B5A41DE6E501004B01AC /* aiengine.provision */; };
 		90F3B5AE1DE6E501004B01AC /* aiplayer.c in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B5A61DE6E501004B01AC /* aiplayer.c */; };
 		90F3B5AF1DE6E501004B01AC /* airecorder.c in Sources */ = {isa = PBXBuildFile; fileRef = 90F3B5A81DE6E501004B01AC /* airecorder.c */; };
@@ -267,13 +267,13 @@
 		90274C091DED48EB002C9AA9 /* GoogleLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleLogin.h; path = ChineseKill/GoogleLogin.h; sourceTree = "<group>"; };
 		90274C0A1DED48EB002C9AA9 /* GoogleLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GoogleLogin.m; path = ChineseKill/GoogleLogin.m; sourceTree = "<group>"; };
 		90274C0C1DED4978002C9AA9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		90EB377B1DED729C0060500F /* libaiengine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libaiengine.a; sourceTree = "<group>"; };
 		90EE71961DDEEA0D005B6662 /* ART.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ART.xcodeproj; path = "../node_modules/react-native/Libraries/ART/ART.xcodeproj"; sourceTree = "<group>"; };
 		90F3B5981DE6E4C3004B01AC /* PcmPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmPlayer.h; sourceTree = "<group>"; };
 		90F3B5991DE6E4C3004B01AC /* PcmPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PcmPlayer.m; sourceTree = "<group>"; };
 		90F3B59A1DE6E4C3004B01AC /* PcmPlayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmPlayerDelegate.h; sourceTree = "<group>"; };
 		90F3B59C1DE6E4DD004B01AC /* ChivoxISE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChivoxISE.h; path = ChineseKill/ChivoxISE.h; sourceTree = "<group>"; };
 		90F3B59D1DE6E4DD004B01AC /* ChivoxISE.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ChivoxISE.m; path = ChineseKill/ChivoxISE.m; sourceTree = "<group>"; };
-		90F3B5A21DE6E501004B01AC /* libaiengine.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libaiengine.a; sourceTree = "<group>"; };
 		90F3B5A31DE6E501004B01AC /* aiengine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aiengine.h; path = ChineseKill/aiengine.h; sourceTree = "<group>"; };
 		90F3B5A41DE6E501004B01AC /* aiengine.provision */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = aiengine.provision; path = ChineseKill/aiengine.provision; sourceTree = "<group>"; };
 		90F3B5A61DE6E501004B01AC /* aiplayer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aiplayer.c; sourceTree = "<group>"; };
@@ -328,12 +328,12 @@
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				90274C061DED48BA002C9AA9 /* GoogleSignIn.framework in Frameworks */,
-				90F3B5AC1DE6E501004B01AC /* libaiengine.a in Frameworks */,
 				9017EA9F1DEC015100BFB09A /* FBSDKCoreKit.framework in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
 				00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */,
 				9017EA9E1DEC015100BFB09A /* Bolts.framework in Frameworks */,
 				90274B961DED0930002C9AA9 /* Fabric.framework in Frameworks */,
+				90EB377C1DED729C0060500F /* libaiengine.a in Frameworks */,
 				133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */,
 				00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */,
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
@@ -544,6 +544,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		90EB377A1DED729C0060500F /* aiengine-ios */ = {
+			isa = PBXGroup;
+			children = (
+				90EB377B1DED729C0060500F /* libaiengine.a */,
+			);
+			name = "aiengine-ios";
+			path = "ChineseKill/aiengine-ios";
+			sourceTree = "<group>";
+		};
 		90EE71971DDEEA0D005B6662 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -561,15 +570,6 @@
 			);
 			name = pcmPlayerCode;
 			path = ChineseKill/pcmPlayerCode;
-			sourceTree = "<group>";
-		};
-		90F3B5A11DE6E501004B01AC /* aiengine-ios */ = {
-			isa = PBXGroup;
-			children = (
-				90F3B5A21DE6E501004B01AC /* libaiengine.a */,
-			);
-			name = "aiengine-ios";
-			path = "ChineseKill/aiengine-ios";
 			sourceTree = "<group>";
 		};
 		90F3B5A51DE6E501004B01AC /* audio */ = {
@@ -620,9 +620,9 @@
 		90F3B5C51DE6E787004B01AC /* Chivox */ = {
 			isa = PBXGroup;
 			children = (
+				90EB377A1DED729C0060500F /* aiengine-ios */,
 				90F3B5A41DE6E501004B01AC /* aiengine.provision */,
 				90F3B5A31DE6E501004B01AC /* aiengine.h */,
-				90F3B5A11DE6E501004B01AC /* aiengine-ios */,
 			);
 			name = Chivox;
 			sourceTree = "<group>";

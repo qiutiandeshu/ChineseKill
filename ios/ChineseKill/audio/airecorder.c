@@ -360,7 +360,7 @@ airecorder_getVolume(struct airecorder * recorder)
   if (rv != noErr){
     volume = 0;
   }else{
-    volume = levelMeter.mAveragePower;
+    volume = levelMeter.mPeakPower;
   }
   
 end:

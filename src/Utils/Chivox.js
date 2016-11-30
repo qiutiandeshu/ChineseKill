@@ -82,7 +82,7 @@ class Chivox{
   setCallback(iseCb, volCb, pcmCb){
     this._isecb = iseCb;
     this._volcb = volCb;
-    this._pcmcb = volCb;
+    this._pcmcb = pcmCb;
   }
   playCallback(data){
     if (this._pcmcb){
