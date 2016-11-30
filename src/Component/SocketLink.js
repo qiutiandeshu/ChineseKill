@@ -62,18 +62,19 @@ function SocketLink(app) {
 		}
 	}
   // 第三方facebook登陆
-  this.facebookSignUp = function(_email, _name) {
+  this.thirdSignUp = function(_id, _name, kind) {
     var date = new Date();
     var timer = date.getTime();
     app.storageUserInfo = {
-      userid: _email,
-      password: '',
+      userid: _id,
+      password: '111',
       username: _name,
       create: timer,
       time: timer,
-      kind: 'facebook',
+      kind: kind,
     };
-    this.sendToSocket('Login', 'helloworld', app.storageUserInfo);
+    console.log(app.storageUserInfo);
+    this.sendToSocket('New', 'helloworld', app.storageUserInfo);
     app.storageUserInfo.blnSign = true;
     app.saveUserInfo(app.storageUserInfo);
   }
@@ -106,24 +107,26 @@ function SocketLink(app) {
   // 默认登陆 用户信息验证，更新
   this.verifyUserInfo = function(obj) {
     if (obj.kind == 'create') {
-      this.userSignIn(obj.userid, obj.password, (msg)=>{
-        if (msg == 'fail') {
-          this.fromServer = null;
-        }
-      }, (json)=>{
-        if (json.msg == '成功') {
-          if (app.storageUserInfo.blnSign) {
-            if (parseInt(json.data.time) != app.storageUserInfo.time) {
-              app.storageUserInfo = json.data;
-              app.storageUserInfo.blnSign = true;
-              app.saveUserInfo(app.storageUserInfo);
-            }
+      if (app.storageUserInfo.blnSign == false) return;
+      app.onExpiredThird(obj.kind, (data)=>{
+
+      });
+    }
+    this.userSignIn(obj.userid, obj.password, (msg)=>{
+      if (msg == 'fail') {
+        this.fromServer = null;
+      }
+    }, (json)=>{
+      if (json.msg == '成功') {
+        if (app.storageUserInfo.blnSign) {
+          if (parseInt(json.data.time) != app.storageUserInfo.time) {
+            app.storageUserInfo = json.data;
+            app.storageUserInfo.blnSign = true;
+            app.saveUserInfo(app.storageUserInfo);
           }
         }
-      });
-    } else if (obj.kind == 'facebook') {
-
-    }
+      }
+    });
   }
   // 从服务器获得card信息
   this.getCardMsg = function(kind, data, callback, _fromServer) {
@@ -245,24 +248,24 @@ function SocketLink(app) {
         obj.blnAgain = false;
       });
     }
-    if (blnS) {
-      learn.juKey.forEach((key)=>{
-        var obj = app.storageReview['Sentence'][key];
-        if (obj.review_t < 0) {
-          obj.dis = -9999999;
-          json.list.push(obj);
-          json.sNum += 1;
-        } else {
-          var dis = obj.day + obj.review_t - socket.getTime();
-          if (dis <= 0) {
-            obj.dis = dis;
-            json.list.push(obj);
-            json.sNum += 1;
-          }
-        }
-        obj.blnAgain = false;
-      });
-    }
+    // if (blnS) {
+    //   learn.juKey.forEach((key)=>{
+    //     var obj = app.storageReview['Sentence'][key];
+    //     if (obj.review_t < 0) {
+    //       obj.dis = -9999999;
+    //       json.list.push(obj);
+    //       json.sNum += 1;
+    //     } else {
+    //       var dis = obj.day + obj.review_t - socket.getTime();
+    //       if (dis <= 0) {
+    //         obj.dis = dis;
+    //         json.list.push(obj);
+    //         json.sNum += 1;
+    //       }
+    //     }
+    //     obj.blnAgain = false;
+    //   });
+    // }
     json.list.sort((a, b)=>{
       return a.dis - b.dis;
     });

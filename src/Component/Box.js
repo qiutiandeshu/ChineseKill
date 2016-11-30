@@ -22,6 +22,9 @@ import PanListView from '../UserInfo/PanListView.js'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import PopupBox from '../Common/PopupBox.js'
 import DrawWord from '../Common/DrawWord.js'
+import FBLogin from '../Utils/FBLogin.js';
+import TWLogin from '../Utils/TWLogin.js';
+import GGLogin from '../Utils/GGLogin.js';
 
 const DAY_TIME = 86400000;
 class Box extends Component {
@@ -73,7 +76,7 @@ class LogoutBox extends Box {
         <View style={{flex: 1, backgroundColor: '#E2E2E2',}}>
           <PanView name={"v_logout_userinfo"} style={[styles.userInfoView, styles.center]}>
             <IconButton panName={'b_logout_userImage'} name={'user-circle'} size={MinUnit*12} />
-            <Text style={styles.userInfoT}>{app.storageUserInfo?app.storageUserInfo.userid:''}</Text>
+            <Text style={styles.userInfoT}>{app.storageUserInfo?app.storageUserInfo.username:''}</Text>
           </PanView>
           <PanButton name={'b_logout_cp'} style={styles.userInfoB} onPress={this.onChangePassword.bind(this)} >
             <IconText text={'Change Password'} />
@@ -100,6 +103,11 @@ class LogoutBox extends Box {
   onLogoutPress() {
     app.storageUserInfo.blnSign = false;
     app.saveUserInfo(app.storageUserInfo);
+    if (app.storageUserInfo.kind != 'create') {
+      app.onLogoutThird(app.storageUserInfo.kind, (date)=>{
+
+      })
+    }
     this.hidden();
     HomeMenuLeft.userLogout();
   }
@@ -249,11 +257,81 @@ class LoginBox extends Box {
     });
   }
   onFacebookLogin() {
-    app.onLoginFB();
+    this.setState({
+      blnWait: true,
+    });
+    app.onLoginThird('facebook', (json)=>{
+      this.setState({
+        blnWait: false,
+      });
+
+      var data = json.data;
+      if (parseInt(data.code) == FBLogin.CB_Error){
+      }else if (parseInt(data.code)== FBLogin.CB_Expired){
+      }else if (parseInt(data.code) == FBLogin.CB_GetInfo){
+        this.hidden();
+        HomeMenuLeft.userLogin();
+      }else if (parseInt(data.code) == FBLogin.CB_Login){
+      }else if (parseInt(data.code) == FBLogin.CB_Logout){
+      }
+    });
   }
   onTwitterLogin() {
+    this.setState({
+      blnWait: true,
+    });
+    app.onLoginThird('twitter', (json)=>{
+      this.setState({
+        blnWait: false,
+      });
+
+      var data = json.data;
+      if (data.code == TWLogin.CB_CODE_ERROR){
+            var ret = JSON.parse(data.result);
+            if (ret.id == TWLogin.ERROR_LOGIN){
+            }else if (ret.id == TWLogin.ERROR_EXPIRED){
+            }else if (ret.id == TWLogin.ERROR_GETINFO){
+            }else if (ret.id == TWLogin.ERROR_NOTLOGIN){
+            }else {
+            }
+        }else if (data.code == TWLogin.CB_CODE_LOGIN){
+            this.hidden();
+            HomeMenuLeft.userLogin();
+        }else if (data.code == TWLogin.CB_CODE_LOGOUT){
+        }else if (data.code == TWLogin.CB_CODE_EXPIRED){
+          if (data.result == TWLogin.EXPIRED_OUT){
+            }else {
+                this.hidden();
+                HomeMenuLeft.userLogin();
+            }
+        }else if (data.code == TWLogin.CB_CODE_GETINFO){
+        }
+    });
   }
   onGoogleLogin() {
+    this.setState({
+      blnWait: true,
+    });
+    app.onLoginThird('google', (json)=>{
+      this.setState({
+        blnWait: false,
+      });
+
+      var data = json.data;
+      if (data.code == GGLogin.CB_CODE_ERROR){
+        }else if (data.code == GGLogin.CB_CODE_LOGIN){
+            this.hidden();
+            HomeMenuLeft.userLogin();
+        }else if (data.code == GGLogin.CB_CODE_LOGOUT){
+        }else if (data.code == GGLogin.CB_CODE_EXPIRED){
+            if (data.result == GGLogin.EXPIRED_OUT){
+            }else {
+                this.hidden();
+                HomeMenuLeft.userLogin();
+            }
+        }else if (data.code == GGLogin.CB_CODE_DISCONNECT){
+        }
+    });
   }
   onEmailChange(text) {
     this.email = text;

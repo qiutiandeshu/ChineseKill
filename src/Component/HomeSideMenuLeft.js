@@ -76,7 +76,7 @@ export default class HomeSideMenuLeft extends Component {
     renderUserInfo = ()=>{
         var _word = 'Sign In/Sign Up';
         if (this.state.blnSign) {
-            _word = app.storageUserInfo.userid;
+            _word = ''+app.storageUserInfo.username;
             if (_word.length > 15) {
                 _word = _word.slice(0, 11) + '...';
             }
@@ -117,7 +117,7 @@ export default class HomeSideMenuLeft extends Component {
                 <MemoryFrame onPress={this._onPopupBoxShow.bind(this, 'FlashCard')} number={number} />
                 <MemoryFrame name={'Character'} color={'#E57C86'} number={card?card.ziKey.length:0} onPress={this._onPopupBoxShow.bind(this, "Character")} />
                 <MemoryFrame name={'Word'} color={'#5ABD5A'} number={card?card.ciKey.length:0} onPress={this._onPopupBoxShow.bind(this, 'Word')} />
-                <MemoryFrame name={'Sentence'} color={'#F4B460'} number={card?card.juKey.length:0} onPress={this._onPopupBoxShow.bind(this, 'Sentence')} />
+                <MemoryFrame name={'Sentence'} color={'#F4B460'} number={card?card.juKey.length:0} />
             </PanView>
         );
     }
@@ -165,7 +165,6 @@ class LineText extends Component {
     static propTypes = {
       fontSize: React.PropTypes.number,
       color: React.PropTypes.string,
-      word: React.PropTypes.string,
       lineDis: React.PropTypes.number,
     };
     static defaultProps = {
