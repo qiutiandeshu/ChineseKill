@@ -14,7 +14,8 @@ const PUNCTUATION = ['，', '。', '？', '“', '”', '！', '：', '（', '�
 export default class QuestionRender extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+        };
         this.initSyllabel(props)
     }
     static propTypes = {

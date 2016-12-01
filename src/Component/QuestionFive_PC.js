@@ -68,8 +68,7 @@ export default class QuestionFive_PC extends Component {
         if(this.state.timeProgress  == 0){
             return   (
                 <View style={{width:ScreenWidth*0.8,height:ScreenHeight*0.25 }}>
-                    <Progress.Circle  thickness={2} borderWidth={0}
-                                       progress={0.5 } size={MinUnit*10+4} color="#4ACE35"/>
+
                 </View>
             )
         }
@@ -83,26 +82,42 @@ export default class QuestionFive_PC extends Component {
         return (
             <View style={{width:ScreenWidth*0.8,height:ScreenHeight*0.25 }}>
                 <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-                    <Text>评测解析</Text>
-                    <Text>分数:{this.state.recordResult.overallScore}</Text>
+                    <Text style={UtilStyles.fontSmall}>评测解析</Text>
+                    <Text style={UtilStyles.fontSmall}>分数:{this.state.recordResult.overallScore}</Text>
                 </View>
                 {list}
-                <Text>录音音量:{parseInt(this.state.volumProgress * 100)}</Text>
+
                 <Text>评测结果:{JSON.stringify(this.state.recordResult)}</Text>
 
-                }
             </View>
         );
     }
 
     getResultMsg = (str,detail)=>{
-        const {overallScore,phnScore,pronScore,toneScore,originalTone,recordTone} = detail
-        let result = str + ":"
-        if(overallScore < 60){
-            result += "读的不太好.因为:"
+        const {overallScore,phnScore,pronScore,toneScore,originalTone,recordTone,phoneScores} = detail
+        let toneStr = ["轻声","一声","二声","三声","四声"]
+        let result = str + ": "
+        let blnGood = true
+        if(phoneScores.sm){
+            if(phoneScores.sm < 75){
+                result += "声母读的不准  "
+                blnGood = false
+            }
+            //result += "声母得分:"+phoneScores.sm+"  "
+        }
+        if(phoneScores.ym){
+            if(phoneScores.ym < 75){
+                result += "韵母读的不准  "
+                blnGood = false
+            }
+            //result += "韵母得分:"+phoneScores.ym+"  "
         }
         if(originalTone != recordTone){
-            result += "声调读的不太好"
+            result += "声调读的不准 (将"+toneStr[originalTone]+"读成"+toneStr[recordTone]+")"
+            blnGood = false
+        }
+        if(blnGood){
+            result += "您读的很准确"
         }
         return result
     }
@@ -110,9 +125,12 @@ export default class QuestionFive_PC extends Component {
     renderButtons = ()=> {
         return (
             <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+
                 <PanButton name="btnRecord" onPress={this.onPressRecord.bind(this)}
                            style={[styles.bigCircle,{backgroundColor:'#00BDD3'}]}>
-                    <Icon name="microphone" size={IconSize*2} color="white"/>
+                    <Progress.Circle  thickness={MinUnit*0.5} borderWidth={0} style={{position:'absolute',left:0,top:0}}
+                                      progress={Number(this.state.volumProgress)} size={IconSize * 2 + MinUnit * 2} color="#1BA2FF"/>
+                    <Icon name="microphone" style={{backgroundColor:'#00000000'}}  size={IconSize*2} color="white"/>
                 </PanButton >
                 <PanButton name="btnPlayRecord" style={[styles.smallCircle]}
                            disabled={this.state.playRecordState=='none'}
@@ -151,7 +169,7 @@ export default class QuestionFive_PC extends Component {
     callBackRecord = (data)=> {
         switch (data.type) {
             case 'volume':
-                //..console.log("获得音量回调:",data.volume)
+                console.log("获得音量回调:",data.volume)
                 this.setState({
                     volumProgress: data.volume
                 })

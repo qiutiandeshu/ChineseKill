@@ -285,7 +285,7 @@ export default class App extends Component {
             // console.log('登出成功：' + ret.fullName);
         }
     }
-    /*--------------------------Login start-----------------------*/
+    /*--------------------------Login end-----------------------*/
 
     /*--------------------------驰声接口 start-----------------------*/
     onStartChivox(param, callBack) {//开始评测，这里的设置可根据需要进行设置，说明看下方对应条目
@@ -770,8 +770,8 @@ export default class App extends Component {
     getLessonDate = ()=> {
         this.allLessonData[0] = require('../data/lessons/lesson1.json')
         this.allLessonData[1] = require('../data/lessons/lesson2.json')
-        this.allLessonData[2] = require('../data/lessons/lesson3.json')
-        this.allLessonData[3] = require('../data/lessons/lesson4.json')
+        //this.allLessonData[2] = require('../data/lessons/lesson3.json')
+        //this.allLessonData[3] = require('../data/lessons/lesson4.json')
 
         for (let i = 0; i < this.allLessonData.length; i++) {
             this.lessonChapterCount[i] = this.allLessonData[i].chapters.length
