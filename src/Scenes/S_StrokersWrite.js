@@ -25,6 +25,8 @@ import {
 var itemHeight = MinUnit * 7;
 import DrawWord from '../Common/DrawWord.js';
 var curWidth = parseInt(ScreenHeight * 0.48);
+import wd from '../Utils/GetWebData.js';
+import Utils from '../Utils/Utils.js';
 
 export default class StrokersWrite extends Component {
   constructor(props) {
@@ -34,6 +36,16 @@ export default class StrokersWrite extends Component {
     this.blnSeeBack = true;
     this.blnSeeLine = true;
     this.drawWord = null;
+
+    // var name = '八';
+    // var uniName = Utils.Utf8ToUnicode(name);
+    // uniName = uniName.replace('\\u', '');
+    // console.log('uniName', uniName);
+    // var uri = 'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/' + uniName + '.json';
+    // wd.Instance().getWebFile(uniName + '.json', wd.DOCUMENT, uri, 'utf8', (result)=>{
+    //   console.log(result);
+    // });
+    
     this.character = props.rowData.data.character;
   }
   static propTypes = {

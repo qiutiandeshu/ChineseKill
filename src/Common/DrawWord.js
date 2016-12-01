@@ -510,7 +510,7 @@ export default class DrawWord extends Component {
   autoWrite(){
     if (this.delayPlay >0){
       this.delayPlay--;
-      console.log(this.delayPlay);
+      // console.log(this.delayPlay);
       return;
     }
     if (this.drawIdx >= 0 && this.delayPlay == 0){
