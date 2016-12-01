@@ -97,6 +97,7 @@ export default class S_LessonMenus extends Component {
          
         const {cardZis,cardCis,cardJus,practices} = this.baseProps.lessonData.chapters[index]
         app.setNextRouteProps({
+            blnGate:true,
             questionData:practices,
             lessonInfo:{lessonId:lessonId,chapterIndex:index},
             newCardInfo:{cardZis:cardZis,cardCis:cardCis,cardJus:cardJus},

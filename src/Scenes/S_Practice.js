@@ -37,12 +37,12 @@ export default class S_Practice extends Component {
     static propTypes = {
         blnGate: PropTypes.bool,//标记是否为闯关,因为涉及到life属性的处理和显示的问题还有练习结果页面
         questionData: PropTypes.array.isRequired,
-        newCardInfo: PropTypes.object.isRequired,
+        newCardInfo: PropTypes.object,
         lessonInfo: PropTypes.object,
         chapterRecord: PropTypes.object
     }
     static defaultProps = {
-        blnGate: true,
+        blnGate: false,
         //questionData: [],
     }
 
@@ -91,7 +91,7 @@ export default class S_Practice extends Component {
         if (this.state.life < 0) {
             showGameOver = "Fail"
         } else {
-            if (index == this.questionCount) {
+            if (index == this.questionCount ) {
                 if (this.props.blnGate) {
                     this.saveLearning()
                     showGameOver = "Success"
@@ -278,9 +278,13 @@ export default class S_Practice extends Component {
     }
 
     renderQuestion = ()=> {//显示答题页面中要回答的问题
-        const {lessonId, chapterIndex} = this.props.lessonInfo        
         let question = this.props.questionData[this.state.index];
-        let questionInfo = lessonId + "_" + chapterIndex + "_" + this.state.index
+        let questionInfo = "tp"+this.state.index; //临时的练习时
+        if(this.props.blnGate){
+            const {lessonId, chapterIndex} = this.props.lessonInfo
+            questionInfo = lessonId + "_" + chapterIndex + "_" + this.state.index
+        }
+
         if (question.Q_Type === 0) {
             return (
                 <QuestionOne_XZ ref="nowQuestion"
