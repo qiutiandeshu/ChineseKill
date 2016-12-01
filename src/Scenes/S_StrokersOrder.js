@@ -135,10 +135,20 @@ export default class StrokersOrder extends Component {
   }
   render() {
     // <TextInput style={styles.textInput}/>
-
-    // <Image source={{uri: 'http://192.169.1.19:8080/ChineseSkill/Pics/5.jpg'}}
+    // <Image source={{uri: 'http://imgsrc.baidu.com/forum/w%3D580/sign=3dc7b5df35fae6cd0cb4ab693fb10f9e/b4ae8226cffc1e17206ed8d94a90f603728de909.jpg'}}
     //      style={{width: 200, height: 150, backgroundColor: '#AAA'}}
     //      resizeMode={'stretch'} />
+
+    // <PanButton name="btnTestChivox" 
+    //       onPress={this.onPressChivox.bind(this)} 
+    //       style={{justifyContent:'center', alignItems: 'center', marginTop:MinUnit*2}}>
+    //       <Icon name="microphone" size={MinUnit*10} style={{color: '#AAF'}} />
+    //     </PanButton>
+    //     <PanButton name="btnTestChivox" 
+    //       onPress={this.onPressPlay.bind(this)} 
+    //       style={{justifyContent:'center', alignItems: 'center', marginTop:MinUnit*2}}>
+    //       <Icon name="volume-up" size={MinUnit*10} style={{color: '#AAF'}} />
+    //     </PanButton>
 
     // <TextInput style={styles.textInput} />
     //     <View style={{width: ScreenWidth, height: 200, backgroundColor: '#111'}} />
@@ -147,16 +157,6 @@ export default class StrokersOrder extends Component {
       <PanView name='StrokersOrderBack' style={styles.container}>
         {this.renderTop()}
         {this.renderBody()}
-        <PanButton name="btnTestChivox" 
-          onPress={this.onPressChivox.bind(this)} 
-          style={{justifyContent:'center', alignItems: 'center', marginTop:MinUnit*2}}>
-          <Icon name="microphone" size={MinUnit*10} style={{color: '#AAF'}} />
-        </PanButton>
-        <PanButton name="btnTestChivox" 
-          onPress={this.onPressPlay.bind(this)} 
-          style={{justifyContent:'center', alignItems: 'center', marginTop:MinUnit*2}}>
-          <Icon name="volume-up" size={MinUnit*10} style={{color: '#AAF'}} />
-        </PanButton>
       </PanView>
     );
   }
