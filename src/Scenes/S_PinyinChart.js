@@ -10,6 +10,7 @@ import {
   View,
   Text, 
   PanResponder,
+  findNodeHandle,
 } from 'react-native';
 import PanView from '../UserInfo/PanView';
 import PanButton from '../UserInfo/PanButton';
@@ -75,12 +76,13 @@ export default class S_PinyinChart extends Component {
     this.state = {
       blnUpdate: false,
     };
-    this.initIndex = 0;
     this.chartData = require('../../data/py/拼音表.json');
-    this.initChart();
     this.moveOffset = { x: 0, y: 0};
     this._deltaMove = null;
     this.deltaSpeed = { x: 0, y: 0};
+    this.blnLoading = true;
+    this.showData = [];
+    this.blnDialog = false;
   }
   static propTypes = {
   }
@@ -102,14 +104,24 @@ export default class S_PinyinChart extends Component {
     });
   }
   componentDidMount() {
+    this.initChart();
+    this._deltaUpdate = setTimeout(this.deltaUpdate.bind(this), 500); 
   }
   componentWillUnmount() {
     this.clearDeltaMove();
+    this._deltaUpdate && clearTimeout(this._deltaUpdate);
+  }
+  deltaUpdate(){
+    if (this.blnLoading){
+      this.blnLoading = false;
+      this.setUpdate();
+    }
   }
   initChart(){
     this.renderData = [];
     this.renderSM = [];
     this.renderYM = [];
+    this.showData = [];
     this.renderOrg = null;
     var top = 0;
     var left = 0;
@@ -150,6 +162,15 @@ export default class S_PinyinChart extends Component {
             </View>
           );
         }
+        var tempShow = {
+          py_sm_i: i,
+          py_ym_j: j,
+          top: top,
+          left: left,
+          width: w,
+          height: h,
+          child: [], 
+        };
         this.renderData.push(
           <View key={`${i}_${j}`} style={{
             position: 'absolute',
@@ -159,30 +180,40 @@ export default class S_PinyinChart extends Component {
             height: h, 
             overflow: 'hidden',
           }}>
-            {this.initChildren(py_sm[i], py_ym[j], iw, ih, pd, color)}
+            {this.initChildren(py_sm[i], py_ym[j], iw, ih, pd, color, tempShow)}
           </View>
         );
         top += (h+pd);
+        this.showData.push(tempShow);
       }
       left += (w+pd);
     }
     this.maxWidth = left - pd;
     this.maxHeight = top - pd;
-    this.initIndex++;
   }
-  initChildren(smArr, ymArr, width, height, pd, color){
+  initChildren(smArr, ymArr, width, height, pd, color, tempShow){
+    var childShow = [];
     var arr = [];
     var top = 0;
     var left = 0;
     for(var j=0;j<ymArr.length; j++){
       top = 0;
       for(var i=0;i<smArr.length;i++){
-        var str = this.getPYString(smArr[i], ymArr[j]);
+        var data = this.getPYString(smArr[i], ymArr[j]);
         var child = null;
-        if (str != null){
+        childShow.push({
+          sm_i: i,
+          ym_j: j,
+          data: data,//包含charyData的index 和 当前的拼音
+          top: top,
+          left: left,
+          width: width,
+          height: height
+        });
+        if (data != null){
           child = (
             <Text style={{fontSize: width/4, textAlign: 'center', color: '#222'}}>
-              {str}
+              {data.py}
             </Text>
           );
         }
@@ -195,6 +226,7 @@ export default class S_PinyinChart extends Component {
       }
       left += (width + pd);
     }
+    tempShow.child = childShow;
     return arr;
   }
   initSMChildren(smArr, width, height, pd, color){
@@ -229,16 +261,38 @@ export default class S_PinyinChart extends Component {
   }
   getPYString(sm, ym){
     if (sm == '-'){
-      var i = this.getPYData(ym);
+      var tmp = ym;
+      if (ym[0] == 'i'){
+        if (ym == 'i' || ym == 'in' || ym == 'ing') {
+          tmp = 'y' + ym;
+        }else{
+          tmp = ym.replace('i','y');
+        }
+      }else if (ym[0] == 'u'){
+        if (ym == 'u'){
+          tmp = 'w' + ym;
+        }else{
+          tmp = ym.replace('u', 'w');
+        }
+      }else if (ym[0] == 'ü'){
+        tmp = ym.replace('ü', 'yu');
+      }
+      var i = this.getPYData(tmp);
       if (i == null) return null;
       else {
-        return this.chartData[i].py;
+        return {
+          idx: i,
+          py: this.chartData[i].py
+        };
       }
     }else {
       var i = this.getPYData(sm+ym);
       if (i == null) return null;
       else {
-        return this.chartData[i].py;
+        return {
+          idx: i,
+          py: this.chartData[i].py
+        };
       }
     }
   }
@@ -251,10 +305,16 @@ export default class S_PinyinChart extends Component {
     return null;
   }
   onStartShouldSetPanResponder(e, g){
-    return true;
+    if (e.nativeEvent.target == findNodeHandle(this.touchView)){
+      return true; 
+    }
+    return false;
   }
   onMoveShouldSetPanResponder(e, g){
-    return true;
+    if (e.nativeEvent.target == findNodeHandle(this.touchView)){
+      return true;
+    }
+    return false;
   }
   onPanResponderGrant(e, g){
     if (g.numberActiveTouches == 1){
@@ -263,22 +323,25 @@ export default class S_PinyinChart extends Component {
         y: e.nativeEvent.locationY
       };
       this.lastPosition = tp;
+      this.deltaSpeed.x = 0;
+      this.deltaSpeed.y = 0;
       this.clearDeltaMove();
       this.blnInTouch = true;
     }
+    this.toucTime = new Date();
   }
   onPanResponderMove(e, g){
-    if (g.numberActiveTouches == 1){
-      var tp = {
-        x: e.nativeEvent.locationX,
-        y: e.nativeEvent.locationY
-      };
-      var delta = Utils.PSubP(tp, this.lastPosition);
-      this.moveOffset.x = this.moveOffset.x + delta.x;
-      this.moveOffset.y = this.moveOffset.y + delta.y;
-      this.moveNativeProps();
-      this.lastPosition = tp;
-      if (delta.x !=0 || delta.y != 0){
+    if (this.blnInTouch){
+      if (g.numberActiveTouches == 1){
+        var tp = {
+          x: e.nativeEvent.locationX,
+          y: e.nativeEvent.locationY
+        };
+        var delta = Utils.PSubP(tp, this.lastPosition);
+        this.moveOffset.x = this.moveOffset.x + delta.x;
+        this.moveOffset.y = this.moveOffset.y + delta.y;
+        this.moveNativeProps();
+        this.lastPosition = tp;
         this.deltaSpeed = delta;
       }
     }
@@ -290,16 +353,57 @@ export default class S_PinyinChart extends Component {
     this.endPanResponder(e, g);
   }
   endPanResponder(e, g){
-    // var tp = {
-    //   x: e.nativeEvent.locationX,
-    //   y: e.nativeEvent.locationY
-    // };
-    if (this.blnInTouch){
-      this.deltaSpeed = Utils.PMulV(this.deltaSpeed, 2);
-      console.log(this.deltaSpeed);
-      this._deltaMove = setInterval(this.deltaMove.bind(this), 1/60);
+    var pressTime = (new Date()).getTime() - this.toucTime.getTime();
+    if (pressTime < 100 || (this.deltaSpeed.x == 0 && this.deltaSpeed.y == 0)){
+      if (this.checkMove()){
+        // console.log('still move');
+        this._deltaMove = setInterval(this.deltaMove.bind(this), 1/60);
+      }else{
+        this.clickGrid({
+          x: e.nativeEvent.locationX,
+          y: e.nativeEvent.locationY
+        });
+      }
+    }else{
+      if (this.blnInTouch){
+        // this.deltaSpeed = Utils.PMulV(this.deltaSpeed, 2);
+        // console.log('deltaSpeed', this.deltaSpeed);
+        this._deltaMove = setInterval(this.deltaMove.bind(this), 1/60);
+      }
     }
     this.blnInTouch = false;
+  }
+  clickGrid(pos){
+    console.log('clicked x:' + pos.x + ', y:' + pos.y);
+    var tx = pos.x - this.moveOffset.x;
+    var ty = pos.y - this.moveOffset.y;
+    var sel = this.findGrid(tx, ty);
+    if (sel != -1){
+      var tempShow = this.showData[sel];
+      if (tempShow.select != -1 && tempShow.child[tempShow.select].data){
+        console.log(tempShow.child[tempShow.select].data);
+        this.onOpenDialog();
+      }
+    }
+  }
+  findGrid(x, y){
+    for(var i=0;i<this.showData.length;i++){
+      var d = this.showData[i];
+      d.select = -1;
+      if (x >= d.left && x <= d.left + d.width && y >= d.top && y <= d.top + d.height){
+        x = x - d.left;
+        y = y - d.top;
+        for(var j=0;j<d.child.length;j++){
+          var c = d.child[j];
+          if (x >= c.left && x <= c.left + c.width && y >= c.top && y <= c.top + c.height){
+            this.showData[i].select = j;
+            break;
+          }
+        }
+        return i;
+      }
+    }
+    return -1;
   }
   moveNativeProps(){
     if (this.refPY){
@@ -331,14 +435,20 @@ export default class S_PinyinChart extends Component {
   }
   deltaMove(){
     if (Math.abs(this.deltaSpeed.x * 10) < 1 && Math.abs(this.deltaSpeed.y * 10) < 1){
-      this.clearDeltaMove();
+      if (!this.checkMove()){
+        // console.log('stop move');
+        this.clearDeltaMove();
+      }else{
+        this.checkDeltaMove();
+        this.moveNativeProps();
+      }
     }else{
       this.moveOffset.x = this.moveOffset.x + this.deltaSpeed.x;
       this.moveOffset.y = this.moveOffset.y + this.deltaSpeed.y;
-      this.moveNativeProps();
       this.deltaSpeed.x *= 0.9;
       this.deltaSpeed.y *= 0.9;
       this.checkDeltaMove();
+      this.moveNativeProps();
     }
   }
   checkDeltaMove(){
@@ -385,9 +495,106 @@ export default class S_PinyinChart extends Component {
     return (
       <View name={'S_PinyinChart'} style={styles.container}>
         {this.renderTop()}
-        {this.renderBody()}
+        {this.rendeLoading()}
       </View>
     );
+  }
+  rendeLoading(){
+    if (this.blnLoading){
+      return (
+        <View style={{position: 'absolute', left: 0, top: 0, width: ScreenWidth, height: ScreenHeight, opacity: 0.5, backgroundColor: '#111', justifyContent: 'center', alignItems: 'center'}} >
+          <Text style={{fontSize: MinUnit*10, color: '#FFF', textAlign: 'center'}}>
+            Loading...
+          </Text>
+        </View>
+      );
+    }else{
+      return [
+        this.renderBody(), this.renderDialog()
+      ];
+    }
+  }
+  onOpenDialog(){
+    this.blnDialog = true;
+    this.setUpdate();
+  }
+  onCloseDialog(){
+    this.blnDialog = false;
+    this.setUpdate();
+  }
+  renderDialog(){
+    if (this.blnDialog){
+      var w = MinUnit*66;
+      var h = MinUnit*36;
+      return (
+        <View key={'dialog'} style={{position: 'absolute', left: 0, top: 0, width: ScreenWidth, height: ScreenHeight, justifyContent: 'center', alignItems: 'center'}} >
+          <PanButton name='btnPinyinChartCloseDialog' 
+            onPress={this.onCloseDialog.bind(this)} 
+            btnType={'none'}>
+            <View style={{position: 'absolute', left: 0, top: 0, width: ScreenWidth, height: ScreenHeight, opacity: 0.5, backgroundColor: '#111'}} />
+          </PanButton>
+          <View style={{
+            width: w, 
+            height: h,
+            borderRadius: MinUnit,
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            backgroundColor: '#FCFCFC',
+            flexDirection: 'row',
+          }}>
+            {this.renderDialogItem()}
+          </View>
+        </View>
+      );
+    }else {
+      return null;
+    }
+  }
+  readPinyin(index){
+
+  }
+  onPressChivox(index){
+
+  }
+  onPressPlay(index){
+
+  }
+  renderDialogItem(){
+    var arr = [];
+    for(var i=0;i<1;i++){
+      arr.push(
+        <View key={i} style={{
+          width: MinUnit*12, 
+          height: ScreenHeight/2 - MinUnit*2, 
+          // backgroundColor:'#ccc',
+          alignItems: 'center'
+        }}>
+          <PanButton name={'btnPCRead'+i} onPress={this.readPinyin.bind(this, i)} style={{justifyContent:'center', alignItems: 'center', height: MinUnit*8, width: MinUnit*8, marginTop: MinUnit*2}}>
+            <Text style={{fontSize: MinUnit*2.2, textAlign: 'center', color: '#333'}}>
+              zhuang
+            </Text>
+          </PanButton>
+          <Text style={{fontSize: MinUnit*1.5, textAlign: 'center', color: '#AAA', marginTop: MinUnit}}>
+            {`声母：${100}\n韵母：${100}\n声调：${100}`}
+          </Text>
+          <CircleIcon
+            name='btnPCChivox'
+            onPress={this.onPressChivox.bind(this, i)}
+            style={[styles.btnBackView, {borderColor: '#8BCBED', marginTop: MinUnit*4}]}
+            iconName={'microphone'}
+            iconSize={4} 
+            iconStyle={{color: '#8BCBED'}} />
+          <CircleIcon
+            name='btnPCPlay'
+            onPress={this.onPressPlay.bind(this, i)}
+            style={[styles.btnBackView, {borderColor: '#8BCBED', marginTop: MinUnit}]}
+            iconName={'volume-up'}
+            iconSize={4} 
+            iconStyle={{color: '#8BCBED'}} />
+        </View>
+      );
+    }
+    return arr;
   }
   onBackScene(){
     this.props.navigator.pop();
@@ -407,7 +614,7 @@ export default class S_PinyinChart extends Component {
   }
   renderBody(){
     return (
-      <PanView name='PingyinChartBodyView' style={styles.bodyViewBack} removeClippedSubviews={true}>
+      <PanView name='PingyinChartBodyView' key={'body'} style={styles.bodyViewBack} removeClippedSubviews={true}>
         {this.renderOrg}
         <View style={styles.bodySMGrid}>
           <View ref={(r)=>{this.refSM = r}} style={styles.bodyGridView}>
@@ -419,13 +626,101 @@ export default class S_PinyinChart extends Component {
             {this.renderYM}
           </View>
         </View>
-        <View style={styles.bodyPYGrid} {...this._panResponder.panHandlers} pointerEvents={'box-only'}>
+        <View style={styles.bodyPYGrid} {...this._panResponder.panHandlers} 
+          ref={(r)=>{this.touchView = r}} pointerEvents={'box-only'}>
           <View ref={(r)=>{this.refPY = r}} style={styles.bodyGridView}>
             {this.renderData}
           </View>
         </View>
       </PanView> 
     )
+  }
+}
+class CircleIcon extends Component {
+  constructor(props) {
+    super(props);
+     this.state={
+      blnUpdate: false,
+    };
+    this.iconIdx = 0;
+    var w = (this.props.iconSize + 1.4) * MinUnit;
+    this.selfStyle={
+      width: w, 
+      height: w, 
+      borderRadius: w / 2, 
+      borderWidth: 1, 
+      borderColor: '#CDCFA7', 
+      alignItems: 'center', 
+      justifyContent: 'center'
+    };
+    this.selectStyle = [
+      {backgroundColor: this.props.style.backgroundColor},
+      {color: this.props.iconStyle.color},
+      {backgroundColor: this.props.iconStyle.color},
+      {color: '#FFFFFF'},
+    ];
+  }
+  static propTypes = {
+    name: PropTypes.string.isRequired, //PanView 或者 PanButton的名字
+    iconName: PropTypes.oneOfType([PropTypes.array, PropTypes.string]).isRequired, //icon的名字
+    iconSize: PropTypes.number, //icon的大小
+    iconStyle: PropTypes.object,  //icon的样式
+    onPress: PropTypes.func, //可以按，说明就是button
+  }
+  static defaultProps = {
+    onPress: null,
+    iconStyle: {color: '#000'},
+    iconSize: 2,
+  }
+  setIconIndex(idx){
+    this.iconIdx = idx % 2;
+    this.setUpdate();
+  }
+  setUpdate(){
+    this.setState({
+      blnUpdate: !this.state.blnUpdate,
+    });
+  }
+  render(){
+    var iname = '';
+    var tempBack = {};
+    var tempIcon = {};
+    if (typeof(this.props.iconName) == 'string'){
+      iname = this.props.iconName;
+    }else {
+      iname = this.props.iconName[this.iconIdx];
+      tempBack = this.selectStyle[this.iconIdx*2+0];
+      tempIcon = this.selectStyle[this.iconIdx*2+1];
+    }
+    var child = (
+      <Icon 
+        name={iname} 
+        size={this.props.iconSize * MinUnit} 
+        style={[this.props.iconStyle, tempIcon, {backgroundColor: 'rgba(0,0,0,0)'}]}
+      />
+    );
+    var ret = null;
+    if (this.props.onPress){
+      ret = (
+        <PanButton 
+          name={this.props.name} 
+          onPress={this.props.onPress} 
+          style={[this.selfStyle, this.props.style, tempBack]}
+        >
+          {child}
+        </PanButton>
+      );
+    }else{
+      ret = (
+        <PanView 
+          name={this.props.name} 
+          style={[this.selfStyle, this.props.style, tempBack]}
+        >
+          {child}
+        </PanView>
+      );
+    }
+    return ret;
   }
 }
 const styles = StyleSheet.create({
@@ -521,5 +816,9 @@ const styles = StyleSheet.create({
     height: fw,
     overflow: 'hidden',
     backgroundColor: '#88CDD2'
+  },
+  btnBackView:{
+    alignItems: 'center', 
+    justifyContent: 'center'
   },
 });
