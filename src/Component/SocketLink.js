@@ -7,8 +7,9 @@ var SERVER_K = {
   ERROE: 3,
 };
 
-function SocketLink(app) {
+function SocketLink(app, _callback) {
   // 连接服务器
+  this.callback = _callback;
 	this.startLink = function() {
 		app.ws = new WebSocket('ws://192.168.1.110:1111');
     this.server_k = SERVER_K.START;
@@ -16,7 +17,8 @@ function SocketLink(app) {
     app.ws.onopen = (e) => {
       // connection opened
       this.server_k = SERVER_K.WORK;
-      console.log('socket open');
+      // console.log('socket open');
+      this.callback('open');
     };
     app.ws.onmessage = (e) => {
       // a message was received
@@ -25,16 +27,19 @@ function SocketLink(app) {
       	this.fromServer(obj);
       	this.fromServer = null;
       }
+      this.callback('message');
     };
     app.ws.onclose = (e) => {
       // connection closed
       this.server_k = SERVER_K.CLOSE;
-      console.log('socket close');
+      // console.log('socket close');
+      this.callback('close');
     };
     app.ws.onerror = (e) => {
       // an error occurred
       this.server_k = SERVER_K.ERROE;
-      console.log('socket error');
+      // console.log('socket error');
+      this.callback('error');
     };
 	}
 	this.stopLink = function() {
@@ -168,6 +173,30 @@ function SocketLink(app) {
       } else {
         callback('fail');
       }
+    }
+  }
+  // 得到描红信息
+  this.getCharacter = function(name, callback, _fromServer) {
+    this.fromServer = _fromServer;
+    var data = {
+      name: name,
+    };
+    if (this.sendToSocket('GetPrint', 'helloworld', data)) {
+      callback('success');
+    } else {
+      callback('fail');
+    }
+  }
+  // 得到课程信息
+  this.getLesson = function(name, callback, _fromServer) {
+    this.fromServer = _fromServer;
+    var data = {
+      name: name,
+    };
+    if (this.sendToSocket('GetLesson', 'helloworld', data)) {
+      callback('success');
+    } else {
+      callback('fail');
     }
   }
 

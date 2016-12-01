@@ -62,7 +62,7 @@ export default class App extends Component {
 
     componentWillMount() {
         // 连接服务器
-        global.socket = new SocketLink(this);
+        global.socket = new SocketLink(this, (msg)=>{});
         this.getLessonDate();
         this.initUserInfoByStorage();
         this.initLearningByStorage();

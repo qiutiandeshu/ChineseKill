@@ -35,6 +35,10 @@ class Box extends Component {
 	hidden() {
 		this.refs.PopupBox.hidden();
 	}
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState != this.state) return true;
+    return false;
+  }
   // 判断是否为邮箱
   blnEmail(_str) {
     var reg = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
@@ -1236,17 +1240,17 @@ class CardBox extends Box {
             break;
           case 'result':
             // console.log("得到评测结果:", data.result.details);
-            // var result = data.result.details;
-            // result.forEach((_data)=>{
-            //   let toneStr = ["轻声","一声","二声","三声","四声"]
-            //   str = '声母：' + _data.phoneScores.sm;
-            //   str += '韵母：' + _data.phoneScores.ym;
-            //   if(originalTone != recordTone){
-            //     str += "声调读的不准 (将"+toneStr[originalTone]+"读成"+toneStr[recordTone]+")"
-            //   }
-            //   console.log(str);
-            //   // this.result = str;
-            // });
+            var result = data.result.details;
+            result.forEach((_data)=>{
+              let toneStr = ["轻声","一声","二声","三声","四声"]
+              str = '声母：' + _data.phoneScores.sm;
+              str += '韵母：' + _data.phoneScores.ym;
+              if(originalTone != recordTone){
+                str += "声调读的不准 (将"+toneStr[originalTone]+"读成"+toneStr[recordTone]+")"
+              }
+              console.log(str);
+              // this.result = str;
+            });
             this.stopRecord();
             this.playSound();
             break;
@@ -1344,7 +1348,6 @@ class CardBox extends Box {
       var _practice = _chapter['practices'][_json.practiceId];
       practices.push(_practice);
     });
-    console.log(practices);
     return practices;
   }
   randomList(_list) {
@@ -1381,6 +1384,7 @@ class CardBox extends Box {
     }
   }
   renderCharacter() {
+    console.log('renderCharacter');
     var wordData = require('../../data/characters/吞.json')
     return (
       <PanView name={'v_characterBox'} style={styles.character}>
@@ -1429,6 +1433,11 @@ class CardBox extends Box {
       selectData: data,
     });
     this.selectId = id;
+    socket.getCharacter('吞', (msg)=>{
+      console.log(msg);
+    }, (json)=>{
+      console.log(json);
+    });
   }
   showEnd(bln) {
     var data = null;

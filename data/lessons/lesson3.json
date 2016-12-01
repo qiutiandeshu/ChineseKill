@@ -328,7 +328,7 @@
       "Q_CiCards": [
         "7856"
       ], 
-      "Q_Type": "0", 
+      "Q_Type": 0, 
       "Q_Question_PY": "jǐu yuè", 
       "word": "日；月", 
       "sentence": "Date expression", 
@@ -439,7 +439,7 @@
             5315, 
             7856
           ], 
-          "Q_Type": "0", 
+          "Q_Type": 0, 
           "Q_Contents": [
             "Tomorrow is February 3rd", 
             "Tomorrow is February 2nd", 
@@ -483,7 +483,7 @@
             "7856", 
             3349
           ], 
-          "Q_Type": "2", 
+          "Q_Type": 2, 
           "Q_Contents": [
             "March", 
             "February", 
@@ -560,7 +560,7 @@
             "7856"
           ], 
           "Q_Title": "choose the correct word", 
-          "Q_Type": "0", 
+          "Q_Type": 0, 
           "Q_Contents": [
             "五月/wǔ yuè", 
             "六月/lìu yuè", 
@@ -576,7 +576,7 @@
             "7856"
           ], 
           "Q_Title": "write down the translation", 
-          "Q_Type": "1", 
+          "Q_Type": 1, 
           "A_Tips": "write down the translation", 
           "Q_Answer": [
             "june"
@@ -624,7 +624,7 @@
         "7856"
       ], 
       "Q_Title": "choose a correct word", 
-      "Q_Type": "0", 
+      "Q_Type": 0, 
       "Q_Answer": "shi2 yi1 yue4 shi2 san1 hao4", 
       "Q_Question_PY": "shí yī_yuè_shí sān_rì", 
       "Q_Question": "十一月_十三_日", 
@@ -687,7 +687,7 @@
       "Q_CiCards": [
         "4591"
       ], 
-      "Q_Type": "0", 
+      "Q_Type": 0, 
       "Q_Contents": [
         "March 2012", 
         "2012 March", 
@@ -724,7 +724,7 @@
       "Q_CiCards": [
         "4420"
       ], 
-      "Q_Type": "0", 
+      "Q_Type": 0, 
       "Q_Contents": [
         "Next year is 2013.", 
         "This year is 2013.", 
@@ -763,7 +763,7 @@
         "7856"
       ], 
       "Q_Title": "choose the correct translation", 
-      "Q_Type": "0", 
+      "Q_Type": 0, 
       "Q_Contents": [
         "Today is November 1, 2016.", 
         "Today is November 1, 2015.", 
@@ -811,7 +811,7 @@
         "5345", 
         "7856"
       ], 
-      "Q_Type": "2", 
+      "Q_Type": 2, 
       "Q_Contents": [
         "Today", 
         "is", 
@@ -864,7 +864,7 @@
         "3349"
       ], 
       "Q_Title": "speak the sentence", 
-      "Q_Type": "4", 
+      "Q_Type": 4, 
       "Q_Answer": "jin1 tian1 shi4 er4 ling2 ling2 jiu3 nian2 ba1 yue4 jiu3 ri4", 
       "Q_Question_PY": "jīn tiān_shì_èr líng líng jǐu nián_bā yuè_jǐu rì.", 
       "Q_Question": "今天_是_二零零九年_八月_九日。", 
@@ -878,7 +878,7 @@
         "7856", 
         "4591"
       ], 
-      "Q_Type": "1", 
+      "Q_Type": 1, 
       "Q_Answer": [
         "November 2016"
       ], 
@@ -896,7 +896,7 @@
         "4591", 
         "7856"
       ], 
-      "Q_Type": "0", 
+      "Q_Type": 0, 
       "Q_Contents": [
         "December 2018", 
         "December 2017", 
@@ -917,7 +917,7 @@
         "4591", 
         "7856"
       ], 
-      "Q_Type": "0", 
+      "Q_Type": 0, 
       "Q_Contents": [
         "This year is 2016", 
         "Last year is 2016", 
@@ -940,7 +940,7 @@
         3349, 
         "4591"
       ], 
-      "Q_Type": "2", 
+      "Q_Type": 2, 
       "Q_Contents": [
         "Today", 
         "is", 
