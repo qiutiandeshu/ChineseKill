@@ -123,6 +123,19 @@ export default class DrawWord extends Component {
     }
   }
   InitWord(data){
+    if (this.props.curWidth != 400){
+      var scaleWidth = this.props.curWidth*0.8 / 400;
+      var offsetXY = this.props.curWidth*0.2 / 2;
+      var jsonStr = JSON.stringify(data);
+      data = JSON.parse(jsonStr);
+      for(var i=0;i<data.length;i++){
+        var points = data[i].points;
+        for(var k=0;k<points.length;k++){
+          points[k].x = points[k].x * scaleWidth + offsetXY;
+          points[k].y = points[k].y * scaleWidth + offsetXY;
+        }
+      }
+    }
     this.data = data;
     this.drawIdx = -1;
     this.minDisStart = Number.MAX_VALUE;
