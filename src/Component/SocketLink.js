@@ -113,7 +113,7 @@ function SocketLink(app) {
       userid: app.storageUserInfo.userid,
       time: timer,
       flashCard: app.storageReview,
-      learnCards: app.storageCardInfo.learnCards,
+      learnCards: app.storageCardInfo,
     };
     if (this.sendToSocket('Update', 'helloworld', data)) {
       callback('success');

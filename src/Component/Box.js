@@ -572,16 +572,17 @@ class FlashCardBox extends Box {
     this.blnAuto = true;
     this.minNum = 1;
     this.defaultNum = this.minNum;
+    this.testIndex = 0;
 
     this.keyNum = [0, 0, 0, 0, 0];
   }
   initSetting() {
     var json = socket.getReviewList(true, true, true);
+    console.log(json);
     this.reviewList = json.list;
     this.reviewNum = json.cNum + json.wNum + json.sNum;
     this.getMaxNum();
     this.defaultNum = this.maxNum;
-    this.testIndex = 0;
   }
   Refresh() {
     this.setState({
@@ -659,6 +660,11 @@ class FlashCardBox extends Box {
         this.setState({
           blnWait: false,
         });
+        Alert.alert(
+          '警告',
+          '连接服务器失败，请稍候重试'
+        );
+        this.initSetting();
       }
     },(json)=>{
       this.setState({
@@ -927,7 +933,7 @@ class FlashCardBox extends Box {
         </Animated.View>
       );
     }
-    if (this.reviewList) {
+    if (this.reviewList.length != 0) {
       var obj = this.reviewList[this.testIndex];
       var _question = obj.zx;
       var _answer1 = obj.py;
@@ -1070,7 +1076,7 @@ class FlashCardBox extends Box {
       var c_factor = [150, 0, -150]
       obj.factor += c_factor[kind - 2];
       obj.day = socket.getTime();
-      obj.review_t = list[kind - 2];
+      obj.review_t = list[kind - 2]*DAY_TIME;
     }
     if (obj.factor < 1300) {
       obj.factor = 1300;
@@ -1356,10 +1362,10 @@ class CardBox extends SoundBox {
         this.setState({
           blnWait: false,
         });
-        // Alert.alert(
-        //   '失败',
-        //   '服务器连接失败，请稍后再试',
-        // );
+        Alert.alert(
+          '失败',
+          '服务器连接失败，请稍后再试',
+        );
         this.timer = setTimeout(this.getCharacterMsg.bind(this), 500);
       }
     },(json)=>{
@@ -1387,6 +1393,7 @@ class CardBox extends SoundBox {
   getCharacterMsg(json) {
     var array = [];
     for (var i=0;i<this.jsonList.length;i++) {
+      if (app.storageReview == null) return;
       var obj = app.storageReview[this.props.kind][this.jsonList[i]];
       if (obj == null) continue;
       var _str = obj['yx_c'];
