@@ -7,8 +7,9 @@
 import React, { Component } from 'react';
 import {
 } from 'react-native';
-var sound = require('react-native-sound');
+
 var fs = require('react-native-fs');
+// var sound = require('react-native-sound');
 // Sound.MAIN_BUNDLE, Sound.DOCUMENT, Sound.LIBRARY, Sound.CACHES
 
 var webData = null;
@@ -24,10 +25,9 @@ export default class GetWebData{
     webData = null;
   }
   //文件路径名称
-  static MAIN_BUNDLE = sound.MAIN_BUNDLE;
-  static DOCUMENT = sound.DOCUMENT;
-  static LIBRARY = sound.LIBRARY;
-  static CACHES = sound.CACHES;
+  static MAIN_BUNDLE = fs.MainBundlePath;
+  static DOCUMENT = fs.DocumentDirectoryPath;
+  static CACHES = fs.CachesDirectoryPath;
   constructor(){
     this.callback = null;
   }
@@ -43,7 +43,20 @@ export default class GetWebData{
       this.callback(data);
     }
   }
-  getCharactorJson(name){
-    
+  getWebFile(name, path, uri, callback){
+    fs.exists(path)//检测路径是否存在
+    .then((result)=>{
+      if (result) {//路径存在
+        fs.exists(path + '/' + name)//检测文件是否存在
+        .then((result1)=>{
+          if (result1) {//文件存在
+            // fs.
+          }
+        })
+      }else{
+        // fs.mkdir(path)
+        // .then()
+      }
+    })
   }
 }

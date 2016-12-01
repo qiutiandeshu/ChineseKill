@@ -51,7 +51,7 @@ export default class DrawWord extends Component {
     this.unitDisMv = this.props.curWidth / 15;
     this.wrongCount = 0;
     this.nowPos = 0;
-    this.blnShowArrow = true;
+    this.blnShowArrow = this.props.arrowShow;
     this.blnShowBack = true;
     this.createBackLine();
     this.delayPlay = this.props.autoDelay;
@@ -80,14 +80,18 @@ export default class DrawWord extends Component {
     writeOver: PropTypes.func, //写完回调函数
     autoSpeed: PropTypes.number, //自动书写速度
     autoDelay: PropTypes.number, //自动书写首次延迟设置
+    arrowShow: PropTypes.bool, //是否显示箭头
+    showAll: PropTypes.bool, //是否一开始都显示 
   }
   static defaultProps = {
     autoSpeed: 3,
     backColor: '#DADADA',
     fillColor: '#000000',
     fillArray: null,
-    touch: true, //默认是可写的
+    blnTouch: true, //默认是可写的
     autoDelay: 30,
+    arrowShow: true,
+    showAll: false,
   }
   setUpdate(){
     this.setState({
@@ -536,6 +540,20 @@ export default class DrawWord extends Component {
   setHandWrite(){
     this.setRestart();
   }
+  setAllDraw(){
+    var character = this.data;
+    for(var i=0;i<character.length;i++){
+      var tColor = this.props.fillColor;
+      if (this.props.fillArray != null){
+        tColor = this.tempColor[character[i].bushou % (this.tempColor.length-1) + 1];
+      }
+      this.arrLine[i] = (
+        <Shape key={i} d={character[i].line} fill={tColor}/>
+      );
+    }
+    this.drawIdx = character.length;
+    this.setUpdate();
+  }
   componentWillMount() {
     if (this.props.blnTouch){
       this._panResponder = PanResponder.create({
@@ -549,8 +567,12 @@ export default class DrawWord extends Component {
     }
   }
   componentDidMount() {
-    this.drawIdx = 0;
-    this.setBeginDraw();
+    if (this.props.showAll){
+      this.setAllDraw();
+    }else{
+      this.drawIdx = 0;
+      this.setBeginDraw();
+    }
   }
   componentWillUnmount() {
     this._blinkTime && clearTimeout(this._blinkTime);
