@@ -8,7 +8,8 @@ import StrokersWrite from './Scenes/S_StrokersWrite';
 import Practice from './Scenes/S_Practice';
 import PinyinChart from './Scenes/S_PinyinChart';
 import Test from './Scenes/S_Test';
-import Tree from './Scenes/S_Tree.js'
+import TreeZ from './Scenes/S_TreeZ.js'
+import TreeC from './Scenes/S_TreeC.js'
 
 let RouteList = [
     {
@@ -55,9 +56,15 @@ let RouteList = [
         showStatusBar:false,
     },
     {
-        name:'Tree',
-        component:Tree,
+        name:'TreeZ',
+        component:TreeZ,
         index:7,
+        configure: 'FFB',
+    },
+    {
+        name:'TreeC',
+        component:TreeC,
+        index:8,
         configure: 'FFB',
     },
 
@@ -71,7 +78,8 @@ let RouteIndex = {
     StrokersWrite: 4,
     PinyinChart: 5,
     Test:6,
-    Tree: 7,
+    TreeZ: 7,
+    TreeC: 8,
 }
  
 module.exports = {RouteList,RouteIndex};

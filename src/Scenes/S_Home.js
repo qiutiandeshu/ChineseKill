@@ -214,8 +214,11 @@ export default class S_Home extends Component {
     _onPressPinyin(){
         this.props.navigator.push(app.getRoute('PinyinChart'));
     }
-    _onPressTree(){
-        this.props.navigator.push(app.getRoute('Tree'));
+    _onPressTreeZ(){
+        this.props.navigator.push(app.getRoute('TreeZ'));
+    }
+    _onPressTreeC(){
+        this.props.navigator.push(app.getRoute('TreeC'));
     }
 
     // 控制弹出框显示/隐藏

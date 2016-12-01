@@ -770,7 +770,7 @@ export default class App extends Component {
     getLessonDate = ()=> {
         this.allLessonData[0] = require('../data/lessons/lesson1.json')
         this.allLessonData[1] = require('../data/lessons/lesson2.json')
-        //this.allLessonData[2] = require('../data/lessons/lesson3.json')
+        this.allLessonData[2] = require('../data/lessons/lesson3.json')
         //this.allLessonData[3] = require('../data/lessons/lesson4.json')
 
         for (let i = 0; i < this.allLessonData.length; i++) {
