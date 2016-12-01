@@ -25,6 +25,7 @@ import DrawWord from '../Common/DrawWord.js'
 import FBLogin from '../Utils/FBLogin.js';
 import TWLogin from '../Utils/TWLogin.js';
 import GGLogin from '../Utils/GGLogin.js';
+import* as Progress from 'react-native-progress'
 
 const DAY_TIME = 86400000;
 class Box extends Component {
@@ -76,7 +77,14 @@ class LogoutBox extends Box {
     this.state = {
       blnWait: false,
       blnSuccess: false,
+      blnRefresh: false,
     };
+  }
+  show() {
+    this.setState({
+      blnRefresh: !this.state.blnRefresh,
+    });
+    this.refs.PopupBox.show();
   }
   render() {
     return (
@@ -114,10 +122,10 @@ class LogoutBox extends Box {
       blnWait: true,
     });
     socket.userUpdate((msg)=>{
-      this.setState({
-        blnWait: false,
-      });
       if (msg == 'fail') {
+        this.setState({
+          blnWait: false,
+        });
         Alert.alert(
           '警告',
           '服务器连接失败，请稍后再试'
@@ -1117,55 +1125,9 @@ class DoubleText extends Component {
     );
   }
 }
-// 带有声音处理的Box
-class SoundBox extends Box {
-  blnRecord = false;
-  constructor(props) {
-    super(props);
-  
-    this.state = {
-      blnShowLoop: false,
-    };
-  }
-  release() {
-    this.blnRecord = false;
-    this.setState({
-      blnShowLoop: false,
-    });
-  }
-  renderButton() {
-    var width = MinUnit*7;
-    return (
-      <View style={[{flexDirection: 'row', justifyContent: 'space-between',}, ]} >
-        <View style={{width}} />
-        <CircleIcon name={'microphone'} size={MinUnit*5} color={'#F6F6F6'} backStyle={styles.microphone} onPress={this.onRecordKey.bind(this)} />
-        {this.state.blnShowLoop && <CircleIcon name={'rotate-left'} size={MinUnit*5} color={'#F6F6F6'} backStyle={styles.microphone} onPress={this.onLoopKey.bind(this)} />}
-        {this.state.blnShowLoop==false && <View style={{width}} />}
-      </View>
-    );
-  }
-  // 录音按钮
-  onRecordKey() {
-    this.blnRecord = !this.blnRecord;
-    if (this.state.blnShowLoop==false && this.blnRecord==false) {
-      this.setState({
-        blnShowLoop: true,
-      });
-    }
-  }
-  // 循环按钮
-  onLoopKey() {
-    this.blnLoop = !this.blnLoop;
-  }
-  // 播放功能
-  playSound() {
 
-  }
-}
-var yxMsg = require('../../data/hz/6字义项表x.json');
-const CharacterList = [4,9,20,26,27,40,41,54,71,86,141,190,203,234,248,258,277,403,437,464,474];
 // 字，词，句记忆资料卡
-class CardBox extends SoundBox {
+class CardBox extends Box {
   static propTypes = {
     kind: React.PropTypes.string,
   };
@@ -1181,6 +1143,9 @@ class CardBox extends SoundBox {
       blnWait: true,
       selectData: null,
       blnShowLoop: false,
+      blnRecord: false,
+      volume: 0,
+      blnLoop: true,
     };
     this.jsonList = null;
     this.selectId = 0;
@@ -1193,6 +1158,13 @@ class CardBox extends SoundBox {
       dataSource: this.state.dataSource.cloneWithRows([]),
     });
     this.release();
+  }
+  release() {
+    this.setState({
+      blnRecord: false,
+      blnShowLoop: false,
+      volume: 0,
+    });
   }
   render() {
     var _name = this.props.kind + ' Review';
@@ -1212,6 +1184,129 @@ class CardBox extends SoundBox {
       </PopupBox>
     );
   }
+
+  renderButton() {
+    var width = MinUnit*7;
+    return (
+      <View style={[{flexDirection: 'row', justifyContent: 'space-between',}, ]} >
+        <View style={{width}} />
+        <CircleIcon
+          name={'microphone'} 
+          size={MinUnit*5} 
+          color={'#F6F6F6'} 
+          backStyle={[styles.microphone, {backgroundColor:this.state.blnRecord?"#CAD500":"#00BBD5",}]} 
+          onPress={this.onRecordKey.bind(this)}>
+          {this.state.blnRecord && 
+            <Progress.Circle  thickness={MinUnit*0.5} borderWidth={0} style={{position:'absolute',left:0,top:0}}
+                                        progress={Number(this.state.volume)} size={MinUnit*7} color="#1BA2FF"/>}
+        </CircleIcon>
+        {this.state.blnShowLoop && <CircleIcon name={'rotate-left'} size={MinUnit*5} color={this.state.blnLoop?'#F6F6F6':'#B0B0B0'} backStyle={styles.microphone} onPress={this.onLoopKey.bind(this)} />}
+        {this.state.blnShowLoop==false && <View style={{width}} />}
+      </View>
+    );
+  }
+  // 录音按钮
+  onRecordKey() {
+    if (this.state.blnRecord == false) {
+      // 开启语音评测
+      if (this.state.selectData.pc == null) {
+        Alert.alert(
+          '警告',
+          '没有评测信息',
+        );
+        return;
+      }
+      let param = {
+        gategory: 'word',
+        text: this.state.selectData.pc,
+        audioName: 'flash',
+      }
+      app.onStartChivox(param, (data)=>{
+        switch (data.type) {
+          case 'volume':
+            // console.log("获得音量回调:",data.volume)
+            if (this.state.blnRecord == false) {
+              this.setState({
+                blnRecord: true,
+              });
+            }
+            this.setState({
+              volume: data.volume,
+            });
+            break;
+          case 'result':
+            // console.log("得到评测结果:", data.result.details);
+            // var result = data.result.details;
+            // result.forEach((_data)=>{
+            //   let toneStr = ["轻声","一声","二声","三声","四声"]
+            //   str = '声母：' + _data.phoneScores.sm;
+            //   str += '韵母：' + _data.phoneScores.ym;
+            //   if(originalTone != recordTone){
+            //     str += "声调读的不准 (将"+toneStr[originalTone]+"读成"+toneStr[recordTone]+")"
+            //   }
+            //   console.log(str);
+            //   // this.result = str;
+            // });
+            this.stopRecord();
+            this.playSound();
+            break;
+          case 'error':
+            // console.log("评测出错:", data.error)
+            Alert.alert(
+              '警告',
+              '启动失败，请稍后',
+            );
+            this.stopRecord();
+            break;
+          case 'working':
+            // console.log("工作ing:", data.working)
+            break;
+        }
+      });
+    } else {
+      // 手动停止评测
+      app.onStopChivox();
+      this.setState({
+        blnRecord: false, 
+        volume: 0
+      });
+    }
+  }
+  stopRecord() {
+    this.setState({
+      blnRecord: false, 
+      volume: 0
+    });
+    if (this.state.blnShowLoop==false) {
+      this.setState({
+        blnShowLoop: true,
+      });
+    }
+  }
+  // 循环按钮
+  onLoopKey() {
+    this.setState({
+      blnLoop: !this.state.blnLoop,
+    });
+  }
+  // 播放功能
+  playSound() {
+    app.initPlayRecord('flash',(data)=>{
+      this.blnFlashVoice = false;
+      switch (data.type) {
+        case 'audioTime':
+            // console.log("获取到录音时长:", data.audioTime)
+            this.blnFlashVoice = true;
+            app.onPlayRecord();
+            break;
+        case 'working':
+            if (this.state.blnLoop) {
+            }
+            break;
+      }
+    });
+  }
+
   onPracticePress() {
     var practiceList = [];
     if (this.props.kind == 'Character') {
@@ -1226,7 +1321,6 @@ class CardBox extends SoundBox {
 
     }
     var practices = this.getPracticesList(practiceList);
-    console.log(practices);
 
     //开始练习
     app.setNextRouteProps({
@@ -1287,9 +1381,11 @@ class CardBox extends SoundBox {
     }
   }
   renderCharacter() {
+    var wordData = require('../../data/characters/吞.json')
     return (
       <PanView name={'v_characterBox'} style={styles.character}>
         <PanView name={'v_characterBox_c'} style={[styles.c_view, styles.border]}>
+          <DrawWord curWidth={MinUnit*20} blnTouch={false} fillArray={['#8AE293']} data={wordData.character} showAll={true} />
         </PanView>
         <View style={[styles.cMsg_view, ]}>
           <View style={{height: MinUnit*5, alignItems: 'center',}}>
@@ -1401,12 +1497,19 @@ class CardBox extends SoundBox {
       if (obj['yx_e'] != null) {
         _str = obj['yx_e'];
       }
-      var obj = {
+      var lastKey = -1;
+      if (obj.lastKey != null) {
+        lastKey = obj.lastKey;
+      }
+      var _obj = {
         character: obj['zx'],
         pyin: obj['py'],
-        yxstr: _str
+        yxstr: _str,
+        lastKey: lastKey,
+        pc: obj['pc'],
+        play: obj['play'],
       };
-      array.push(obj);
+      array.push(_obj);
     }
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(array),
@@ -1442,9 +1545,16 @@ class ListItem extends Component {
     var _str = ''+this.props.rowId;
     var fontSize = MinUnit* (1.4 - _str.length*0.15);
     if (fontSize < MinUnit*0.8) fontSize = MinUnit;
+    var backColor = '#000000';
+    var lastKey = this.props.data.lastKey;
+    if (lastKey==0 || lastKey==1) {
+      backColor = '#DF3F44';
+    } else if (lastKey >= 2) {
+      backColor = '#6EDF70';
+    }
     return (
       <PanButton name={'b_listItem_'+this.props.name+'_'+this.props.rowId} style={styles.listItem} onPress={this.props.onPress} >
-        <View style={styles.listIndexView}>
+        <View style={[styles.listIndexView, {backgroundColor: backColor}]}>
           <Text style={[styles.indexFont, {fontSize: fontSize}]}>{this.props.rowId + 1}</Text>
         </View>
         <View style={{width: MinUnit*10, justifyContent: 'center',}}>
@@ -1502,6 +1612,7 @@ class IconButton extends Component {
     return (
       <PanButton name={this.props.panName} onPress={this.props.onPress} style={this.props.backStyle} >
         <Icon name={this.props.name} size={this.props.size} color={this.props.color} style={this.props.iconStyle} />
+        {this.props.children}
       </PanButton>
     );
   }
@@ -1543,7 +1654,9 @@ class CircleIcon extends Component {
         onPress={this.props.onPress}
         name={this.props.name}
         size={MinUnit*4}
-        color={this.props.color} />
+        color={this.props.color}>
+        {this.props.children}
+      </IconButton>
     );
   }
 }

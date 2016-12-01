@@ -571,12 +571,14 @@ export default class App extends Component {
             this.addLoadingIndex()
         })
     }
-
+    
     noneUserInfoStorage = ()=> {
 
     }
 
     saveUserInfo = (saveData, expires = null)=> {
+        saveData.flashCard = [];
+        saveData.learnCards = [];
         this.storage.save({
             key: 'UserInfo',
             rawData: saveData,

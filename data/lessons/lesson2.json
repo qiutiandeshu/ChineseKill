@@ -1,4 +1,4 @@
-﻿{
+{
   "lessonId": 2, 
   "lessonTitle": "number", 
   "chapters": [
@@ -77,8 +77,8 @@
           "Q_Title": "select a correct translation", 
           "Q_Question": "五_个_女孩。", 
           "Q_JuCards": [
-		1
-	],
+            1
+          ]
         }, 
         {
           "Q_CiCards": [
@@ -92,7 +92,7 @@
             177
           ], 
           "Q_Answer": [
-            "one man"
+            "oneman"
           ], 
           "Q_Question_PY": "yī_gè_nán rén", 
           "Q_Sound": "yigenanren.MP3", 
@@ -100,8 +100,8 @@
           "Q_Question": "一_个_男人", 
           "A_Tips": "write down the translation", 
           "Q_JuCards": [
-		1
-	],
+            1
+          ]
         }, 
         {
           "Q_CiCards": [
@@ -203,9 +203,9 @@
           "Q_Sound": "sangenanren.mp3", 
           "Q_Title": "select a correct translation", 
           "Q_Question": "三_个_男人。", 
-          "Q_JuCards":[
-		1
-	],
+          "Q_JuCards": [
+            1
+          ]
         }, 
         {
           "Q_CiCards": [
@@ -628,7 +628,7 @@
           ], 
           "Q_Type": 1, 
           "Q_Answer": [
-            "eight girls"
+            "eightgirls"
           ], 
           "Q_Question_PY": "bā_gè_nǚ hái", 
           "Q_Sound": "bagenvhai.MP3", 
@@ -660,9 +660,7 @@
     {
       "practices": [
         {
-          "Q_CiCards": [
-            41626
-          ], 
+          "Q_Title": "choose a correct translation", 
           "Q_Type": 0, 
           "Q_Contents": [
             "ten", 
@@ -672,9 +670,8 @@
           ], 
           "Q_Answer": "eleven", 
           "Q_Question_PY": "shíyī", 
-          "Q_Sound": "11.MP3", 
-          "Q_Title": "choose a correct translation", 
           "Q_Question": "十一", 
+          "Q_Sound": "11.MP3", 
           "Q_JuCards": [
             2
           ]
@@ -739,7 +736,7 @@
             "two", 
             "boys"
           ], 
-          "Q_Question_PY": "sānshíèr_gè_nán hái.", 
+          "Q_Question_PY": "sān shí èr_gè_nán hái.", 
           "Q_Sound": "sanshiergenanhai.mp3", 
           "Q_Title": "select a correct translation", 
           "Q_Question": "三十二_个_男孩。", 
@@ -754,7 +751,7 @@
           "Q_Title": "choose a correct picture", 
           "Q_Type": 0, 
           "Q_Pics": [
-            "1000.jpg", 
+            "100.jpg", 
             "1000.jpg", 
             "10.jpg", 
             "10000.jpg"
@@ -814,7 +811,7 @@
         }, 
         {
           "Q_ZiCards": [
-            4983
+            457
           ], 
           "Q_Type": 3, 
           "Q_Question": "千", 
@@ -845,7 +842,7 @@
           "Q_Type": 4, 
           "Q_Answer": "yi1 bai3 san1 shi2 yi1", 
           "Q_Question_PY": "yībǎi_sānshíyī", 
-          "Q_Question": "一百_三十一。", 
+          "Q_Question": "一百_三十一", 
           "Q_Sound": "131.MP3", 
           "Q_JuCards": [
             2
@@ -862,7 +859,7 @@
           "Q_Type": 4, 
           "Q_Answer": "yi1 wan4 san1 qian1 yi1 bai3 wu3 shi2", 
           "Q_Question_PY": "yīwàn_sānqiān_yībǎi_wǔshí", 
-          "Q_Question": "一万_三千_一百_五十。", 
+          "Q_Question": "一万_三千_一百_五十", 
           "Q_Sound": "13150.MP3", 
           "Q_JuCards": [
             2
@@ -943,7 +940,9 @@
             87
           ], 
           "Q_Type": 1, 
-          "Q_Answer": "Five thousand eight hundred", 
+          "Q_Answer": [
+            "Fivethousandeighthundred"
+          ], 
           "Q_Question_PY": "wǔ qiān_bà bǎi", 
           "Q_Sound": "5800.MP3", 
           "Q_Title": "write down the translation", 
@@ -966,329 +965,10 @@
         87, 
         4983, 
         6502, 
-        7527, 
-        41626
+        7527
       ], 
       "cardJus": [
         2
-      ]
-    }, 
-    {
-      "practices": [
-        {
-          "Q_CiCards": [
-            4283
-          ], 
-          "Q_Title": "choose a correct picture", 
-          "Q_Type": 0, 
-          "Q_Pics": [
-            "cat.jpg", 
-            "dog.jpg", 
-            "bird.jpg", 
-            "fish.jpg"
-          ], 
-          "Q_Contents": [
-            "猫/māo", 
-            "狗/gǒu", 
-            "鸟/niǎo", 
-            "鱼/yú"
-          ], 
-          "Q_Answer": "猫/māo", 
-          "Q_Question": "cat", 
-          "Q_Sound": "mao.mp3"
-        }, 
-        {
-          "Q_CiCards": [
-            4047
-          ], 
-          "Q_Title": "choose a correct word", 
-          "Q_Type": 0, 
-          "Q_Contents": [
-            "one", 
-            "two", 
-            "three", 
-            "four"
-          ], 
-          "Q_Answer": "two", 
-          "Q_Question_PY": "liǎng", 
-          "Q_Question": "两", 
-          "Q_Sound": "liang3.MP3"
-        }, 
-        {
-          "Q_CiCards": [
-            4047, 
-            8196, 
-            4283
-          ], 
-          "Q_Pics": [
-            "twocats.jpg", 
-            "cat.jpg", 
-            "threecats.jpg", 
-            "fourcats.jpg"
-          ], 
-          "Q_Type": 0, 
-          "Q_Contents": [
-            "两只猫/liǎng zhī māo", 
-            "一只猫/yī zhī māo", 
-            "三只猫/sān zhī māo", 
-            "四只猫/sì zhī māo"
-          ], 
-          "Q_Answer": "两只猫/liǎng zhī māo", 
-          "Q_Sound": "liangzhimao.MP3", 
-          "Q_Title": "choose a correct picture", 
-          "Q_Question": "two cats", 
-          "Q_JuCards": [
-            3, 
-            4
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            2296
-          ], 
-          "Q_Title": "select the missing character", 
-          "Q_Type": 0, 
-          "Q_Contents": [
-            "猫/māo", 
-            "狗/gǒu", 
-            "鸟/niǎo", 
-            "鱼/yú"
-          ], 
-          "Q_Answer": "狗/gǒu", 
-          "Q_Question_PY": "sān_zhī_*", 
-          "Q_Question": "三_只_*", 
-          "Q_Sound": "sanzhigou.MP3"
-        }, 
-        {
-          "Q_CiCards": [
-            4047, 
-            8196, 
-            4283
-          ], 
-          "Q_Type": 2, 
-          "Q_Answer": [
-            "two", 
-            "cats"
-          ], 
-          "Q_Question_PY": "liǎng_zhī_māo", 
-          "Q_Sound": "liangzhimao.MP3", 
-          "Q_Title": "write down the translation", 
-          "Q_Question": "两_只_猫", 
-          "A_Tips": "write down the translation", 
-          "Q_JuCards": [
-            3, 
-            4
-          ]
-        }, 
-        {
-          "Q_ZiCards": [
-            362
-          ], 
-          "Q_Type": 3, 
-          "Q_Question": "两", 
-          "Q_Title": "trace the arrow to write"
-        }, 
-        {
-          "Q_ZiCards": [
-            764
-          ], 
-          "Q_Type": 3, 
-          "Q_Question": "只", 
-          "Q_Title": "trace the arrow to write"
-        }, 
-        {
-          "Q_CiCards": [
-            4047, 
-            8196, 
-            2296
-          ], 
-          "Q_Title": "speak the sentence", 
-          "Q_Type": 4, 
-          "Q_Answer": "liang3 zhi1 gou3", 
-          "Q_Question_PY": "liǎng_zhī_gǒu", 
-          "Q_Question": "两_只_狗", 
-          "Q_Sound": "liangzhigou.MP3", 
-          "Q_JuCards": [
-            3, 
-            4
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            2979
-          ], 
-          "Q_Title": "choose a correct word", 
-          "Q_Type": 0, 
-          "Q_Contents": [
-            "how much", 
-            "what", 
-            "when", 
-            "where"
-          ], 
-          "Q_Answer": "how much", 
-          "Q_Question_PY": "jǐ", 
-          "Q_Question": "几", 
-          "Q_Sound": "ji3.MP3"
-        }, 
-        {
-          "Q_CiCards": [
-            6036
-          ], 
-          "Q_Title": "choose a correct word", 
-          "Q_Type": 0, 
-          "Q_Contents": [
-            "year old", 
-            "old", 
-            "once time", 
-            "year"
-          ], 
-          "Q_Answer": "year old", 
-          "Q_Question_PY": "suì", 
-          "Q_Question": "岁", 
-          "Q_Sound": "sui4.MP3"
-        }, 
-        {
-          "Q_CiCards": [
-            2979, 
-            6036
-          ], 
-          "Q_Title": "speak the sentence", 
-          "Q_Type": 4, 
-          "Q_Answer": "ni3 ji3 sui4", 
-          "Q_Question_PY": "nǐ_jǐ_suì?", 
-          "Q_Question": "你_几_岁？", 
-          "Q_Sound": "nijisui.MP3", 
-          "Q_JuCards": [
-            5
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            6036, 
-            6637
-          ], 
-          "Q_Type": 0, 
-          "Q_Contents": [
-            "I am eight years old", 
-            "he is eight years old", 
-            "you are eight years old", 
-            "I am nine years old"
-          ], 
-          "Q_Answer": "I am eight years old", 
-          "Q_Question_PY": "wǒ_bā_suì", 
-          "Q_Sound": "wobasui.MP3", 
-          "Q_Title": "choose a correct translation", 
-          "Q_Question": "我_八_岁", 
-          "Q_JuCards": [
-            5
-          ]
-        }, 
-        {
-          "Q_ZiCards": [
-            2917
-          ], 
-          "Q_Type": 3, 
-          "Q_Question": "几", 
-          "Q_Title": "trace the arrow to write"
-        }, 
-        {
-          "Q_ZiCards": [
-            556
-          ], 
-          "Q_Type": 3, 
-          "Q_Question": "岁", 
-          "Q_Title": "trace the arrow to write"
-        }, 
-        {
-          "Q_CiCards": [
-            6071, 
-            6637
-          ], 
-          "Q_Type": 2, 
-          "Q_Contents": [
-            "she", 
-            "he", 
-            "thirty", 
-            "thirteen", 
-            "year", 
-            "years old", 
-            "is", 
-            "i", 
-            "am", 
-            "are"
-          ], 
-          "Q_Answer": [
-            "she", 
-            "is", 
-            "thirteen", 
-            "years old"
-          ], 
-          "Q_Question_PY": "tā_shísān_suì", 
-          "Q_Sound": "tashisansui.mp3", 
-          "Q_Title": "select a correct translation", 
-          "Q_Question": "她_十三_岁", 
-          "Q_JuCards": [
-            2, 
-            5
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            6637
-          ], 
-          "Q_Title": "write the chinese translation", 
-          "Q_Type": 1, 
-          "A_Tips": "write the chinese translation using pinyin or characters.you may write pinyin in one of the following three types:nan ren/nan2 ren2/男人", 
-          "Q_Answer": [
-            "wushisui", 
-            "wu3shi2sui4", 
-            "五十岁"
-          ], 
-          "Q_Question": "fifty years old", 
-          "Q_Sound": "wushisui.MP3", 
-          "Q_JuCards": [
-            5, 
-            2
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            6637
-          ], 
-          "Q_Title": "speak the sentence", 
-          "Q_Type": 4, 
-          "Q_Answer": "wo3 shi2 er4 sui4", 
-          "Q_Question_PY": "wǒ_shí èr_suì", 
-          "Q_Question": "我_十二_岁", 
-          "Q_Sound": "woshiersui.MP3", 
-          "Q_JuCards": [
-            5, 
-            2
-          ]
-        }
-      ], 
-      "word": "两；只；猫；狗；几；岁", 
-      "sentence": "二VS两；number+只+object;how old are you?", 
-      "cardZis": [
-        362, 
-        764, 
-        1201, 
-        1002, 
-        2917, 
-        556
-      ], 
-      "cardCis": [
-        4047, 
-        8196, 
-        4283, 
-        2296, 
-        2979, 
-        6036
-      ], 
-      "cardJus": [
-        3, 
-        4, 
-        5
       ]
     }
   ], 

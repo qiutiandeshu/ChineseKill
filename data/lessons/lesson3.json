@@ -1,5 +1,10 @@
 {
-  "lessonId": 3, 
+  "word": "年；今年；明年；零", 
+  "sentence": "Date expression", 
+  "cardZis": [
+    "418", 
+    "367"
+  ], 
   "lessonTitle": "Date & Week", 
   "chapters": [
     {
@@ -320,6 +325,27 @@
       ]
     }, 
     {
+      "Q_CiCards": [
+        "7856"
+      ], 
+      "Q_Type": "0", 
+      "Q_Question_PY": "jǐu yuè", 
+      "word": "日；月", 
+      "sentence": "Date expression", 
+      "Q_Contents": [
+        "September", 
+        "October", 
+        "November", 
+        "August"
+      ], 
+      "Q_Answer": "September", 
+      "cardZis": [
+        485, 
+        731
+      ], 
+      "Q_Sound": "9yue.mp3", 
+      "Q_Title": "choose a correct word", 
+      "Q_Question": "九月", 
       "practices": [
         {
           "Q_CiCards": [
@@ -560,77 +586,9 @@
           "Q_Sound": "6yue.MP3"
         }, 
         {
-          "Q_CiCards": [
-            "7856"
-          ], 
-          "Q_Title": "choose a correct word", 
-          "Q_Type": 3, 
-          "Q_Contents": [
-            "September", 
-            "October", 
-            "November", 
-            "August"
-          ], 
-          "Q_Answer": "September", 
-          "Q_Question_PY": "jǐu yuè", 
-          "Q_Question": "九月", 
-          "Q_Sound": "9yue.mp3"
-        }, 
-        {
-          "Q_CiCards": [
-            "7856"
-          ], 
-          "Q_Title": "choose a correct word", 
-          "Q_Type": "0", 
-          "Q_Contents": [
-            "September", 
-            "October", 
-            "November", 
-            "August"
-          ], 
-          "Q_Answer": "August", 
-          "Q_Question_PY": "bā yuè", 
-          "Q_Question": "八月", 
-          "Q_Sound": "8yue.mp3"
-        }, 
-        {
-          "Q_CiCards": [
-            "7856", 
-            "2585"
-          ], 
-          "Q_Title": "speak the sentence", 
-          "Q_Type": 4, 
-          "Q_Answer": "shi2 yi1 yue4 shi2 san1 hao4", 
-          "Q_Question_PY": "shí yī_yuè_shí sān_rì", 
-          "Q_Question": "十一月_十三_日", 
-          "Q_Sound": "shiyiyueshisanhao.MP3", 
-          "Q_JuCards": [
-            "7"
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            "7856"
-          ], 
-          "Q_Title": "choose a correct word", 
-          "Q_Type": "0", 
-          "Q_Contents": [
-            "September", 
-            "October", 
-            "November", 
-            "December"
-          ], 
-          "Q_Answer": "December", 
-          "Q_Question_PY": "shí èr yuè", 
-          "Q_Question": "十二月", 
-          "Q_Sound": "12yue.mp3"
+          "Q_CiCards": {}, 
+          "Q_Type": 3
         }
-      ], 
-      "word": "日；月", 
-      "sentence": "Date expression", 
-      "cardZis": [
-        485, 
-        731
       ], 
       "cardCis": [
         5315, 
@@ -641,344 +599,381 @@
       ]
     }, 
     {
-      "practices": [
-        {
-          "Q_CiCards": [
-            "7856"
-          ], 
-          "Q_Title": "choose a correct picture", 
-          "Q_Type": 0, 
-          "Q_Pics": [
-            "month.jpg", 
-            "year.jpg", 
-            "day.jpg", 
-            "4yue.jpg"
-          ], 
-          "Q_Contents": [
-            "月/yuè", 
-            "年/nián", 
-            "日/rì", 
-            "四月/sì yuè"
-          ], 
-          "Q_Answer": "年/nián", 
-          "Q_Question": "year", 
-          "Q_Sound": "nian2.MP3"
-        }, 
-        {
-          "Q_ZiCards": [
-            3347
-          ], 
-          "Q_Type": 0, 
-          "Q_Title": "choose a correct word", 
-          "Q_Contents": [
-            "this year", 
-            "next year", 
-            "last year", 
-            "two years ago"
-          ], 
-          "Q_Answer": "this year", 
-          "Q_Question_PY": "jīn nián", 
-          "Q_Question": "今年", 
-          "Q_Sound": "jinnian.mp3"
-        }, 
-        {
-          "Q_CiCards": [
-            "4591"
-          ], 
-          "Q_Type": "0", 
-          "Q_Contents": [
-            "March 2012", 
-            "2012 March", 
-            "March 2011", 
-            "2011 March"
-          ], 
-          "Q_Answer": "March 2012", 
-          "Q_Question_PY": "èr líng yī èr_nián_sān yuè", 
-          "Q_Sound": "2012nian3yue.mp3", 
-          "Q_Title": "choose a correct translation", 
-          "Q_Question": "二零一二_年_三月", 
-          "Q_JuCards": [
-            7
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            "7856"
-          ], 
-          "Q_Title": "choose a correct translation", 
-          "Q_Type": 0, 
-          "Q_Contents": [
-            "This year is 2012.", 
-            "Next year is 2012.", 
-            "This year is 2013.", 
-            "last year is 2012."
-          ], 
-          "Q_Answer": "This year is 2012.", 
-          "Q_Question_PY": "jīn nián_shì_èr líng yī èr_nián.", 
-          "Q_Question": "今年_是_二零一二_年。", 
-          "Q_Sound": "jinnianshi2012nian.mp3"
-        }, 
-        {
-          "Q_CiCards": [
-            "4420"
-          ], 
-          "Q_Type": "0", 
-          "Q_Contents": [
-            "Next year is 2013.", 
-            "This year is 2013.", 
-            "last year is 2013.", 
-            "last year is 2011."
-          ], 
-          "Q_Answer": "Next year is 2013.", 
-          "Q_Question_PY": "míng nián_shì_èr líng yī sān_nián.", 
-          "Q_Sound": "mingnianshi2013nian.mp3", 
-          "Q_Title": "choose a correct translation", 
-          "Q_Question": "明年_是_二零一三_年。", 
-          "Q_JuCards": [
-            7
-          ]
-        }, 
-        {
-          "Q_ZiCards": [
-            "418"
-          ], 
-          "Q_Type": 3, 
-          "Q_Question": "年", 
-          "Q_Title": "trace the arrow to write"
-        }, 
-        {
-          "Q_ZiCards": [
-            "367"
-          ], 
-          "Q_Type": 3, 
-          "Q_Question": "零", 
-          "Q_Title": "trace the arrow to write"
-        }, 
-        {
-          "Q_CiCards": [
-            "5315", 
-            3349, 
-            "7856"
-          ], 
-          "Q_Title": "choose the correct translation", 
-          "Q_Type": "0", 
-          "Q_Contents": [
-            "Today is November 1, 2016.", 
-            "Today is November 1, 2015.", 
-            "Yesterday is November 1, 2016.", 
-            "Today is October 1, 2016."
-          ], 
-          "Q_Answer": "Today is November 1, 2016.", 
-          "Q_Question_PY": "jīn tiān_shì_èr líng yī lìu nián_shí yī yuè_yī rì.", 
-          "Q_Question": "今天_是_二零一六年_十一月_一日。", 
-          "Q_Sound": "2016nian11yue1ri.mp3"
-        }, 
-        {
-          "Q_CiCards": [
-            4422, 
-            "4090"
-          ], 
-          "Q_Title": "speak the sentence", 
-          "Q_Type": 4, 
-          "Q_Answer": "ming2 tian1 shi4 er4 ling2 ling2 ba1 nian2 wu3 yue4 ba1 ri4", 
-          "Q_Question_PY": "míng tiān_shì_èr líng líng bā nián_wǔ yuè_bā rì.", 
-          "Q_Question": "明天_是_二零零八年_五月_八日。", 
-          "Q_Sound": "2008nian5yue8ri.mp3", 
-          "Q_JuCards": [
-            "7"
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            3347, 
-            "4420"
-          ], 
-          "Q_Title": "speak the sentence", 
-          "Q_Type": 4, 
-          "Q_Answer": "san1 yue4 qi1 ri4", 
-          "Q_Question_PY": "míng nián_shì_èr líng yī qī_nián.", 
-          "Q_Question": "明年_是_二零一七_年。", 
-          "Q_Sound": "mingnianshi2017nian.mp3", 
-          "Q_JuCards": [
-            "7"
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            "3349", 
-            "5345", 
-            "7856"
-          ], 
-          "Q_Type": "2", 
-          "Q_Contents": [
-            "Today", 
-            "is", 
-            "January 1st", 
-            "2006", 
-            "January 2ed", 
-            "Tomorrow", 
-            "yesterday", 
-            "February 1st"
-          ], 
-          "Q_Answer": [
-            "Today", 
-            "is", 
-            "January 1st", 
-            "2006"
-          ], 
-          "Q_Question_PY": "jīn tiān_shì_èr líng líng lìu nián_yī yuè_yī rì.", 
-          "Q_Sound": "2006nian1yue1ri.MP3", 
-          "Q_Title": "select the correct translation", 
-          "Q_Question": "今天_是_二零零六年_一月_一日。", 
-          "Q_JuCards": [
-            "7"
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            "4591", 
-            "7856"
-          ], 
-          "Q_Type": 0, 
-          "Q_Contents": [
-            "June 2015", 
-            "June 2016", 
-            "2015 June", 
-            "2016 June"
-          ], 
-          "Q_Answer": "June 2015", 
-          "Q_Question_PY": "èr líng yī wǔ nián_lìu yuè", 
-          "Q_Sound": "2015nian6yue.mp3", 
-          "Q_Title": "choose a correct translation", 
-          "Q_Question": "二零一五年_六月", 
-          "Q_JuCards": [
-            "7"
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            4422, 
-            "4090", 
-            "3349"
-          ], 
-          "Q_Title": "speak the sentence", 
-          "Q_Type": "4", 
-          "Q_Answer": "jin1 tian1 shi4 er4 ling2 ling2 jiu3 nian2 ba1 yue4 jiu3 ri4", 
-          "Q_Question_PY": "jīn tiān_shì_èr líng líng jǐu nián_bā yuè_jǐu rì.", 
-          "Q_Question": "今天_是_二零零九年_八月_九日。", 
-          "Q_Sound": "2009nian8yue9ri.mp3", 
-          "Q_JuCards": [
-            "7"
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            "7856", 
-            "4591"
-          ], 
-          "Q_Type": "1", 
-          "Q_Answer": [
-            "November 2016"
-          ], 
-          "Q_Question_PY": "èr líng yī lìu nián_shí yī yuè", 
-          "Q_Sound": "2016nian11yue.MP3", 
-          "Q_Title": "write down the translation", 
-          "Q_Question": "二零一六年_十一月", 
-          "A_Tips": "write down the translation", 
-          "Q_JuCards": [
-            "7"
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            "4591", 
-            "7856"
-          ], 
-          "Q_Type": "0", 
-          "Q_Contents": [
-            "December 2018", 
-            "December 2017", 
-            "November 2018", 
-            "December 2019"
-          ], 
-          "Q_Answer": "December 2018", 
-          "Q_Question_PY": "èr líng yī bā nián_shí èr yuè", 
-          "Q_Sound": "2018nian12yue.mp3", 
-          "Q_Title": "choose a correct translation", 
-          "Q_Question": "二零一八年_十二月", 
-          "Q_JuCards": [
-            "7"
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            "4591", 
-            "7856"
-          ], 
-          "Q_Type": "0", 
-          "Q_Contents": [
-            "This year is 2016", 
-            "Last year is 2016", 
-            "Next year is 2016", 
-            "This year is 2015"
-          ], 
-          "Q_Answer": "This year is 2016", 
-          "Q_Question_PY": "jīn nián_shì_èr líng yī lìu nián", 
-          "Q_Sound": "jinianshi2016nian.mp3", 
-          "Q_Title": "choose a correct translation", 
-          "Q_Question": "今年_是_二零一六年", 
-          "Q_JuCards": [
-            "7"
-          ]
-        }, 
-        {
-          "Q_CiCards": [
-            5315, 
-            "7856", 
-            3349, 
-            "4591"
-          ], 
-          "Q_Type": "2", 
-          "Q_Contents": [
-            "Today", 
-            "is", 
-            "March 1st", 
-            "2017", 
-            "Yesterday", 
-            "april 1st", 
-            2016
-          ], 
-          "Q_Answer": [
-            "today", 
-            "is", 
-            "March 1st", 
-            "2017"
-          ], 
-          "Q_Question_PY": "jīn_tiān_shì_èr líng yī qī nián_sān yuè_yī rì.", 
-          "Q_Sound": "jintianshi2017nian.mp3", 
-          "Q_Title": "select a correct translation", 
-          "Q_Question": "今天_是_二零一七年_三月_一日。", 
-          "Q_JuCards": [
-            7
-          ]
-        }
+      "Q_CiCards": [
+        "7856", 
+        "2585"
       ], 
-      "word": "年；今年；明年；零", 
-      "sentence": "Date expression", 
-      "cardZis": [
-        "418", 
+      "Q_Type": 4, 
+      "Q_Contents": [
+        "September", 
+        "October", 
+        "November", 
+        "August"
+      ], 
+      "Q_Answer": "August", 
+      "Q_Question_PY": "bā yuè", 
+      "Q_Sound": "8yue.mp3", 
+      "Q_Title": "speak the sentence", 
+      "Q_Question": "八月", 
+      "Q_JuCards": [
+        "7"
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        "7856"
+      ], 
+      "Q_Title": "choose a correct word", 
+      "Q_Type": "0", 
+      "Q_Answer": "shi2 yi1 yue4 shi2 san1 hao4", 
+      "Q_Question_PY": "shí yī_yuè_shí sān_rì", 
+      "Q_Question": "十一月_十三_日", 
+      "Q_Sound": "shiyiyueshisanhao.MP3"
+    }, 
+    {
+      "Q_Contents": [
+        "September", 
+        "October", 
+        "November", 
+        "December"
+      ], 
+      "Q_Question": "十二月", 
+      "Q_Question_PY": "shí èr yuè", 
+      "Q_Answer": "December", 
+      "Q_Sound": "12yue.mp3"
+    }
+  ], 
+  "practices": [
+    {
+      "Q_CiCards": [
+        "7856"
+      ], 
+      "Q_Title": "choose a correct picture", 
+      "Q_Type": 0, 
+      "Q_Pics": [
+        "month.jpg", 
+        "year.jpg", 
+        "day.jpg", 
+        "4yue.jpg"
+      ], 
+      "Q_Contents": [
+        "月/yuè", 
+        "年/nián", 
+        "日/rì", 
+        "四月/sì yuè"
+      ], 
+      "Q_Answer": "年/nián", 
+      "Q_Question": "year", 
+      "Q_Sound": "nian2.MP3"
+    }, 
+    {
+      "Q_ZiCards": [
+        3347
+      ], 
+      "Q_Type": 0, 
+      "Q_Title": "choose a correct word", 
+      "Q_Contents": [
+        "this year", 
+        "next year", 
+        "last year", 
+        "two years ago"
+      ], 
+      "Q_Answer": "this year", 
+      "Q_Question_PY": "jīn nián", 
+      "Q_Question": "今年", 
+      "Q_Sound": "jinnian.mp3"
+    }, 
+    {
+      "Q_CiCards": [
+        "4591"
+      ], 
+      "Q_Type": "0", 
+      "Q_Contents": [
+        "March 2012", 
+        "2012 March", 
+        "March 2011", 
+        "2011 March"
+      ], 
+      "Q_Answer": "March 2012", 
+      "Q_Question_PY": "èr líng yī èr_nián_sān yuè", 
+      "Q_Sound": "2012nian3yue.mp3", 
+      "Q_Title": "choose a correct translation", 
+      "Q_Question": "二零一二_年_三月", 
+      "Q_JuCards": [
+        7
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        "7856"
+      ], 
+      "Q_Title": "choose a correct translation", 
+      "Q_Type": 0, 
+      "Q_Contents": [
+        "This year is 2012.", 
+        "Next year is 2012.", 
+        "This year is 2013.", 
+        "last year is 2012."
+      ], 
+      "Q_Answer": "This year is 2012.", 
+      "Q_Question_PY": "jīn nián_shì_èr líng yī èr_nián.", 
+      "Q_Question": "今年_是_二零一二_年。", 
+      "Q_Sound": "jinnianshi2012nian.mp3"
+    }, 
+    {
+      "Q_CiCards": [
+        "4420"
+      ], 
+      "Q_Type": "0", 
+      "Q_Contents": [
+        "Next year is 2013.", 
+        "This year is 2013.", 
+        "last year is 2013.", 
+        "last year is 2011."
+      ], 
+      "Q_Answer": "Next year is 2013.", 
+      "Q_Question_PY": "míng nián_shì_èr líng yī sān_nián.", 
+      "Q_Sound": "mingnianshi2013nian.mp3", 
+      "Q_Title": "choose a correct translation", 
+      "Q_Question": "明年_是_二零一三_年。", 
+      "Q_JuCards": [
+        7
+      ]
+    }, 
+    {
+      "Q_ZiCards": [
+        "418"
+      ], 
+      "Q_Type": 3, 
+      "Q_Question": "年", 
+      "Q_Title": "trace the arrow to write"
+    }, 
+    {
+      "Q_ZiCards": [
         "367"
       ], 
-      "cardCis": [
-        "4591", 
-        3347, 
-        "4420", 
+      "Q_Type": 3, 
+      "Q_Question": "零", 
+      "Q_Title": "trace the arrow to write"
+    }, 
+    {
+      "Q_CiCards": [
+        "5315", 
+        3349, 
+        "7856"
+      ], 
+      "Q_Title": "choose the correct translation", 
+      "Q_Type": "0", 
+      "Q_Contents": [
+        "Today is November 1, 2016.", 
+        "Today is November 1, 2015.", 
+        "Yesterday is November 1, 2016.", 
+        "Today is October 1, 2016."
+      ], 
+      "Q_Answer": "Today is November 1, 2016.", 
+      "Q_Question_PY": "jīn tiān_shì_èr líng yī lìu nián_shí yī yuè_yī rì.", 
+      "Q_Question": "今天_是_二零一六年_十一月_一日。", 
+      "Q_Sound": "2016nian11yue1ri.mp3"
+    }, 
+    {
+      "Q_CiCards": [
+        4422, 
         "4090"
       ], 
-      "cardJus": [
+      "Q_Title": "speak the sentence", 
+      "Q_Type": 4, 
+      "Q_Answer": "ming2 tian1 shi4 er4 ling2 ling2 ba1 nian2 wu3 yue4 ba1 ri4", 
+      "Q_Question_PY": "míng tiān_shì_èr líng líng bā nián_wǔ yuè_bā rì.", 
+      "Q_Question": "明天_是_二零零八年_五月_八日。", 
+      "Q_Sound": "2008nian5yue8ri.mp3", 
+      "Q_JuCards": [
+        "7"
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        3347, 
+        "4420"
+      ], 
+      "Q_Title": "speak the sentence", 
+      "Q_Type": 4, 
+      "Q_Answer": "san1 yue4 qi1 ri4", 
+      "Q_Question_PY": "míng nián_shì_èr líng yī qī_nián.", 
+      "Q_Question": "明年_是_二零一七_年。", 
+      "Q_Sound": "mingnianshi2017nian.mp3", 
+      "Q_JuCards": [
+        "7"
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        "3349", 
+        "5345", 
+        "7856"
+      ], 
+      "Q_Type": "2", 
+      "Q_Contents": [
+        "Today", 
+        "is", 
+        "January 1st", 
+        "2006", 
+        "January 2ed", 
+        "Tomorrow", 
+        "yesterday", 
+        "February 1st"
+      ], 
+      "Q_Answer": [
+        "Today", 
+        "is", 
+        "January 1st", 
+        "2006"
+      ], 
+      "Q_Question_PY": "jīn tiān_shì_èr líng líng lìu nián_yī yuè_yī rì.", 
+      "Q_Sound": "2006nian1yue1ri.MP3", 
+      "Q_Title": "select the correct translation", 
+      "Q_Question": "今天_是_二零零六年_一月_一日。", 
+      "Q_JuCards": [
+        "7"
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        "4591", 
+        "7856"
+      ], 
+      "Q_Type": 0, 
+      "Q_Contents": [
+        "June 2015", 
+        "June 2016", 
+        "2015 June", 
+        "2016 June"
+      ], 
+      "Q_Answer": "June 2015", 
+      "Q_Question_PY": "èr líng yī wǔ nián_lìu yuè", 
+      "Q_Sound": "2015nian6yue.mp3", 
+      "Q_Title": "choose a correct translation", 
+      "Q_Question": "二零一五年_六月", 
+      "Q_JuCards": [
+        "7"
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        4422, 
+        "4090", 
+        "3349"
+      ], 
+      "Q_Title": "speak the sentence", 
+      "Q_Type": "4", 
+      "Q_Answer": "jin1 tian1 shi4 er4 ling2 ling2 jiu3 nian2 ba1 yue4 jiu3 ri4", 
+      "Q_Question_PY": "jīn tiān_shì_èr líng líng jǐu nián_bā yuè_jǐu rì.", 
+      "Q_Question": "今天_是_二零零九年_八月_九日。", 
+      "Q_Sound": "2009nian8yue9ri.mp3", 
+      "Q_JuCards": [
+        "7"
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        "7856", 
+        "4591"
+      ], 
+      "Q_Type": "1", 
+      "Q_Answer": [
+        "November 2016"
+      ], 
+      "Q_Question_PY": "èr líng yī lìu nián_shí yī yuè", 
+      "Q_Sound": "2016nian11yue.MP3", 
+      "Q_Title": "write down the translation", 
+      "Q_Question": "二零一六年_十一月", 
+      "A_Tips": "write down the translation", 
+      "Q_JuCards": [
+        "7"
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        "4591", 
+        "7856"
+      ], 
+      "Q_Type": "0", 
+      "Q_Contents": [
+        "December 2018", 
+        "December 2017", 
+        "November 2018", 
+        "December 2019"
+      ], 
+      "Q_Answer": "December 2018", 
+      "Q_Question_PY": "èr líng yī bā nián_shí èr yuè", 
+      "Q_Sound": "2018nian12yue.mp3", 
+      "Q_Title": "choose a correct translation", 
+      "Q_Question": "二零一八年_十二月", 
+      "Q_JuCards": [
+        "7"
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        "4591", 
+        "7856"
+      ], 
+      "Q_Type": "0", 
+      "Q_Contents": [
+        "This year is 2016", 
+        "Last year is 2016", 
+        "Next year is 2016", 
+        "This year is 2015"
+      ], 
+      "Q_Answer": "This year is 2016", 
+      "Q_Question_PY": "jīn nián_shì_èr líng yī lìu nián", 
+      "Q_Sound": "jinianshi2016nian.mp3", 
+      "Q_Title": "choose a correct translation", 
+      "Q_Question": "今年_是_二零一六年", 
+      "Q_JuCards": [
+        "7"
+      ]
+    }, 
+    {
+      "Q_CiCards": [
+        5315, 
+        "7856", 
+        3349, 
+        "4591"
+      ], 
+      "Q_Type": "2", 
+      "Q_Contents": [
+        "Today", 
+        "is", 
+        "March 1st", 
+        "2017", 
+        "Yesterday", 
+        "april 1st", 
+        2016
+      ], 
+      "Q_Answer": [
+        "today", 
+        "is", 
+        "March 1st", 
+        "2017"
+      ], 
+      "Q_Question_PY": "jīn_tiān_shì_èr líng yī qī nián_sān yuè_yī rì.", 
+      "Q_Sound": "jintianshi2017nian.mp3", 
+      "Q_Title": "select a correct translation", 
+      "Q_Question": "今天_是_二零一七年_三月_一日。", 
+      "Q_JuCards": [
         7
       ]
     }
   ], 
-  "lessonIcon": "titleIcon_date.png"
+  "lessonId": 3, 
+  "lessonIcon": "titleIcon_date.png", 
+  "cardCis": [
+    "4591", 
+    3347, 
+    "4420", 
+    "4090"
+  ], 
+  "cardJus": [
+    7
+  ]
 }

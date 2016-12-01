@@ -109,7 +109,6 @@ export default class S_TreeZ extends Component {
   }
   onMessage(message) {
     var json = JSON.parse(message);
-    console.log(json);
     if (json.kind == 'style') {
       this.yxPointStyle = json.style;
     } else if (json.kind == 'yxmsg') {
@@ -253,23 +252,24 @@ const styles = StyleSheet.create({
   },
   inputView: {
     position: "absolute",
-    left: MinUnit,
-    top: MinUnit,
-    width: MinUnit*20,
-    height: MinUnit*3,
-    borderRadius: MinUnit*0.5,
-    backgroundColor: '#00000041', 
+    left: MinUnit*0.5,
+    top: MinUnit*0.5,
+    width: MinUnit*29,
+    height: MinUnit*4,
+    backgroundColor: '#FFFFFF', 
     borderColor: '#CDCDCD',
     borderWidth: MinWidth,
   },
   input: {
     flex: 1,
     paddingHorizontal: MinUnit*0.5,
-    fontSize: MinUnit*1.6,
+    fontSize: MinUnit*3,
   },
   yxMsg: {
-    width: MinUnit*30,
+    width: MinUnit*29,
+    marginLeft: MinUnit*0.5,
     marginTop: MinUnit*5,
+    marginBottom: MinUnit*0.5,
     paddingHorizontal: MinUnit,
   },
   scrollView: {

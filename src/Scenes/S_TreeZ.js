@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     width: MinUnit*20,
     height: MinUnit*3,
     borderRadius: MinUnit*0.5,
-    backgroundColor: '#00000041', 
+    backgroundColor: '#FFFFFF', 
     borderColor: '#CDCDCD',
     borderWidth: MinWidth,
   },

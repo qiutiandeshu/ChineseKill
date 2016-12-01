@@ -19,6 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize } from '../AppStyles';
 var itemHeight = MinUnit * 7;//top的高度
 import Utils from '../Utils/Utils.js';
+import* as Progress from 'react-native-progress'
 
 let py_sm = [
   ['-'],
@@ -83,6 +84,8 @@ export default class S_PinyinChart extends Component {
     this.blnLoading = true;
     this.showData = [];
     this.blnDialog = false;
+    this.blnRecord = false;
+    this.volume = 0;
   }
   static propTypes = {
   }
@@ -520,6 +523,7 @@ export default class S_PinyinChart extends Component {
   }
   onCloseDialog(){
     this.blnDialog = false;
+    this.stopRecord();
     this.setUpdate();
   }
   renderDialog(){
@@ -554,10 +558,58 @@ export default class S_PinyinChart extends Component {
 
   }
   onPressChivox(index){
-
+    if (this.blnRecord) {
+      this.stopRecord();
+      return;
+    }
+    let param = {
+      gategory: 'word',
+      text: 'zhuang',
+      audioName: 'flash',
+    }
+    app.onStartChivox(param, (data)=>{
+      switch (data.type) {
+        case 'volume':
+          // console.log("获得音量回调:",data.volume)
+          if (this.blnRecord == false) {
+            this.blnRecord = true;
+          }
+          this.volume = data.volume;
+          this.setUpdate();
+          break;
+        case 'result':
+          console.log("得到评测结果:", data.result)
+          // this.initPlayRecord();
+          this.stopRecord();
+          break;
+        case 'error':
+          // console.log("评测出错:", data.error)
+          this.stopRecord();
+          break;
+        case 'working':
+          // console.log("工作ing:", data.working)
+          break;
+      }
+    });
+  }
+  stopRecord() {
+    app.onStopChivox();
+    this.blnRecord = false;
+    this.volume = 0;
+    this.setUpdate();
   }
   onPressPlay(index){
-
+    app.initPlayRecord('flash',(data)=>{
+      this.blnFlashVoice = false;
+      switch (data.type) {
+        case 'audioTime':
+            // console.log("获取到录音时长:", data.audioTime)
+            app.onPlayRecord();
+            break;
+        case 'working':
+            break;
+      }
+    });
   }
   renderDialogItem(){
     var arr = [];
@@ -583,7 +635,11 @@ export default class S_PinyinChart extends Component {
             style={[styles.btnBackView, {borderColor: '#8BCBED', marginTop: MinUnit*4}]}
             iconName={'microphone'}
             iconSize={4} 
-            iconStyle={{color: '#8BCBED'}} />
+            iconStyle={{color: '#8BCBED'}}>
+            {
+              <Progress.Circle  thickness={MinUnit*0.3} borderWidth={0} style={{position:'absolute',left:0,top:0}}
+                                          progress={Number(this.volume)} size={MinUnit*5.4} color="#1BA2FF"/>}
+          </CircleIcon>
           <CircleIcon
             name='btnPCPlay'
             onPress={this.onPressPlay.bind(this, i)}
@@ -648,7 +704,7 @@ class CircleIcon extends Component {
       width: w, 
       height: w, 
       borderRadius: w / 2, 
-      borderWidth: 1, 
+      borderWidth: MinWidth, 
       borderColor: '#CDCFA7', 
       alignItems: 'center', 
       justifyContent: 'center'
@@ -708,6 +764,7 @@ class CircleIcon extends Component {
           style={[this.selfStyle, this.props.style, tempBack]}
         >
           {child}
+          {this.props.children}
         </PanButton>
       );
     }else{
@@ -717,6 +774,7 @@ class CircleIcon extends Component {
           style={[this.selfStyle, this.props.style, tempBack]}
         >
           {child}
+          {this.props.children}
         </PanView>
       );
     }
