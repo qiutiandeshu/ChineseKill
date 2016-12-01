@@ -7,21 +7,27 @@
 import React, { Component } from 'react';
 import {
 } from 'react-native';
-var Sound = require('react-native-sound');
+var sound = require('react-native-sound');
+var fs = require('react-native-fs');
 // Sound.MAIN_BUNDLE, Sound.DOCUMENT, Sound.LIBRARY, Sound.CACHES
 
-var getJson = null;
-export default class GetJson{
+var webData = null;
+export default class GetWebData{
   static Instance(){
-    if (getJson == null){
-      getJson = new GetJson();
+    if (webData == null){
+      webData = new GetWebData();
     }
-    return getJson;
+    return webData;
   }
   static Remove(){
-    getJson.remove();
-    getJson = null;
+    webData.remove();
+    webData = null;
   }
+  //文件路径名称
+  static MAIN_BUNDLE = sound.MAIN_BUNDLE;
+  static DOCUMENT = sound.DOCUMENT;
+  static LIBRARY = sound.LIBRARY;
+  static CACHES = sound.CACHES;
   constructor(){
     this.callback = null;
   }
