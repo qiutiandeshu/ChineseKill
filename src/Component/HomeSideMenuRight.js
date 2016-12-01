@@ -80,6 +80,16 @@ export default class HomeSideMenuRight extends Component {
                         </Text>
                     </View>
                 </PanButton>
+                <PanButton name='btnGotoStrokesPage' 
+                    onPress={()=>{Home._onPressTree()}}
+                    style={{padding: 10, paddingVertical: 20, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#DDD'}} >
+                    <Icon name="pencil" size={MinUnit * 3} style={{marginLeft: MinUnit}}/>
+                    <View style={{justifyContent: 'center', alignItems: 'center', marginLeft: MinUnit * 2}}>
+                        <Text style={{textAlign: 'center', fontSize: MinUnit * 2.5}}>
+                            关系网
+                        </Text>
+                    </View>
+                </PanButton>
             </View>
         );
     }

@@ -1226,6 +1226,7 @@ class CardBox extends SoundBox {
 
     }
     var practices = this.getPracticesList(practiceList);
+    console.log(practices);
 
     //开始练习
     app.setNextRouteProps({
