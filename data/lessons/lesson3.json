@@ -1,4 +1,4 @@
-{
+﻿{
   "lessonId": 3, 
   "lessonTitle": "Date & Week", 
   "chapters": [
@@ -413,7 +413,7 @@
             5315, 
             7856
           ], 
-          "Q_Type": "0", 
+          "Q_Type": 0,
           "Q_Contents": [
             "Tomorrow is February 3rd", 
             "Tomorrow is February 2nd", 
@@ -457,7 +457,7 @@
             7856, 
             3349
           ], 
-          "Q_Type": "2", 
+          "Q_Type": 2,
           "Q_Contents": [
             "March", 
             "February", 
@@ -665,7 +665,7 @@
           "Q_Sound": "nian2.MP3"
         }, 
         {
-          "Q_ZiCards": [
+          "Q_CiCards": [
             3347
           ], 
           "Q_Type": 0, 
@@ -761,7 +761,7 @@
             7856
           ], 
           "Q_Title": "choose the correct translation", 
-          "Q_Type": "0", 
+          "Q_Type": 0, 
           "Q_Contents": [
             "Today is November 1, 2016.", 
             "Today is November 1, 2015.", 
@@ -878,7 +878,7 @@
           ], 
           "Q_Type": 1, 
           "Q_Answer": [
-            "November 2016"
+            "November2016"
           ], 
           "Q_Question_PY": "èr líng yī lìu nián_shí yī yuè", 
           "Q_Sound": "2016nian11yue.MP3", 
@@ -946,7 +946,7 @@
             "2017", 
             "Yesterday", 
             "april 1st", 
-            2016
+            "2016"
           ], 
           "Q_Answer": [
             "today", 
@@ -954,7 +954,7 @@
             "March 1st", 
             "2017"
           ], 
-          "Q_Question_PY": "jīn_tiān_shì_èr líng yī qī nián_sān yuè_yī rì.", 
+          "Q_Question_PY": "jīn tiān_shì_èr líng yī qī nián_sān yuè_yī rì.", 
           "Q_Sound": "jintianshi2017nian.mp3", 
           "Q_Title": "select a correct translation", 
           "Q_Question": "今天_是_二零一七年_三月_一日。", 

@@ -20,12 +20,19 @@ export default class S_Home extends Component {
         this.state = {
             menuState: 'none',
             sideMenuAnim: new Animated.Value(0),
-            dataSource: ds.cloneWithRows(this.learingRecord)
+            dataSource: ds.cloneWithRows(this.learingRecord),
         };
         this.blnContentOffX = false;
         global.Home = this;
         this.baseProps = props;
     }    
+    Refresh() {
+        var str = JSON.stringify(app.storageLearning);
+        var _data = JSON.parse(str);
+        this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(_data),
+        });
+    }
 
     static propTypes = {
         allLessonData: PropTypes.array.isRequired,
@@ -93,6 +100,7 @@ export default class S_Home extends Component {
     }
 
     render() {
+        console.log('render Home');
         const width = this.state.sideMenuAnim.interpolate(
             {
                 inputRange: [0, 1],
@@ -134,10 +142,10 @@ export default class S_Home extends Component {
 
                 {this.state.menuState == 'none'&&
                     <PanButton name="btnDeleteSave" style={styles.delBtn} onPress={()=>{
-                    app.removeAllStorageData()
-                    app.removeStorageData('UserInfo')
-                     app.removeStorageData('CardInfo')
-                     app.removeStorageData('Review')
+                        app.removeAllStorageData()
+                        app.removeStorageData('UserInfo')
+                        app.removeStorageData('CardInfo')
+                        app.removeStorageData('Review')
                     }}>
                     <Text>删除存档</Text>
                     </PanButton>}

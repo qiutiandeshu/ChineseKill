@@ -154,8 +154,15 @@ class LogoutBox extends Box {
 
       })
     }
+    app.removeAllStorageData()
+    app.removeStorageData('UserInfo')
+    app.removeStorageData('CardInfo')
+    app.removeStorageData('Review')
+    app.noneCardInfoStorage()
+    app.noneLearningStorage([])
     this.hidden();
     HomeMenuLeft.userLogout();
+    Home.Refresh();
   }
   onChangePassword() {
     Home._onPopupBoxShow('ChangePassword');
@@ -575,7 +582,6 @@ class FlashCardBox extends Box {
     };
 
     this.state.height.setValue(0);
-    this.state.answerY.setValue(0 - ScreenHeight*0.3);
     this.reviewList = [];
     this.displayKind = 1;
     this.focusedC = true;
@@ -585,6 +591,7 @@ class FlashCardBox extends Box {
     this.minNum = 1;
     this.defaultNum = this.minNum;
     this.testIndex = 0;
+    this.flashTime = [];
 
     this.keyNum = [0, 0, 0, 0, 0];
   }
@@ -601,6 +608,7 @@ class FlashCardBox extends Box {
       blnRefresh: !this.state.blnRefresh,
     });
     this.reviewList = this.getReviewList();
+    this.state.answerY.setValue(0 - ScreenHeight*0.3);
   }
   getMaxNum() {
     this.maxNum = 0;
@@ -918,11 +926,11 @@ class FlashCardBox extends Box {
     var Height = ScreenHeight*0.2;
     return (
       <PanView name='v_flashcard_key_num' style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center',}}>
-        <BarShowNum color={'#C8CB7D'} height={Height*this.keyNum[4]/max} num={this.keyNum[4]}/>
+        <BarShowNum color={'#C8CB7D'} height={Height*this.keyNum[2]/max} num={this.keyNum[2]}/>
         <BarShowNum color={'#D4CF9C'} height={Height*this.keyNum[3]/max} num={this.keyNum[3]}/>
-        <BarShowNum color={'#E3DEC9'} height={Height*this.keyNum[2]/max} num={this.keyNum[2]}/>
-        <BarShowNum color={'#EACFC7'} height={Height*this.keyNum[1]/max} num={this.keyNum[1]}/>
-        <BarShowNum color={'#DDB0C7'} height={Height*this.keyNum[0]/max} num={this.keyNum[0]}/>
+        <BarShowNum color={'#E3DEC9'} height={Height*this.keyNum[4]/max} num={this.keyNum[4]}/>
+        <BarShowNum color={'#EACFC7'} height={Height*this.keyNum[0]/max} num={this.keyNum[0]}/>
+        <BarShowNum color={'#DDB0C7'} height={Height*this.keyNum[1]/max} num={this.keyNum[1]}/>
       </PanView>
     );
   }
@@ -1022,6 +1030,8 @@ class FlashCardBox extends Box {
   }
   onChangeRightOrWrong(str) {
     if (str == 'right') {
+      var obj = this.reviewList[this.testIndex];
+      this.flashTime = socket.getReviewT(obj.day, obj.factor, obj.review_t);
       this.setState({
         showKind: 3
       });
@@ -1036,13 +1046,13 @@ class FlashCardBox extends Box {
     return (
       <PanView name={'v_flashcard_test_button'} style={styles.fTButtonV1} >
         <PanButton name={'v_flashcard_test_left'} style={styles.fTButton} onPress={this.onRememberPress.bind(this, 2)}>
-          <Text>Remembered Perfectly</Text>
+          <Text>Remembered Perfectly + {this.flashTime[0]}</Text>
         </PanButton>
         <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onRememberPress.bind(this, 3)}>
-          <Text>Remembered</Text>
+          <Text>Remembered + {this.flashTime[1]}</Text>
         </PanButton>
         <PanButton name={'v_flashcard_test_right'} style={styles.fTButton} onPress={this.onRememberPress.bind(this, 4)}>
-          <Text>Barely Remembered</Text>
+          <Text>Barely Remembered + {this.flashTime[2]}</Text>
         </PanButton>
       </PanView>
     );
@@ -1103,6 +1113,7 @@ class FlashCardBox extends Box {
     if (this.testIndex >= this.reviewList.length) {
       this.testIndex = 0;
     }
+    this.state.answerY.setValue(0 - ScreenHeight*0.3);
     this.setState({
       showKind: 1,
     });
@@ -1188,12 +1199,25 @@ class CardBox extends Box {
       </PopupBox>
     );
   }
-
+  onShowTree() {
+    if (this.props.kind == 'Character') {
+      Home.searchWord = this.state.selectData.character;
+      Home._onPressTreeZ();
+    } else if (this.props.kind == 'Word') {
+      Home.searchWord = '打';
+      Home._onPressTreeC();
+    }
+  }
   renderButton() {
     var width = MinUnit*7;
     return (
       <View style={[{flexDirection: 'row', justifyContent: 'space-between',}, ]} >
-        <View style={{width}} />
+        <CircleIcon
+          name={'sitemap'} 
+          size={MinUnit*5} 
+          color={'#F6F6F6'} 
+          backStyle={[styles.microphone, {backgroundColor:this.state.blnRecord?"#CAD500":"#00BBD5",}]} 
+          onPress={this.onShowTree.bind(this)} />
         <CircleIcon
           name={'microphone'} 
           size={MinUnit*5} 
@@ -1211,6 +1235,7 @@ class CardBox extends Box {
   }
   // 录音按钮
   onRecordKey() {
+    console.log("blnRecord: "+this.state.blnRecord);
     if (this.state.blnRecord == false) {
       // 开启语音评测
       if (this.state.selectData.pc == null) {
@@ -1386,12 +1411,25 @@ class CardBox extends Box {
     }
   }
   renderCharacter() {
-    // console.log('renderCharacter');
-    var wordData = require('../../data/characters/吞.json')
+    var wordData = require('../../data/characters/你.json');
     return (
       <PanView name={'v_characterBox'} style={styles.character}>
         <PanView name={'v_characterBox_c'} style={[styles.c_view, styles.border]}>
-          <DrawWord curWidth={MinUnit*20} blnTouch={false} fillArray={['#8AE293']} data={wordData.character} showAll={true} />
+          <DrawWord curWidth={MinUnit*20} blnTouch={false} fillArray={['#62DC51', '#DC9069', '#8D7ADC']} data={wordData.character} showAll={true} />
+          <View style={[{height: MinUnit*3, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }]} >
+            <View style={{flexDirection: 'row'}}>
+              <View style={{backgroundColor: '#DC9069', width:MinUnit*1.4, height: MinUnit*1.4, borderRadius: MinUnit*0.7, marginHorizontal: MinUnit*0.5}} />
+              <Text>表音</Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+            <View style={{backgroundColor: '#62DC51', width:MinUnit*1.4, height: MinUnit*1.4, borderRadius: MinUnit*0.7, marginHorizontal: MinUnit*0.5}} />
+            <Text>表意</Text>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+            <View style={{backgroundColor: '#8D7ADC', width:MinUnit*1.4, height: MinUnit*1.4, borderRadius: MinUnit*0.7, marginHorizontal: MinUnit*0.5}} />
+            <Text>表记号</Text>
+            </View>
+          </View>
         </PanView>
         <View style={[styles.cMsg_view, ]}>
           <View style={{height: MinUnit*2, alignItems: 'center',}}>
@@ -1438,11 +1476,11 @@ class CardBox extends Box {
       selectData: data,
     });
     this.selectId = id;
-    socket.getCharacter('吞', (msg)=>{
-      console.log(msg);
-    }, (json)=>{
-      console.log(json);
-    });
+    // socket.getCharacter(this.state.selectData.character, (msg)=>{
+    //   console.log(msg);
+    // }, (json)=>{
+    //   console.log(json);
+    // });
   }
   showEnd(bln) {
     var data = null;
@@ -1499,6 +1537,7 @@ class CardBox extends Box {
     });
   }
   hiddenEnd(bln) {
+    app.onCancelChivox();
     this.init();
   }
   getCharacterMsg(json) {
@@ -1527,8 +1566,6 @@ class CardBox extends Box {
     }
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(array),
-    });
-    this.setState({
       blnWait: false,
     });
     if (array[0] != null) {

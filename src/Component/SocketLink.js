@@ -23,6 +23,43 @@ function SocketLink(app, _callback) {
     app.ws.onmessage = (e) => {
       // a message was received
       var obj = JSON.parse(e.data);
+      if (obj.from == 'Login') {
+        if (obj.msg == '成功') {
+          var bln = false;
+          if (app.storageUserInfo == null) {
+            bln = true;
+          } else {
+            if (app.storageUserInfo.userid != obj.data.userid) {
+              bln = true;
+            } else if (app.storageUserInfo.time < obj.data.time) {
+              bln = true;
+            }
+          }
+          if (bln) {
+            if (obj.data.Review != null) {
+              app.storageReview = JSON.parse(obj.data.Review);
+              app.saveReview(app.storageReview);
+            } else {
+              app.storageReview = null;
+              app.initReviewByStorage();
+            }
+            if (obj.data.CardInfo != null) {
+              app.storageCardInfo = JSON.parse(obj.data.CardInfo);
+              app.saveCardInfoMing();
+            } else {
+              app.storageCardInfo = null;
+              app.initCardInfoByStorage();
+            }
+            if (obj.data.Learning != null) {
+              var _learning = JSON.parse(obj.data.Learning);
+              app.noneLearningStorage(_learning);
+            } else {
+              app.noneLearningStorage([]);
+            }
+            Home.Refresh();
+          }
+        }
+      }
       if (this.fromServer) {
       	this.fromServer(obj);
       	this.fromServer = null;
@@ -117,8 +154,9 @@ function SocketLink(app, _callback) {
     var data = {
       userid: app.storageUserInfo.userid,
       time: timer,
-      flashCard: app.storageReview,
-      learnCards: app.storageCardInfo,
+      Review: app.storageReview,
+      CardInfo: app.storageCardInfo,
+      Learning:app.storageLearning,
     };
     if (this.sendToSocket('Update', 'helloworld', data)) {
       callback('success');

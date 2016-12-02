@@ -11,6 +11,7 @@ import {
   Text, 
   WebView,
   TextInput,
+  InteractionManager,
 } from 'react-native';
 import PanView from '../UserInfo/PanView';
 import PanButton from '../UserInfo/PanButton';
@@ -40,6 +41,9 @@ export default class S_TreeZ extends Component {
   componentWillMount() { 
   }
   componentDidMount() {
+    InteractionManager.runAfterInteractions(()=>{
+      this.postMessage(Home.searchWord);
+    });
   }
   componentWillUnmount() {
   }
@@ -55,7 +59,7 @@ export default class S_TreeZ extends Component {
             onBridgeMessage={this.onMessage.bind(this)}
             ref={(webview)=>{this.webview = webview;}}>
           </WebViewBridge>
-          <View style={styles.inputView}>
+          {/*<View style={styles.inputView}>
             <TextInput
               ref={'Input'}
               style={[styles.input, ]}
@@ -64,7 +68,7 @@ export default class S_TreeZ extends Component {
               onFocus={()=>{this.refs.Input.clear(); this.SearchWord="";}}
               onEndEditing={this.search.bind(this)}
               placeholder={'输入要查询的汉字'}/>
-          </View>
+          </View>*/}
           <View style={[styles.msg, ]}>
             <YxPoint text={"表音"} color={"#D1E575"}/>
             <YxPoint text={"表义"} color={"#7FE570"}/>
@@ -102,7 +106,7 @@ export default class S_TreeZ extends Component {
         <PanButton name={'b_tree_back'} onPress={this.onBackPress.bind(this)} >
           <Icon name="times" size={IconSize}/>
         </PanButton>
-        <Text style={UtilStyles.fontNormal}>关系网</Text>
+        <Text style={UtilStyles.fontNormal}>汉字关系网</Text>
         <View style={{width: IconSize, height: IconSize}} />
       </PanView>
     );
