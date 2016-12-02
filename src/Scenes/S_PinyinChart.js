@@ -16,7 +16,7 @@ import PanView from '../UserInfo/PanView';
 import PanButton from '../UserInfo/PanButton';
 import PanListView from '../UserInfo/PanListView';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize } from '../AppStyles';
+import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize ,SyllableData} from '../AppStyles';
 var itemHeight = MinUnit * 7;//top的高度
 import Utils from '../Utils/Utils.js';
 import* as Progress from 'react-native-progress'
@@ -77,7 +77,7 @@ export default class S_PinyinChart extends Component {
     this.state = {
       blnUpdate: false,
     };
-    this.chartData = require('../../data/py/拼音表.json');
+    this.chartData = SyllableData;
     this.moveOffset = { x: 0, y: 0};
     this._deltaMove = null;
     this.deltaSpeed = { x: 0, y: 0};
@@ -86,6 +86,7 @@ export default class S_PinyinChart extends Component {
     this.blnDialog = false;
     this.blnRecord = false;
     this.volume = 0;
+    this.selectGrid = null;
   }
   static propTypes = {
   }
@@ -299,10 +300,16 @@ export default class S_PinyinChart extends Component {
       }
     }
   }
-  getPYData(py){
+  getPYData(py, tone){
     for(var i=0;i<this.chartData.length;i++){
-      if (py == this.chartData[i].py && this.chartData[i].type == '正常字音'){
-        return i;
+      if (this.chartData[i].type == '正常字音'){
+        if (py == this.chartData[i].py){
+          if (tone){
+            if (tone == this.chartData[i].sd) return i;
+          }else{
+            return i;
+          }
+        }
       }
     }
     return null;
@@ -377,14 +384,21 @@ export default class S_PinyinChart extends Component {
     this.blnInTouch = false;
   }
   clickGrid(pos){
-    console.log('clicked x:' + pos.x + ', y:' + pos.y);
+    // console.log('clicked x:' + pos.x + ', y:' + pos.y);
     var tx = pos.x - this.moveOffset.x;
     var ty = pos.y - this.moveOffset.y;
     var sel = this.findGrid(tx, ty);
     if (sel != -1){
-      var tempShow = this.showData[sel];
-      if (tempShow.select != -1 && tempShow.child[tempShow.select].data){
-        console.log(tempShow.child[tempShow.select].data);
+      this.selectGrid = this.showData[sel];
+      if (this.selectGrid.select != -1 && this.selectGrid.child[this.selectGrid.select].data){
+        var data = this.selectGrid.child[this.selectGrid.select].data;
+        console.log(data);
+        if (data.arrTone == null || data.arrTone == undefined){
+          console.log('find tone array!');
+          for(var i=0;i<5;i++){
+
+          }
+        }
         this.onOpenDialog();
       }
     }
@@ -523,7 +537,7 @@ export default class S_PinyinChart extends Component {
   }
   onCloseDialog(){
     this.blnDialog = false;
-    this.stopRecord();
+    app.onCancelChivox();
     this.setUpdate();
   }
   renderDialog(){
@@ -606,8 +620,10 @@ export default class S_PinyinChart extends Component {
     });
   }
   stopRecord() {
-    app.onStopChivox();
-    this.blnRecord = false;
+    if (this.blnRecord){
+      app.onStopChivox();
+      this.blnRecord = false;
+    }
     this.volume = 0;
     this.setUpdate();
   }

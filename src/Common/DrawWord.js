@@ -128,8 +128,8 @@ export default class DrawWord extends Component {
   }
   InitWord(data){
     if (this.props.curWidth != 400){
-      var scaleWidth = this.props.curWidth*0.8 / 400;
-      var offsetXY = this.props.curWidth*0.2 / 2;
+      var scaleWidth = this.props.curWidth*0.9 / 400;//变成原来的0.8倍
+      var offsetXY = this.props.curWidth*0.1 / 2;
       var jsonStr = JSON.stringify(data);
       data = JSON.parse(jsonStr);
       for(var i=0;i<data.length;i++){

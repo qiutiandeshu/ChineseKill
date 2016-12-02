@@ -108,49 +108,49 @@ class Chivox{
     if (this._isecb){
       this._isecb(data);
     }
-    // if (data.code == ChivoxISE.CB_CODE_RESULT) {
-    //   console.log('have result!');
-    //   this.resultParse(data.result);
-    //   this.speechStatus = ChivoxISE.SPEECH_STOP;
-    //   this.volume = 0;
-    // }
-    // else if (data.code == ChivoxISE.CB_CODE_ERROR) {
-    //   if (data.result.match("-20161015_")){
-    //     var r = data.result.split('_');
-    //     var ret = JSON.parse(r[1]);
-    //     console.log(ret);//里面包含errorid 和 error的描述
-    //     if (chivoxErr[ret.errId]){
-    //       console.log(chivoxErr[ret.errId]);
-    //     }else{
-    //       console.log(`${ret.errId}，未知错误！`);
-    //     }
-    //     // ret.errId;//id
-    //     // ret.error;//描述
-    //   }else{
-    //     console.log('error', data.result);
-    //   }
-    //   this.speechStatus = ChivoxISE.SPEECH_STOP;
-    //   this.volume = 0;
-    // }
-    // else if (data.code == ChivoxISE.CB_CODE_STATUS) {//正在录音
-    //   console.log('status', data.result);
-    //   if (data.result == ChivoxISE.SPEECH_START) {//已经开始
-    //     //
-    //   } else if (data.result == ChivoxISE.SPEECH_WORK) {//工作中...
-    //     //
-    //   } else if (data.result == ChivoxISE.SPEECH_STOP) {//手动停止
-    //     //
-    //   } else if (data.result == ChivoxISE.SPEECH_RECOG) {//识别中...
-    //     //
-    //   } else if (data.result == ChivoxISE.SPEECH_PRESTART) {//启动前...
-    //     //整个时候还不能说话
-    //   }
-    //   this.speechStatus = data.result;
-    // }
-    // else {//..真的是未知的错误
-    //   console.log('传回其他参数', data.result);
-    //   this.speechStatus = ChivoxISE.SPEECH_STOP;
-    // }
+    if (data.code == ChivoxISE.CB_CODE_RESULT) {
+      // console.log('have result!');
+      // this.resultParse(data.result);
+      this.speechStatus = ChivoxISE.SPEECH_STOP;
+      // this.volume = 0;
+    }
+    else if (data.code == ChivoxISE.CB_CODE_ERROR) {
+      // if (data.result.match("-20161015_")){
+      //   var r = data.result.split('_');
+      //   var ret = JSON.parse(r[1]);
+      //   console.log(ret);//里面包含errorid 和 error的描述
+      //   if (chivoxErr[ret.errId]){
+      //     console.log(chivoxErr[ret.errId]);
+      //   }else{
+      //     console.log(`${ret.errId}，未知错误！`);
+      //   }
+      //   // ret.errId;//id
+      //   // ret.error;//描述
+      // }else{
+      //   console.log('error', data.result);
+      // }
+      this.speechStatus = ChivoxISE.SPEECH_STOP;
+      // this.volume = 0;
+    }
+    else if (data.code == ChivoxISE.CB_CODE_STATUS) {//正在录音
+      // console.log('status', data.result);
+      // if (data.result == ChivoxISE.SPEECH_START) {//已经开始
+      //   //
+      // } else if (data.result == ChivoxISE.SPEECH_WORK) {//工作中...
+      //   //
+      // } else if (data.result == ChivoxISE.SPEECH_STOP) {//手动停止
+      //   //
+      // } else if (data.result == ChivoxISE.SPEECH_RECOG) {//识别中...
+      //   //
+      // } else if (data.result == ChivoxISE.SPEECH_PRESTART) {//启动前...
+      //   //整个时候还不能说话
+      // }
+      this.speechStatus = data.result;
+    }
+    else {//..真的是未知的错误
+      // console.log('传回其他参数', data.result);
+      this.speechStatus = ChivoxISE.SPEECH_STOP;
+    }
   }
   resultParse(result){
     var obj = eval('(' + result + ')');
@@ -251,13 +251,18 @@ class Chivox{
   // }
   //iseCb: 评测的回调, volCb: 音量回调
   startISE(data){//开始评测，各参数看上面
+    this.cancelISE();
     ChivoxISE.start(data, ''+data.index, data.ISE_CATEGORY);//这里使用和讯飞一样的字段，后面两个的作用参考LiuliSpeak@唐
   }
   stopISE(){//中途如果录音了，则不会停止这次评测，只是停止录音
-    ChivoxISE.stop();
+    if (this.speechStatus != cv.SPEECH_STOP){
+      ChivoxISE.stop();
+    }
   }
   cancelISE(){//取消本次评测，调用后，本次评测取消，录音停止，不会得到评测结果
-    ChivoxISE.cancel();
+    if (this.speechStatus != cv.SPEECH_STOP){
+      ChivoxISE.cancel();
+    }
   }
 }
 var chivoxErr = {//返回错误码，可以对应该错误码进行log或者提示。
