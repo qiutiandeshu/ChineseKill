@@ -156,10 +156,11 @@ class LogoutBox extends Box {
     }
     app.removeAllStorageData()
     app.removeStorageData('UserInfo')
+    app.storageUserInfo = null;
     app.removeStorageData('CardInfo')
     app.removeStorageData('Review')
     app.noneCardInfoStorage()
-    app.noneLearningStorage([])
+    app.noneLearningStorage([]);
     this.hidden();
     HomeMenuLeft.userLogout();
     Home.Refresh();
@@ -278,7 +279,7 @@ class LoginBox extends Box {
   }
 	render() {
 		return (
-			<PopupBox ref={'PopupBox'} name={'Sign In / Sign Up'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)} hiddenAnimatedEnd={this.hiddenAnimatedEnd.bind(this)}>
+			<PopupBox ref={'PopupBox'} name={'Sign In / Sign Up'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)} hiddenAnimatedEnd={this.hiddenAnimatedEnd.bind(this)} hiddenAnimatedEnd={this.hiddenEnd.bind(this)}>
 				<PanView name={'v_login'} style={styles.Login}>
 	        <IconInput name={'p_login_email'} iconName={'envelope'} placeholder={'Email'} clearButtonMode={"unless-editing"} onChangeText={this.onEmailChange.bind(this)} />
 	        <IconInput name={'p_login_password'} iconName={'lock'} placeholder={'You password'} secureTextEntry={true} onChangeText={this.onPasswordChange.bind(this)} />
@@ -386,6 +387,10 @@ class LoginBox extends Box {
         }
     });
   }
+  hiddenEnd(bln) {
+    this.email = '';
+    this.password = '';
+  }
   onEmailChange(text) {
     this.email = text;
   }
@@ -483,7 +488,7 @@ class SignUpBox extends Box {
   }
   render() {
     return (
-      <PopupBox ref={'PopupBox'} name={'Sign Up'} leftIconName={'close'} onLeftPress={this.closeBox.bind(this)}>
+      <PopupBox ref={'PopupBox'} name={'Sign Up'} leftIconName={'close'} onLeftPress={this.closeBox.bind(this)} hiddenAnimatedEnd={this.hiddenEnd.bind(this)} >
         <PanView name={'v_login'} style={styles.Login}>
           <IconInput name={'p_signup_email'} iconName={'envelope'} placeholder={'Email'} onChangeText={this.onEmailChange.bind(this)} clearButtonMode={"unless-editing"} />
           <IconInput name={'p_signup_lock1'} iconName={'lock'} placeholder={'At least six characters required'} secureTextEntry={true} onChangeText={this.onPassword1.bind(this)} />
@@ -510,6 +515,11 @@ class SignUpBox extends Box {
   }
   onPassword2(text) {
     this.password2 = text;
+  }
+  hiddenEnd(bln) {
+    this.email = '';
+    this.password1 = '';
+    this.password2 = '';
   }
   // 注册
   onSignUp() {
@@ -1216,7 +1226,7 @@ class CardBox extends Box {
           name={'sitemap'} 
           size={MinUnit*5} 
           color={'#F6F6F6'} 
-          backStyle={[styles.microphone, {backgroundColor:this.state.blnRecord?"#CAD500":"#00BBD5",}]} 
+          backStyle={[styles.microphone, {backgroundColor:"#00BBD5",}]} 
           onPress={this.onShowTree.bind(this)} />
         <CircleIcon
           name={'microphone'} 
@@ -1253,7 +1263,7 @@ class CardBox extends Box {
       app.onStartChivox(param, (data)=>{
         switch (data.type) {
           case 'volume':
-            // console.log("获得音量回调:",data.volume)
+            console.log("获得音量回调:",data.volume)
             this.pcResult = null;
             if (this.state.blnRecord == false) {
               this.setState({
@@ -1475,6 +1485,7 @@ class CardBox extends Box {
     this.setState({
       selectData: data,
     });
+    this.pcResult = '';
     this.selectId = id;
     // socket.getCharacter(this.state.selectData.character, (msg)=>{
     //   console.log(msg);

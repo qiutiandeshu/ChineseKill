@@ -639,7 +639,6 @@ export default class App extends Component {
                 chapterScores: [],
                 chapterTimes: [],
             }
-            if (retData.length == 0) continue;
             if (i < retData.length) {//当前的是已经存在本地的数据
                 let data = retData[i]
                 for (let j = 0; j < data.chapterStates.length; j++) {
@@ -660,6 +659,7 @@ export default class App extends Component {
                     this.storageLearning[i].chapterTimes[j] = 0
                 }
             }
+            if (retData.length == 0) continue;
             this.storage.save({
                 key: 'Learning',
                 id: this.getSaveId(i),

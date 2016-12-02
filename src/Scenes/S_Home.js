@@ -100,7 +100,6 @@ export default class S_Home extends Component {
     }
 
     render() {
-        console.log('render Home');
         const width = this.state.sideMenuAnim.interpolate(
             {
                 inputRange: [0, 1],
