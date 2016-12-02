@@ -577,8 +577,8 @@ export default class App extends Component {
     }
 
     saveUserInfo = (saveData, expires = null)=> {
-        saveData.flashCard = [];
-        saveData.learnCards = [];
+        saveData.flashCard = null;
+        saveData.learnCards = null;
         this.storage.save({
             key: 'UserInfo',
             rawData: saveData,

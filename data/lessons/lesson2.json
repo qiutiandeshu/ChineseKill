@@ -669,7 +669,7 @@
             "thirty"
           ], 
           "Q_Answer": "eleven", 
-          "Q_Question_PY": "shíyī", 
+          "Q_Question_PY": "shí yī", 
           "Q_Question": "十一", 
           "Q_Sound": "11.MP3", 
           "Q_JuCards": [
@@ -686,7 +686,7 @@
             "thirty-one"
           ], 
           "Q_Answer": "thirty-one", 
-          "Q_Question_PY": "sānshíyī", 
+          "Q_Question_PY": "sān shí yī", 
           "Q_Question": "三十一", 
           "Q_Sound": "31.MP3", 
           "Q_JuCards": [
@@ -793,7 +793,7 @@
             "one thousand thirty-two/1032"
           ], 
           "Q_Answer": "One hundred twenty-three/123", 
-          "Q_Question_PY": "yībǎi_èrshísān", 
+          "Q_Question_PY": "yī bǎi_èr shí sān", 
           "Q_Sound": "123.MP3", 
           "Q_Title": "choose a correct translation", 
           "Q_Question": "一百_二十三", 
@@ -841,7 +841,7 @@
           "Q_Title": "speak the sentence", 
           "Q_Type": 4, 
           "Q_Answer": "yi1 bai3 san1 shi2 yi1", 
-          "Q_Question_PY": "yībǎi_sānshíyī", 
+          "Q_Question_PY": "yī bǎi_sān shí yī", 
           "Q_Question": "一百_三十一", 
           "Q_Sound": "131.MP3", 
           "Q_JuCards": [
@@ -858,7 +858,7 @@
           "Q_Title": "speak the sentence", 
           "Q_Type": 4, 
           "Q_Answer": "yi1 wan4 san1 qian1 yi1 bai3 wu3 shi2", 
-          "Q_Question_PY": "yīwàn_sānqiān_yībǎi_wǔshí", 
+          "Q_Question_PY": "yī wàn_sān qiān_yī bǎi_wǔ shí", 
           "Q_Question": "一万_三千_一百_五十", 
           "Q_Sound": "13150.MP3", 
           "Q_JuCards": [
@@ -910,7 +910,7 @@
             "four", 
             "thousand"
           ], 
-          "Q_Question_PY": "yīyì_sānqiānwàn_sìqiān", 
+          "Q_Question_PY": "yī yì_sān qiān wàn_sì qiān", 
           "Q_Sound": "yiyisanqianwansiqian.mp3", 
           "Q_Title": "select a correct translation", 
           "Q_Question": "一亿_三千万_四千", 

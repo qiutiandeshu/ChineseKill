@@ -1229,6 +1229,7 @@ class CardBox extends Box {
         switch (data.type) {
           case 'volume':
             // console.log("获得音量回调:",data.volume)
+            this.pcResult = null;
             if (this.state.blnRecord == false) {
               this.setState({
                 blnRecord: true,
@@ -1243,13 +1244,14 @@ class CardBox extends Box {
             var result = data.result.details;
             result.forEach((_data)=>{
               let toneStr = ["轻声","一声","二声","三声","四声"]
-              str = '声母：' + _data.phoneScores.sm;
-              str += '韵母：' + _data.phoneScores.ym;
-              if(originalTone != recordTone){
-                str += "声调读的不准 (将"+toneStr[originalTone]+"读成"+toneStr[recordTone]+")"
+              var str = '声母：' + _data.phoneScores.sm;
+              str += ' 韵母：' + _data.phoneScores.ym;
+              if(_data.originalTone != _data.recordTone){
+                str += " 声调读的不准 (将"+toneStr[_data.originalTone]+"读成"+toneStr[_data.recordTone]+")"
+              } else {
+                str += ' 声调：100';
               }
-              console.log(str);
-              // this.result = str;
+              this.pcResult = str;
             });
             this.stopRecord();
             this.playSound();
@@ -1384,7 +1386,7 @@ class CardBox extends Box {
     }
   }
   renderCharacter() {
-    console.log('renderCharacter');
+    // console.log('renderCharacter');
     var wordData = require('../../data/characters/吞.json')
     return (
       <PanView name={'v_characterBox'} style={styles.character}>
@@ -1392,6 +1394,9 @@ class CardBox extends Box {
           <DrawWord curWidth={MinUnit*20} blnTouch={false} fillArray={['#8AE293']} data={wordData.character} showAll={true} />
         </PanView>
         <View style={[styles.cMsg_view, ]}>
+          <View style={{height: MinUnit*2, alignItems: 'center',}}>
+            <Text style={{fontSize: MinUnit*1.2, color: '#DC915C'}}>{this.pcResult?this.pcResult:''}</Text>
+          </View>
           <View style={{height: MinUnit*5, alignItems: 'center',}}>
             <Text style={{fontSize:MinUnit*4}}>{this.state.selectData?this.state.selectData.pyin:''}</Text>
           </View>

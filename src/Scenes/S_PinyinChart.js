@@ -571,6 +571,7 @@ export default class S_PinyinChart extends Component {
       switch (data.type) {
         case 'volume':
           // console.log("获得音量回调:",data.volume)
+          this.pcResult = null;
           if (this.blnRecord == false) {
             this.blnRecord = true;
           }
@@ -579,6 +580,18 @@ export default class S_PinyinChart extends Component {
           break;
         case 'result':
           console.log("得到评测结果:", data.result)
+          var result = data.result.details;
+          result.forEach((_data)=>{
+            let toneStr = ["轻声","一声","二声","三声","四声"]
+            var str = '声母：' + _data.phoneScores.sm;
+            str += '\n韵母：' + _data.phoneScores.ym;
+            if(_data.originalTone != _data.recordTone){
+              str += "\n声调读的不准 (将"+toneStr[_data.originalTone]+"读成"+toneStr[_data.recordTone]+")"
+            } else {
+              str += '\n声调：100';
+            }
+            this.pcResult = str;
+          });
           // this.initPlayRecord();
           this.stopRecord();
           break;
@@ -627,7 +640,7 @@ export default class S_PinyinChart extends Component {
             </Text>
           </PanButton>
           <Text style={{fontSize: MinUnit*1.5, textAlign: 'center', color: '#AAA', marginTop: MinUnit}}>
-            {`声母：${100}\n韵母：${100}\n声调：${100}`}
+            {this.pcResult?this.pcResult:''}
           </Text>
           <CircleIcon
             name='btnPCChivox'
