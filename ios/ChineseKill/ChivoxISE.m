@@ -333,8 +333,10 @@ RCT_EXPORT_METHOD(getStatus:(RCTResponseSenderBlock)callback)
 
 -(void)stopTicks
 {
-  [self.SpeakTimer invalidate];
-  self.SpeakTimer = nil;
+  if (self.SpeakTimer){
+    [self.SpeakTimer invalidate];
+    self.SpeakTimer = nil;
+  }
 }
 
 -(void)timeTicked
@@ -402,6 +404,8 @@ RCT_EXPORT_METHOD(getStatus:(RCTResponseSenderBlock)callback)
 //    }
   }else if ([code isEqualToString:CB_CODE_RESULT] || [code isEqualToString:CB_CODE_ERROR]){
     self.bridgeStatus = SPEECH_STOP;
+    [self stopTicks];
+  }else if ([code isEqualToString:CB_CODE_STATUS] && [result isEqualToString:SPEECH_RECOG]){
     [self stopTicks];
   }
   [self sendEventWithName:@"iseCallback"

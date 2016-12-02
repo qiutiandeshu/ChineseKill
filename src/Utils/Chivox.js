@@ -99,10 +99,13 @@ class Chivox{
     }
   }
   iseVolume(data){
-    this.volume = parseFloat(data.volume);
     if (this._volcb){
+      if (this.speechStatus == cv.SPEECH_RECOG){
+        data.volume = 0;
+      }
       this._volcb(data);
     }
+    this.volume = parseFloat(data.volume);
   }
   iseCallback(data){
     if (this._isecb){

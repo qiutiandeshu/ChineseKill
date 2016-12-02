@@ -11,6 +11,8 @@ import {
   Text, 
   PanResponder,
   findNodeHandle,
+  Image,
+  Alert,
 } from 'react-native';
 import PanView from '../UserInfo/PanView';
 import PanButton from '../UserInfo/PanButton';
@@ -19,7 +21,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize ,SyllableData} from '../AppStyles';
 var itemHeight = MinUnit * 7;//top的高度
 import Utils from '../Utils/Utils.js';
-import* as Progress from 'react-native-progress'
+import* as Progress from 'react-native-progress';
+import webData from '../Utils/GetWebData.js';
 
 let py_sm = [
   ['-'],
@@ -70,6 +73,9 @@ let pyp = {//中间拼音的位置和宽高
   height: bodyp.height - fw - pd
 };
 
+var pyUrl = 'http://192.169.1.19:8080/ChineseSkill/audio/';
+var pyPath = webData.CACHES + '/pyAudio';
+
 export default class S_PinyinChart extends Component {
   constructor(props) {
     super(props);
@@ -87,6 +93,7 @@ export default class S_PinyinChart extends Component {
     this.blnRecord = false;
     this.volume = 0;
     this.selectGrid = null;
+    this.dialogWaiting = false;
   }
   static propTypes = {
   }
@@ -212,7 +219,7 @@ export default class S_PinyinChart extends Component {
           top: top,
           left: left,
           width: width,
-          height: height
+          height: height,
         });
         if (data != null){
           child = (
@@ -286,7 +293,8 @@ export default class S_PinyinChart extends Component {
       else {
         return {
           idx: i,
-          py: this.chartData[i].py
+          py: this.chartData[i].py,
+          isDown: false,
         };
       }
     }else {
@@ -295,7 +303,8 @@ export default class S_PinyinChart extends Component {
       else {
         return {
           idx: i,
-          py: this.chartData[i].py
+          py: this.chartData[i].py,
+          isDown: false,
         };
       }
     }
@@ -391,21 +400,6 @@ export default class S_PinyinChart extends Component {
     if (sel != -1){
       this.selectGrid = this.showData[sel];
       if (this.selectGrid.select != -1 && this.selectGrid.child[this.selectGrid.select].data){
-        var data = this.selectGrid.child[this.selectGrid.select].data;
-        console.log(data);
-        if (data.arrTone == null || data.arrTone == undefined){
-          data.arrTone = [];
-          for(var i=0;i<5;i++){
-            var idx = this.getPYData(data.py, '' + i);
-            if (idx != null){
-              data.arrTone.push({
-                tone: i,
-                pyIdx: idx
-              });
-            }
-          }
-          console.log(data.arrTone);
-        }
         this.onOpenDialog();
       }
     }
@@ -539,7 +533,33 @@ export default class S_PinyinChart extends Component {
     }
   }
   onOpenDialog(){
+    var data = this.selectGrid.child[this.selectGrid.select].data;
+    // console.log(data);
+    if (data.arrTone == null || data.arrTone == undefined){
+      data.arrTone = [];
+      for(var i=0;i<5;i++){//得到五个音调的音频
+        var idx = this.getPYData(data.py, '' + i);
+        if (idx != null){
+          data.arrTone.push({
+            tone: i,
+            pyIdx: idx,
+            name: data.py + i + '.mp3',
+            pcResult: null,
+            volume: 0,
+          });
+        }
+      }
+      // console.log(data.arrTone);
+    }
+    for(var i=0;i<data.arrTone.length;i++){
+      data.arrTone[i].pcResult = null;
+      data.arrTone[i].volume = 0;
+    }
     this.blnDialog = true;
+    if (!data.isDown){
+      this.dialogWaiting = true;
+      this.checkPinyinAudio(pyPath, pyUrl, 0);
+    }
     this.setUpdate();
   }
   onCloseDialog(){
@@ -547,6 +567,28 @@ export default class S_PinyinChart extends Component {
     app.onCancelChivox();
     app.onStopRecord();
     this.setUpdate();
+  }
+  checkPinyinAudio(path, uri, index){
+    var data = this.selectGrid.child[this.selectGrid.select].data;
+    if (index < data.arrTone.length){
+      webData.Instance().getWebFile(data.arrTone[index].name, path, uri+data.arrTone[index].name, 'none', (result)=>{
+        if (result.error){
+          Alert.alert(
+            '提示',
+            '错误：' + result.error,
+            [
+              {text: 'OK', onPress: () => {this.onCloseDialog()}},
+            ]
+          );
+        }else{
+          this.checkPinyinAudio(path, uri, ++index);
+        }
+      });
+    }else{
+      data.isDown = true;
+      this.dialogWaiting = false;
+      this.setUpdate();
+    }
   }
   renderDialog(){
     if (this.blnDialog){
@@ -568,7 +610,7 @@ export default class S_PinyinChart extends Component {
             backgroundColor: '#FCFCFC',
             flexDirection: 'row',
           }}>
-            {this.renderDialogItem()}
+            {this.renderDialogItem(w, h)}
           </View>
         </View>
       );
@@ -584,25 +626,28 @@ export default class S_PinyinChart extends Component {
       this.stopRecord();
       return;
     }
+    var tempData = this.selectGrid.child[this.selectGrid.select].data;
+    var tone = tempData.arrTone[index];
     let param = {
       gategory: 'word',
-      text: 'zhuang',
-      audioName: 'flash',
-    }
+      text: tempData.py + tone.tone,
+      audioName: tempData.py + tone.tone,
+    };
     app.onStartChivox(param, (data)=>{
       switch (data.type) {
         case 'volume':
-          // console.log("获得音量回调:",data.volume)
-          this.pcResult = null;
+          console.log("获得音量回调:",data.volume);
           if (this.blnRecord == false) {
             this.blnRecord = true;
           }
-          this.volume = data.volume;
+          tone.volume = data.volume;
+          tone.pcResult = null;
           this.setUpdate();
           break;
         case 'result':
           console.log("得到评测结果:", data.result)
           var result = data.result.details;
+          tone.volume = 0;
           result.forEach((_data)=>{
             let toneStr = ["轻声","一声","二声","三声","四声"]
             var str = '声母：' + _data.phoneScores.sm;
@@ -612,13 +657,14 @@ export default class S_PinyinChart extends Component {
             } else {
               str += '\n声调：100';
             }
-            this.pcResult = str;
+            tone.pcResult = str;
           });
           // this.initPlayRecord();
           this.stopRecord();
           break;
         case 'error':
           // console.log("评测出错:", data.error)
+          tone.volume = 0;
           this.stopRecord();
           break;
         case 'working':
@@ -649,48 +695,66 @@ export default class S_PinyinChart extends Component {
       }
     });
   }
-  renderDialogItem(){
-    var data = this.selectGrid.child[this.selectGrid.select].data;
-    var arr = [];//`声母:读的很好\n韵母:读的不好\n声调:读的一般`
-    for(var i=0;i<data.arrTone.length;i++){
-      var pyStr = this.chartData[data.arrTone[i].pyIdx].pyd;//`${data.py}${data.arrTone[i].tone}`
-      arr.push(
-        <View key={i} style={{
-          width: MinUnit*12, 
-          height: ScreenHeight/2 - MinUnit*2, 
-          // backgroundColor:'#ccc',
-          alignItems: 'center'
-        }}>
-          <PanButton name={'btnPCRead'+i} onPress={this.readPinyin.bind(this, i)} style={{justifyContent:'center', alignItems: 'center', height: MinUnit*8, width: MinUnit*8, marginTop: MinUnit*2}}>
-            <Text style={{fontSize: MinUnit*2.2, textAlign: 'center', color: '#333'}}>
-              {pyStr}
-            </Text>
-          </PanButton>
-          <Text style={{fontSize: MinUnit*1.5, textAlign: 'center', color: '#AAA', height: MinUnit*6 , marginTop: MinUnit}}>
-            {this.pcResult?this.pcResult:''}
-          </Text>
-          <CircleIcon
-            name='btnPCChivox'
-            onPress={this.onPressChivox.bind(this, i)}
-            style={[styles.btnBackView, {borderColor: '#8BCBED', marginTop: MinUnit*4}]}
-            iconName={'microphone'}
-            iconSize={4} 
-            iconStyle={{color: '#8BCBED'}}>
-            {
-              <Progress.Circle  thickness={MinUnit*0.3} borderWidth={0} style={{position:'absolute',left:0,top:0}}
-                                          progress={Number(this.volume)} size={MinUnit*5.4} color="#1BA2FF"/>}
-          </CircleIcon>
-          <CircleIcon
-            name='btnPCPlay'
-            onPress={this.onPressPlay.bind(this, i)}
-            style={[styles.btnBackView, {borderColor: '#8BCBED', marginTop: MinUnit}]}
-            iconName={'volume-up'}
-            iconSize={4} 
-            iconStyle={{color: '#8BCBED'}} />
-        </View>
+  renderDialogItem(w, h){
+    if (this.dialogWaiting){
+      return (
+        <Waiting
+          show={this.dialogWaiting}
+          style={{width: w, height: h}} 
+          text={'Loading'} 
+          textStyle={{fontSize: MinUnit*5, color: '#6699CC', textAlign: 'center'}}
+        />
       );
+    }else{
+      var data = this.selectGrid.child[this.selectGrid.select].data;
+      var arr = [];//`声母:读的很好\n韵母:读的不好\n声调:读的一般`
+      for(var i=0;i<data.arrTone.length;i++){
+        var pyStr = this.chartData[data.arrTone[i].pyIdx].pyd;//`${data.py}${data.arrTone[i].tone}`
+        arr.push(
+          <View key={i} style={{
+            width: MinUnit*12, 
+            height: ScreenHeight/2 - MinUnit*2, 
+            // backgroundColor:'#ccc',
+            alignItems: 'center'
+          }}>
+            <PanButton name={'btnPCRead'+i} onPress={this.readPinyin.bind(this, i)} style={{justifyContent:'center', alignItems: 'center', height: MinUnit*8, width: MinUnit*8, marginTop: MinUnit*2}}>
+              <Text style={{fontSize: MinUnit*2.2, textAlign: 'center', color: '#333'}}>
+                {pyStr}
+              </Text>
+            </PanButton>
+            <Text style={{fontSize: MinUnit*1.5, textAlign: 'center', color: '#AAA', height: MinUnit*8 , marginTop: MinUnit}}>
+              {data.arrTone[i].pcResult ? data.arrTone[i].pcResult : ''}
+            </Text>
+            <CircleIcon
+              name='btnPCChivox'
+              onPress={this.onPressChivox.bind(this, i)}
+              style={[styles.btnBackView, {borderColor: '#8BCBED', marginTop: MinUnit*2}]}
+              iconName={'microphone'}
+              iconSize={4} 
+              iconStyle={{color: '#8BCBED'}}>
+              {
+                <Progress.Circle 
+                  thickness={MinUnit*0.3} 
+                  borderWidth={0} 
+                  style={{position:'absolute',left:0,top:0}}
+                  progress={Number(data.arrTone[i].volume)} 
+                  size={MinUnit*5.4} 
+                  color="#1BA2FF"
+                />
+              }
+            </CircleIcon>
+            <CircleIcon
+              name='btnPCPlay'
+              onPress={this.onPressPlay.bind(this, i)}
+              style={[styles.btnBackView, {borderColor: '#8BCBED', marginTop: MinUnit}]}
+              iconName={'volume-up'}
+              iconSize={4} 
+              iconStyle={{color: '#8BCBED'}} />
+          </View>
+        );
+      }
+      return arr;
     }
-    return arr;
   }
   onBackScene(){
     this.props.navigator.pop();
@@ -730,6 +794,87 @@ export default class S_PinyinChart extends Component {
         </View>
       </PanView> 
     )
+  }
+}
+class Waiting extends Component{
+  static ICON = 0;
+  static IMAGE = 1;
+  constructor(props) {
+    super(props);
+    this.defaultStyle = {
+      position: 'absolute',
+      left: 0,
+      top: 0,
+      width: ScreenWidth,
+      height: ScreenHeight,
+      backgroundColor: '#333',
+      opacity: 0.5,
+      justifyContent: 'center',
+      alignItems: 'center'
+    };
+  }
+  static propTypes = {
+    show: PropTypes.bool.isRequired,//显示
+    text: PropTypes.string,//显示内容
+    textStyle: PropTypes.object,//显示内容的样式
+    icon: PropTypes.object,//显示
+    // icon: {
+    //   type: Waiting.ICON,//ICON：表示使用Icon，IMAGE：表示使用Image组件
+    //   name: null,//ICON：表示名字，IMAGE：表示Image组件是source
+    //   size: MinUnit*2,//组件大小
+    //   style: {...}//样式
+    //   param: {}//其他参数，主要是Image使用的参数
+    // }
+  }
+  static defaultProps = {
+    show: true,
+    text: '',
+    textStyle: {
+      fontSize: MinUnit*3, 
+      color: '#000', 
+      textAlign: 'center'
+    },
+    icon: null,
+  }
+  render(){
+    if (this.props.show){
+      var icon = this.props.icon
+      var child = null;
+      if (icon){
+        if (icon.type == Waiting.ICON){
+          child = (
+            <Icon 
+              name={icon.name} 
+              size={icon.size} 
+              style={icon.style}
+            />
+          );
+        }else if (icon.type == Waiting.IMAGE){
+          child = (
+            <Image
+              source={icon.name}
+              resizeMode={icon.param.resizeMode} 
+              style={icon.style}
+            />
+          );
+        }
+      }
+      return (
+        <View style={[this.defaultStyle, this.props.style]}>
+          {
+            this.props.text && this.props.text != '' ?
+            <Text style={this.props.textStyle} >
+              {this.props.text}
+            </Text> :
+            null 
+          }
+          {child}
+          {this.props.children}
+        </View>
+      );
+    }else{
+      return <View style={[this.defaultStyle, {opacity:0}]}/>
+    }
   }
 }
 class CircleIcon extends Component {

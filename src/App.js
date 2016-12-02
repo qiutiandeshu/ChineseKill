@@ -311,7 +311,7 @@ export default class App extends Component {
     onStartChivox(param, callBack) {//开始评测，这里的设置可根据需要进行设置，说明看下方对应条目
         console.log("开始评测:", this.blnChivoxWorking)
         if (this.blnChivoxWorking) return false;//如果引擎正在工作,返回错误
-        const {gategory, text, audioName}=param
+        const {gategory, text, audioName, index}=param
         this.chivox.startISE({
             VOLUME_TS: 0.1,//音量超过多少则表示检测到说话了，最大值为1
             VAD_BOS: 3600,//静音超时时间，即用户多长时间不说话则当做超时处理vad_bos 毫秒 ms
@@ -322,7 +322,7 @@ export default class App extends Component {
             ISE_AUDIO_PATH: audioName,//录音文件的名称，不带后缀，默认为wav
             SAMPLE_RATE: '16000',//采样率，16000即可，不需要调整
             USER_ID: 'jld-9527',//userID
-            index: 0,
+            index: index ? index : 0,
             //WAV_PATH: ''//如果传递了录音文件保存路径，则使用传入的地址，否则默认路径保存在Caches文件夹下面
         });
         this.blnChivoxWorking = true
