@@ -510,20 +510,19 @@ export default class S_PinyinChart extends Component {
   }
   render() {
     return (
-      <View name={'S_PinyinChart'} style={styles.container}>
+      <PanView name={'S_PinyinChart'} style={styles.container}>
         {this.renderTop()}
         {this.rendeLoading()}
-      </View>
+      </PanView>
     );
   }
   rendeLoading(){
     if (this.blnLoading){
       return (
-        <View style={{position: 'absolute', left: 0, top: 0, width: ScreenWidth, height: ScreenHeight, opacity: 0.5, backgroundColor: '#111', justifyContent: 'center', alignItems: 'center'}} >
-          <Text style={{fontSize: MinUnit*10, color: '#FFF', textAlign: 'center'}}>
-            Loading...
-          </Text>
-        </View>
+        <Waiting text='Loading' 
+          textStyle={{fontSize: MinUnit*10, color: '#FFF', textAlign: 'center'}} 
+          show={true} 
+        />
       );
     }else{
       return [

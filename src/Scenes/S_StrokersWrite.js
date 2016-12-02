@@ -210,6 +210,14 @@ export default class StrokersWrite extends Component {
     }
   }
   renderBodyMiddle(){
+    // var name = '八';
+    // var uniName = Utils.Utf8ToUnicode(name);
+    // uniName = uniName.replace('\\u', '');
+    // console.log('uniName', uniName);
+    // var uri = 'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/' + uniName + '.json';
+    // wd.Instance().getWebFile(uniName + '.json', wd.DOCUMENT, uri, 'utf8', (result)=>{
+    //   console.log(result);
+    // });this.character
     return (
       <View style={styles.bodyCenterView}>
         <View style={styles.bodyMiddleLeftView}>
@@ -230,10 +238,15 @@ export default class StrokersWrite extends Component {
         </View>
         <DrawWord ref={(r)=>{this.drawWord = r}}
           style={styles.bodyMiddleCenterView} 
-          data={this.character}
+          data={{
+            path: wd.CACHES + '/mhJson',
+            name: this.props.rowData.data.hz,
+            uri: 'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/'
+          }}
           curWidth={curWidth}
           blnTouch={true}
           writeOver={this.writeOver.bind(this)}
+          firstPlay={true}
         />
         <View style={styles.bodyMiddleRightView}>
           <ButtonIcon ref={(r)=>{this.refAutoWrite = r}}

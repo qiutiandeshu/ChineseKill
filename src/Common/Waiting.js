@@ -14,7 +14,6 @@ import PanButton from '../UserInfo/PanButton';
 import PanListView from '../UserInfo/PanListView';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize } from '../AppStyles';
-var itemHeight = MinUnit * 7;//top的高度
 
 export default class Waiting extends Component {
   static ICON = 0;

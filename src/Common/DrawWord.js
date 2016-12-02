@@ -11,6 +11,7 @@ import {
   ART,
   PixelRatio,
   PanResponder,
+  Alert,
 } from 'react-native';
 
 const {
@@ -26,7 +27,13 @@ const {
   ClippingRectangle,
 } = ART;
 
+import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize } from '../AppStyles';
 import Utils from '../Utils/Utils.js';
+import Waiting from './Waiting.js';
+import webData from '../Utils/GetWebData.js';
+
+var mhUrl = 'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/';
+var mhPath = webData.CACHES + '/mhJson';
 
 var backLineData = [
   {w: 2, t: 0, c: [1,1,1,-1,-1,-1,-1,1,1,1], p:[0, 0, 0, 100, 100, 100, 100, 0, 0, 0]},
@@ -39,7 +46,6 @@ var backLineData = [
 export default class DrawWord extends Component {
   constructor(props){
     super(props);
-    this.InitWord(props.data);
     this.state = {
       blnUpdate: false
     };
@@ -53,9 +59,95 @@ export default class DrawWord extends Component {
     this.nowPos = 0;
     this.blnShowArrow = this.props.arrowShow;
     this.blnShowBack = true;
-    this.createBackLine();
     this.delayPlay = this.props.autoDelay;
-    
+    this.arrLine = [];
+    this.showArrow = [];
+    this.blnDownload = false;
+    this.createBackLine();
+  }
+  static propTypes = {
+    curWidth: PropTypes.number.isRequired, //宽高必须
+    data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired, //数据，点阵数组数据 或者 一个带 path，name，uri的对象
+    blnTouch: PropTypes.bool.isRequired, //是否可书写
+    backColor: PropTypes.string, //背景颜色
+    fillColor: PropTypes.string, //填充颜色，
+    fillArray: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]), //如果存在则以这个为准，用于不同部件的颜色标识，如果是bool类型，则在内部随机颜色，否则以给定颜色为准
+    writeOver: PropTypes.func, //写完回调函数
+    autoSpeed: PropTypes.number, //自动书写速度
+    autoDelay: PropTypes.number, //自动书写首次延迟设置
+    arrowShow: PropTypes.bool, //是否显示箭头
+    showAll: PropTypes.bool, //是否一开始都显示 
+    firstPlay: PropTypes.bool, //是否初始化自动播放
+  }
+  static defaultProps = {
+    autoSpeed: 3,
+    backColor: '#DADADA',
+    fillColor: '#000000',
+    fillArray: null,
+    blnTouch: true, //默认是可写的
+    autoDelay: 30,
+    arrowShow: true,
+    showAll: false,
+    firstPlay: false,
+  }
+  componentWillMount() {
+    if (this.props.blnTouch){
+      this._panResponder = PanResponder.create({
+        onStartShouldSetPanResponder: this.onStartShouldSetPanResponder.bind(this),
+        onMoveShouldSetPanResponder: this.onMoveShouldSetPanResponder.bind(this),
+        onPanResponderGrant: this.onPanResponderGrant.bind(this),
+        onPanResponderMove: this.onPanResponderMove.bind(this),
+        onPanResponderRelease: this.onPanResponderRelease.bind(this),
+        onPanResponderTerminate: this.onPanResponderTerminate.bind(this),
+      });
+    }
+  }
+  componentDidMount() {
+    if (Utils.isArray(this.props.data)){
+      this.updateData(this.props.data);
+    }else{
+      this.checkData();
+    }
+  }
+  componentWillUnmount() {
+    this._blinkTime && clearTimeout(this._blinkTime);
+    this._autoWrite && clearInterval(this._autoWrite);
+  }
+  checkData(){
+    // var name = '八';
+    // var uniName = Utils.Utf8ToUnicode(name);
+    // uniName = uniName.replace('\\u', '');
+    // console.log('uniName', uniName);
+    // var uri = 'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/' + uniName + '.json';
+    // wd.Instance().getWebFile(uniName + '.json', wd.DOCUMENT, uri, 'utf8', (result)=>{
+    //   console.log(result);
+    // });
+
+    this.blnDownload = true;
+    var name = this.props.data.name;
+    var uniName = Utils.Utf8ToUnicode(name);
+    uniName = uniName.replace('\\u', '') + '.json';
+    console.log(uniName);
+    webData.Instance().getWebFile(uniName, this.props.data.path, this.props.data.uri+uniName, 'utf8', (result)=>{
+      if (result.error){
+        Alert.alert(
+          '提示',
+          '错误：未找到文件或者服务器没有数据，' + result.error,
+          [
+            {text: 'OK', onPress: () => {}},
+          ]
+        );
+      }else{
+        console.log(result.data);
+        var data = JSON.parse(result.data);
+        this.blnDownload = false;
+        this.updateData(data.character);
+      }
+    });
+    this.setUpdate();
+  }
+  updateData(data){
+    this.InitWord(data);
     this.tempColor = [];
     this.tempColor.push(this.props.fillColor);
     if (this.props.fillArray != null){
@@ -69,29 +161,15 @@ export default class DrawWord extends Component {
         }
       }
     }
-  }
-  static propTypes = {
-    curWidth: PropTypes.number.isRequired, //宽高必须
-    data: PropTypes.array.isRequired, //数据，点阵数组数据
-    blnTouch: PropTypes.bool.isRequired, //是否可书写
-    backColor: PropTypes.string, //背景颜色
-    fillColor: PropTypes.string, //填充颜色，
-    fillArray: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]), //如果存在则以这个为准，用于不同部件的颜色标识，如果是bool类型，则在内部随机颜色，否则以给定颜色为准
-    writeOver: PropTypes.func, //写完回调函数
-    autoSpeed: PropTypes.number, //自动书写速度
-    autoDelay: PropTypes.number, //自动书写首次延迟设置
-    arrowShow: PropTypes.bool, //是否显示箭头
-    showAll: PropTypes.bool, //是否一开始都显示 
-  }
-  static defaultProps = {
-    autoSpeed: 3,
-    backColor: '#DADADA',
-    fillColor: '#000000',
-    fillArray: null,
-    blnTouch: true, //默认是可写的
-    autoDelay: 30,
-    arrowShow: true,
-    showAll: false,
+    if (this.props.showAll){
+      this.setAllDraw();
+    }else{
+      this.drawIdx = 0;
+      this.setBeginDraw();
+    }
+    if (this.props.firstPlay){
+      this.setAutoWrite();
+    }
   }
   setUpdate(){
     this.setState({
@@ -395,6 +473,9 @@ export default class DrawWord extends Component {
     }
   }
   setBeginDraw(){
+    if (this.blnDownload){
+      return;
+    }
     this.wrongCount = 0;
     var bh = this.data[this.drawIdx];
     this.max_Step = Math.min(bh.upPoints.length, bh.downPoints.length);
@@ -434,6 +515,9 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   setEndDraw(){
+    if (this.blnDownload){
+      return;
+    }
     var character = this.data;
     this.arrLine[this.drawIdx] = (
       <Shape key={this.drawIdx} d={character[this.drawIdx].line} fill={this.tempDrawData.color}/>
@@ -442,6 +526,9 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   setRestart(){
+    if (this.blnDownload){
+      return;
+    }
     var character = this.data;
     for(var i=0;i<character.length;i++){
       this.arrLine[i] = (
@@ -460,6 +547,9 @@ export default class DrawWord extends Component {
     }
   }
   stopBlink(){
+    if (this.blnDownload){
+      return;
+    }
     this.blnBlink = false;
     var character = this.data.character;
     var color = character[this.blinkIdx].color;
@@ -470,6 +560,9 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   setStrokeBlink(){
+    if (this.blnDownload){
+      return;
+    }
     if (!this.blnBlink){
       this.blnBlink = true;
       this.blinkIdx = this.drawIdx;
@@ -495,12 +588,18 @@ export default class DrawWord extends Component {
     }
   }
   setAutoWrite(){
+    if (this.blnDownload){
+      return;
+    }
     this.tempDrawLine = null;
     this.setRestart();
     this.stopAutoWrite();
     this._autoWrite = setInterval(this.autoWrite.bind(this), 1/60);
   }
   stopAutoWrite(){
+    if (this.blnDownload){
+      return;
+    }
     this._autoWrite && clearInterval(this._autoWrite);
     this._autoWrite = null;
     this.nowPos = 0;
@@ -554,38 +653,14 @@ export default class DrawWord extends Component {
     this.drawIdx = character.length;
     this.setUpdate();
   }
-  componentWillMount() {
-    if (this.props.blnTouch){
-      this._panResponder = PanResponder.create({
-        onStartShouldSetPanResponder: this.onStartShouldSetPanResponder.bind(this),
-        onMoveShouldSetPanResponder: this.onMoveShouldSetPanResponder.bind(this),
-        onPanResponderGrant: this.onPanResponderGrant.bind(this),
-        onPanResponderMove: this.onPanResponderMove.bind(this),
-        onPanResponderRelease: this.onPanResponderRelease.bind(this),
-        onPanResponderTerminate: this.onPanResponderTerminate.bind(this),
-      });
-    }
-  }
-  componentDidMount() {
-    if (this.props.showAll){
-      this.setAllDraw();
-    }else{
-      this.drawIdx = 0;
-      this.setBeginDraw();
-    }
-  }
-  componentWillUnmount() {
-    this._blinkTime && clearTimeout(this._blinkTime);
-    this._autoWrite && clearInterval(this._autoWrite);
-  }
   onStartShouldSetPanResponder(e, g){
-    if (this.drawIdx >= this.data.length){
+    if (this.blnDownload || this.drawIdx >= this.data.length){
       return false;
     }
     return this.props.blnTouch;
   }
   onMoveShouldSetPanResponder(e, g){
-    if (this.drawIdx >= this.data.length){
+    if (this.blnDownload || this.drawIdx >= this.data.length){
       return false;
     }
     return this.props.blnTouch;
@@ -686,7 +761,7 @@ export default class DrawWord extends Component {
   }
   render() {
     var arrayArrow = null;
-    if (this.blnShowArrow){
+    if (this.blnShowArrow && this.showArrow){
       for(var i=0;i<this.showArrow.length;i++){
         if (i == this.drawIdx){
           arrayArrow = this.showArrow[i];
@@ -713,6 +788,11 @@ export default class DrawWord extends Component {
           {arrayArrow}
         </Surface>
         {this.showPoints}
+        <Waiting style={{width: this.props.curWidth, height: this.props.curWidth}} 
+          text='Loading'
+          textStyle={{fontSize: MinUnit * 5, color:'white'}}
+          show={this.blnDownload}
+        />
       </View>
     );
   }
