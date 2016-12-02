@@ -7,7 +7,7 @@ import {
     View, Text, Navigator, StyleSheet, StatusBar,
     AppState, AsyncStorage, AlertIOS, Platform
 } from 'react-native'
-import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles,SyllableData} from './AppStyles'
+import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, SyllableData} from './AppStyles'
 import Storage from 'react-native-storage'
 import UserBehavior from './UserInfo/UserBehavior'
 import {RouteList, RouteIndex} from './AppRoutes'
@@ -17,6 +17,7 @@ import {Chivox, cv, chivoxErr} from './Utils/Chivox.js';
 import FBLogin from './Utils/FBLogin.js';
 import TWLogin from './Utils/TWLogin.js';
 import GGLogin from './Utils/GGLogin.js';
+import Sound from 'react-native-sound'
 export default class App extends Component {
     constructor(props) {
         super(props);
@@ -35,7 +36,7 @@ export default class App extends Component {
         this.lessonChapterCount = [];
         this.routeProps = {allLessonData: this.allLessonData};//页面跳转时,从A页面到B页面需要传递的消息
         this.routeStackNowIndex = 0;//route堆栈的序号,其实现在只会一条堆栈的导航,还不会多条堆栈的
-        this.initRouteName = "Home";//初始页面的名称
+        this.initRouteName = "Test";//初始页面的名称
         this.nowSceneName = "";
         //..this.setNowPageName(this.getRoute(this.initRouteName))
         this.sceneRef = null;//当前页面的引用对象
@@ -55,6 +56,18 @@ export default class App extends Component {
         this.storageReview = null;//用户复习
         /*-----------本地存储数据有关的变量 End--------------*/
 
+        /*------------------RNSound Start-------------------------------*/
+        this.objSound = {} //播放的音乐对象
+        this.objAudioParam = {}//播放的音乐属性
+        this.objCallbackPlayer = {} //
+        this.playerState = 'stop' //播放器状态 // "stop,play,pause"
+        this.nowPlayAudio = "" //记录当前播放的音频
+        this.playerCurrentTime = 0 //播放器当前播放时间
+        this.getCurrentTimeInterval = null //获取当前播放时间的计时器
+        this.playTarget = -1
+
+        /*------------------RNSound end-------------------------------*/
+
         this.blnChivoxWorking = false //驰声引擎是否在工作的标志位
         this.callBackChivox = null
         this.callBackPlayRecord = null
@@ -62,7 +75,7 @@ export default class App extends Component {
 
     componentWillMount() {
         // 连接服务器
-        global.socket = new SocketLink(this, (msg)=>{});
+        global.socket = new SocketLink(this,(msg)=>{});
         this.getLessonDate();
         this.initUserInfoByStorage();
         this.initLearningByStorage();
@@ -108,11 +121,11 @@ export default class App extends Component {
         this.ggLogin = null;
     }
 
-    addLoadingIndex = ()=>{
+    addLoadingIndex = ()=> {
         this.loadIndex += 1
-        if(this.loadIndex == 4){
+        if (this.loadIndex == 4) {
             this.setState({
-                blnLoading:false,
+                blnLoading: false,
             })
         }
     }
@@ -120,57 +133,61 @@ export default class App extends Component {
     /*--------------------------Login start-----------------------*/
     onLoginThird(name, callback) {
         this.thirdCB = callback;
-        if (name == 'facebook'){
+        if (name == 'facebook') {
             this.fbLogin.Login([
                 'public_profile',
                 'email'
             ]);
-        }else if (name == 'twitter'){
+        } else if (name == 'twitter') {
             this.twLogin.Login();
-        }else if (name == 'google'){
+        } else if (name == 'google') {
             this.ggLogin.Login();
-        }else{
+        } else {
             console.log('not set this param of name');
         }
     }
-    onLogoutThird(name, callback){
+
+    onLogoutThird(name, callback) {
         this.thirdCB = callback;
-        if (name == 'facebook'){
+        if (name == 'facebook') {
             this.fbLogin.Logout();
-        }else if (name == 'twitter'){
+        } else if (name == 'twitter') {
             this.twLogin.Logout();
-        }else if (name == 'google'){
+        } else if (name == 'google') {
             this.ggLogin.Logout();
-        }else{
+        } else {
             console.log('not set this param of name');
         }
     }
-    onExpiredThird(name, callback){
+
+    onExpiredThird(name, callback) {
         this.thirdCB = callback;
-        if (name == 'facebook'){
+        if (name == 'facebook') {
             this.fbLogin.Expired();
-        }else if (name == 'twitter'){
+        } else if (name == 'twitter') {
             this.twLogin.Expired();
-        }else if (name == 'google'){
+        } else if (name == 'google') {
             this.ggLogin.Expired();
-        }else{
+        } else {
             console.log('not set this param of name');
         }
     }
-    onGetInfoThird(name, callback){
+
+    onGetInfoThird(name, callback) {
         this.thirdCB = callback;
-        if (name == 'facebook'){
+        if (name == 'facebook') {
             this.fbLogin.GetInfo();
-        }else if (name == 'twitter'){
+        } else if (name == 'twitter') {
             this.twLogin.GetInfo();
-        }else if (name == 'google'){
+        } else if (name == 'google') {
             this.ggLogin.LoginSilently();
-        }else{
+        } else {
             console.log('not set this param of name');
         }
     }
-    thirdLoginCallback(name, data){
-        if (this.thirdCB){
+
+    thirdLoginCallback(name, data) {
+        if (this.thirdCB) {
             this.thirdCB({
                 name: name,
                 data: data,
@@ -178,42 +195,43 @@ export default class App extends Component {
         }
     }
 
-    fbCallback(data){
+    fbCallback(data) {
         this.thirdLoginCallback('facebook', data);
-        if (parseInt(data.code) == FBLogin.CB_Error){
-            alert('登录FB出错:' +  data.err_msg);
-        }else if (parseInt(data.code)== FBLogin.CB_Expired){
+        if (parseInt(data.code) == FBLogin.CB_Error) {
+            alert('登录FB出错:' + data.err_msg);
+        } else if (parseInt(data.code) == FBLogin.CB_Expired) {
             // alert('token未过期，直接登录!');
-        }else if (parseInt(data.code) == FBLogin.CB_GetInfo){
+        } else if (parseInt(data.code) == FBLogin.CB_GetInfo) {
             var json = data.result;
             socket.thirdSignUp(json.email, json.name, 'facebook');
-        }else if (parseInt(data.code) == FBLogin.CB_Login){
+        } else if (parseInt(data.code) == FBLogin.CB_Login) {
             this.fbLogin.GetInfo();
-        }else if (parseInt(data.code) == FBLogin.CB_Logout){
+        } else if (parseInt(data.code) == FBLogin.CB_Logout) {
             alert('退出登录！');
         }
     }
-    twCallback(data){
+
+    twCallback(data) {
         this.thirdLoginCallback('facebook', data);
-        if (data.code == TWLogin.CB_CODE_ERROR){
+        if (data.code == TWLogin.CB_CODE_ERROR) {
             var ret = JSON.parse(data.result);
-            if (ret.id == TWLogin.ERROR_LOGIN){
+            if (ret.id == TWLogin.ERROR_LOGIN) {
                 alert('登录失败：' + ret.dsc);
-            }else if (ret.id == TWLogin.ERROR_EXPIRED){
+            } else if (ret.id == TWLogin.ERROR_EXPIRED) {
                 // console.log('验证有效期失败：' + ret.dsc);
                 this.twLogin.Login();
-            }else if (ret.id == TWLogin.ERROR_GETINFO){
+            } else if (ret.id == TWLogin.ERROR_GETINFO) {
                 // console.log('获取信息失败：' + ret.dsc);
-            }else if (ret.id == TWLogin.ERROR_NOTLOGIN){
+            } else if (ret.id == TWLogin.ERROR_NOTLOGIN) {
                 // console.log('你还未登录呢！');
                 this.twLogin.Login();
-            }else {
+            } else {
                 alert("未知错误！");
             }
-        }else if (data.code == TWLogin.CB_CODE_LOGIN){
+        } else if (data.code == TWLogin.CB_CODE_LOGIN) {
             var ret = JSON.parse(data.result);
             this.twLogin.GetInfo();
-        }else if (data.code == TWLogin.CB_CODE_LOGOUT){
+        } else if (data.code == TWLogin.CB_CODE_LOGOUT) {
             // var ret = JSON.parse(data.result);
             // // this.setState({
             // //   twName: '',
@@ -221,14 +239,14 @@ export default class App extends Component {
             // //   twIcon: null,
             // // });
             // console.log('登出成功：' + ret.userID);
-        }else if (data.code == TWLogin.CB_CODE_EXPIRED){
-            if (data.result == TWLogin.EXPIRED_OUT){
+        } else if (data.code == TWLogin.CB_CODE_EXPIRED) {
+            if (data.result == TWLogin.EXPIRED_OUT) {
                 // console.log('登录已经过期');
                 this.twLogin.Login();
-            }else {
+            } else {
                 this.twLogin.GetInfo();
             }
-        }else if (data.code == TWLogin.CB_CODE_GETINFO){
+        } else if (data.code == TWLogin.CB_CODE_GETINFO) {
             var ret = JSON.parse(data.result);
             socket.thirdSignUp(ret.id, ret.name, 'twitter');
             // this.setState({
@@ -239,19 +257,20 @@ export default class App extends Component {
             // console.log('欢迎回来，' + ret.name + '!');
         }
     }
-    ggCallback(data){
+
+    ggCallback(data) {
         // console.log(data);
         this.thirdLoginCallback('facebook', data);
-        if (data.code == GGLogin.CB_CODE_ERROR){
+        if (data.code == GGLogin.CB_CODE_ERROR) {
             var ret = JSON.parse(data.result);
-            if (ret.id == GGLogin.ERROR_LOGIN){
+            if (ret.id == GGLogin.ERROR_LOGIN) {
                 alert()('登录失败：' + ret.dsc);
-            }else if (ret.id == GGLogin.ERROR_DISCONNECT){
+            } else if (ret.id == GGLogin.ERROR_DISCONNECT) {
                 alert('断开连接失败：' + ret.dsc);
-            }else {
+            } else {
                 alert("未知错误！");
             }
-        }else if (data.code == GGLogin.CB_CODE_LOGIN){
+        } else if (data.code == GGLogin.CB_CODE_LOGIN) {
             var ret = JSON.parse(data.result);
             socket.thirdSignUp(ret.userID, ret.fullName, 'Google');
             // this.setState({
@@ -261,22 +280,22 @@ export default class App extends Component {
             // });
             // console.log('欢迎回来，' + ret.fullName + '!');
             //谷歌登录后会直接返回个人信息
-        }else if (data.code == GGLogin.CB_CODE_LOGOUT){
+        } else if (data.code == GGLogin.CB_CODE_LOGOUT) {
             // this.setState({
             //   glName: '',
             //   glEmail: '',
             //   glLoginStatus: false,
             // });
             // console.log('登出成功！');
-        }else if (data.code == GGLogin.CB_CODE_EXPIRED){
-            if (data.result == GGLogin.EXPIRED_OUT){
+        } else if (data.code == GGLogin.CB_CODE_EXPIRED) {
+            if (data.result == GGLogin.EXPIRED_OUT) {
                 // console.log('登录已经过期');
                 this.Google.Login();
-            }else {
+            } else {
                 // console.log('登录成功！');
                 // this.LoginSilently();
             }
-        }else if (data.code == GGLogin.CB_CODE_DISCONNECT){
+        } else if (data.code == GGLogin.CB_CODE_DISCONNECT) {
             // this.setState({
             //   glName: '',
             //   glEmail: '',
@@ -285,11 +304,12 @@ export default class App extends Component {
             // console.log('登出成功：' + ret.fullName);
         }
     }
+
     /*--------------------------Login end-----------------------*/
 
     /*--------------------------驰声接口 start-----------------------*/
     onStartChivox(param, callBack) {//开始评测，这里的设置可根据需要进行设置，说明看下方对应条目
-        console.log("开始评测:",this.blnChivoxWorking)
+        console.log("开始评测:", this.blnChivoxWorking)
         if (this.blnChivoxWorking) return false;//如果引擎正在工作,返回错误
         const {gategory, text, audioName}=param
         this.chivox.startISE({
@@ -318,17 +338,17 @@ export default class App extends Component {
         this.chivox.cancelISE()
     }
 
-    onPlayRecord(){
+    onPlayRecord() {
         this.chivox.playPcm()
-        this.getPlayRecordTime = setInterval(this.getCurrentTime.bind(this),100)
+        this.getPlayRecordTime = setInterval(this.getCurrentTime.bind(this), 100)
     }
 
-    getCurrentTime(){
+    getCurrentTime() {
         this.chivox.getCurrentTime(
-            (data)=>{
-                if(data.error){
+            (data)=> {
+                if (data.error) {
                     console.log(data.error)
-                }else{
+                } else {
                     console.log(data.audioCurrentTime)
                 }
             }
@@ -346,7 +366,7 @@ export default class App extends Component {
             } else {
                 console.log('pcm time: ' + data.audioTime);//init录音之后可以得到录音的总时长
                 if (this.callBackPlayRecord) {
-                    this.callBackPlayRecord({type:'audioTime',audioTime: data.audioTime})
+                    this.callBackPlayRecord({type: 'audioTime', audioTime: data.audioTime})
                 }
             }
         });
@@ -413,13 +433,13 @@ export default class App extends Component {
         if (obj.error) {
             // console.log('评测错误', obj.errId, obj.error);
             //已经在原生端处理了，这里只是加个保险。
-        } else {             
+        } else {
             let result = {
-                overallScore:obj.result.overall,//总分
-                phnScore:obj.result.phn,//无调得分
-                pronScore:obj.result.pron,//带调得分
-                toneScore:obj.result.tone,//声调得分
-                details:this.getDetails(obj.result.details)
+                overallScore: obj.result.overall,//总分
+                phnScore: obj.result.phn,//无调得分
+                pronScore: obj.result.pron,//带调得分
+                toneScore: obj.result.tone,//声调得分
+                details: this.getDetails(obj.result.details)
             }
             if (this.callBackChivox) {
                 this.callBackChivox({type: 'result', result: result})
@@ -427,33 +447,33 @@ export default class App extends Component {
         }
     }
 
-    getDetails(details){
-        console.log("获取详情:",details)
+    getDetails(details) {
+        console.log("获取详情:", details)
         var detailList = [];
-        if (details){
-            for(let i=0;i<details.length;i++){
+        if (details) {
+            for (let i = 0; i < details.length; i++) {
                 let detail = {
-                    content:details[i].char,//内容
-                    overallScore:details[i].overall,//评测分数
-                    phnScore:details[i].phn,
-                    pronScore:details[i].pron,
-                    toneScore:details[i].tonescore,
-                    originalTone:details[i].tone,//正确的音调
-                    recordTone:this.getToneIndex(details[i].confidence),//读的音调
-                    phoneScores:this.getPhoneScore(details[i].char,details[i].phone),
+                    content: details[i].char,//内容
+                    overallScore: details[i].overall,//评测分数
+                    phnScore: details[i].phn,
+                    pronScore: details[i].pron,
+                    toneScore: details[i].tonescore,
+                    originalTone: details[i].tone,//正确的音调
+                    recordTone: this.getToneIndex(details[i].confidence),//读的音调
+                    phoneScores: this.getPhoneScore(details[i].char, details[i].phone),
                 }
                 detailList[i] = detail
             }
         }
-        console.log("获取详情:",detailList)
+        console.log("获取详情:", detailList)
         return detailList;
     }
 
-    getToneIndex = (confidence)=>{//获取用户读的音调值
+    getToneIndex = (confidence)=> {//获取用户读的音调值
         let toneIndex = 0
         let tmpScore = 0;
-        for(let i=0;i<confidence.length;i++){
-            if (tmpScore < confidence[i]){
+        for (let i = 0; i < confidence.length; i++) {
+            if (tmpScore < confidence[i]) {
                 tmpScore = confidence[i];
                 toneIndex = i;
             }
@@ -461,32 +481,32 @@ export default class App extends Component {
         return toneIndex
     }
 
-    getPhoneScore = (content,phone)=>{
+    getPhoneScore = (content, phone)=> {
         let pinyin = {}
-        for(let i=0;i<SyllableData.length;i++){
+        for (let i = 0; i < SyllableData.length; i++) {
             let syllable = SyllableData[i]
-            if(syllable.py == content){
-                if(syllable.sm != "无声母"){
+            if (syllable.py == content) {
+                if (syllable.sm != "无声母") {
                     pinyin.sm = syllable.sm
                 }
                 pinyin.ym = syllable.ym
             }
         }
 
-        if(phone.length == 1){
-            if(pinyin.sm){
-                return {sm:phone[0].score,ym:phone[0].score}
-            }else{
-                return {ym:phone[0].score}
+        if (phone.length == 1) {
+            if (pinyin.sm) {
+                return {sm: phone[0].score, ym: phone[0].score}
+            } else {
+                return {ym: phone[0].score}
             }
-        }else if(phone.length == 2){
+        } else if (phone.length == 2) {
             return {
-                sm:phone[0].score,
-                ym:phone[1].score,
+                sm: phone[0].score,
+                ym: phone[1].score,
             }
         }
         console.log("评测数据有问题,没有返回声母和韵母的情况")
-        return {sm:0,ym:0}
+        return {sm: 0, ym: 0}
     }
 
     onChivoxEndOfWork() {
@@ -505,11 +525,11 @@ export default class App extends Component {
         console.log("会不会走到这里来呢")
         let workState = ''
         if (data.status == cv.PCM_TOTALTIME) {
-            workState = 'totalTime'+ data.msg//
+            workState = 'totalTime' + data.msg//
         } else if (data.status == cv.PCM_PLAYOVER) {
             workState = 'playover' + data.msg
             console.log('play over! ' + data.msg);
-            this.getPlayRecordTime&&clearInterval(this.getPlayRecordTime)
+            this.getPlayRecordTime && clearInterval(this.getPlayRecordTime)
         } else if (data.status == cv.PCM_CURRENTTIME) {
             workState = 'currenttime' + data.msg//
         } else if (data.status == cv.PCM_ERROR) {
@@ -523,10 +543,10 @@ export default class App extends Component {
     /*--------------------------驰声接口 end-----------------------*/
 
     /*--------------------------本地数据存储部分 Start-----------------------*/
-    initReviewByStorage = ()=>{
-        this.storage.load({key:'Review'}).then(
-            ret=>{
-                console.log("读取到Review:",ret)
+    initReviewByStorage = ()=> {
+        this.storage.load({key: 'Review'}).then(
+            ret=> {
+                console.log("读取到Review:", ret)
                 this.storageReview = ret;
                 this.addLoadingIndex()
             }
@@ -543,11 +563,11 @@ export default class App extends Component {
         })
     }
 
-    saveReview = (saveData,expires = null)=>{
+    saveReview = (saveData, expires = null)=> {
         this.storage.save({
-            key:'Review',
-            rawData:saveData,
-            expires:expires
+            key: 'Review',
+            rawData: saveData,
+            expires: expires
         })
     }
 
@@ -571,7 +591,7 @@ export default class App extends Component {
             this.addLoadingIndex()
         })
     }
-    
+
     noneUserInfoStorage = ()=> {
 
     }
@@ -768,6 +788,164 @@ export default class App extends Component {
     }
 
     /*--------------------------本地数据存储部分End-----------------------*/
+
+    /*------------------RNSound Start-------------------------------*/
+    onPlaySound = (audioName, callback,audioTarget,param = {})=> { //param:{mainPath:"",rate:1,blnRepeat:false,autoRelease:true}
+        console.log("app on playSound:",audioName,audioTarget)
+        
+        let mainPath = "DOCUMENT" //"MAIN_BUNDLE,DOCUMENT,LIBRARY,CACHES"
+        let rate = 1
+        let blnRepeat = false
+        let autoRelease = true
+        let audioParam = {}
+        audioParam.mainPaht = param.mainPath ? param.mainPath : mainPath
+        audioParam.rate = param.rate ? param.rate : rate
+        audioParam.blnRepeat = param.blnRepeat ? param.blnRepeat : blnRepeat
+        audioParam.autoRelease = param.autoRelease ? param.autoRelease : autoRelease
+        if (!this.objCallbackPlayer[audioName+audioTarget]) {
+            //console.log("接受到新的回调函数")
+            this.objCallbackPlayer[audioName+audioTarget] = callback
+        }
+        if(!this.objAudioParam[audioName+audioTarget]){
+            this.objAudioParam[audioName+audioTarget] = audioParam
+            //..Object.assign(this.objAudioParam[audioName], param)
+        }
+
+        if (this.playerState == 'stop') {
+            this.playSound(audioName,audioTarget, mainPath,audioParam)
+        } else if (this.playerState == 'play') {
+            if (this.nowPlayAudio == audioName && this.playTarget == audioTarget) {
+                this.pauseSound(audioName,audioTarget)
+            } else {
+                this.stopSound(this.nowPlayAudio,this.playTarget)
+                this.playSound(audioName,audioTarget, mainPath, audioParam)
+            }
+        } else if (this.playerState == 'pause') {
+            if (this.nowPlayAudio == audioName && this.playTarget == audioTarget) {
+                this.resumeSound(audioName,audioTarget,audioParam)
+            } else {
+                this.stopSound(this.nowPlayAudio,this.playTarget)
+                this.playSound(audioName,audioTarget,mainPath, audioParam)
+            }
+        }
+
+    }
+
+    initSound = (audioName,audioTarget,mainPath)=> {
+        this.objSound[audioName] = new Sound(audioName, Sound[mainPath], this.callbackInit.bind(this, audioName,audioTarget))
+    }
+
+    playSound = (audioName,audioTarget, mainPath, param)=> {
+        if (this.objSound[audioName]) { //如果有这个对象
+            console.log("减个速",param.rate)
+            this.objSound[audioName].setRate(param.rate)
+            this.objSound[audioName].play(this.callbackPlayEnd.bind(this, audioName,audioTarget))
+            this.setInterval(audioName,audioTarget)
+            this.playerState = 'play'
+            this.playTarget = audioTarget
+            this.nowPlayAudio = audioName
+            this.playCallback(audioName, audioTarget,{type: 'play', message: 'start play old audio'})
+        } else {
+            this.initSound(audioName, audioTarget,mainPath)
+        }
+
+    }
+
+    resumeSound = (audioName,audioTarget, param)=> {
+        this.objSound[audioName].setRate(param.rate)
+        this.objSound[audioName].play(this.callbackPlayEnd.bind(this, audioName,audioTarget))
+        this.playerState = 'play'
+        this.playCallback(audioName,audioTarget, {type: 'resume', message: this.playerCurrentTime})
+    }
+
+    pauseSound = (audioName,audioTarget)=> {
+        this.objSound[audioName].pause()
+        this.playerState = 'pause'
+        this.playCallback(audioName,audioTarget, {type: 'pause', message: this.playerCurrentTime})
+    }
+
+    stopSound = (audioName,audioTarget)=> {
+        this.objSound[audioName].stop()
+        this.nowPlayAudio = ''
+        this.playTarget = -1
+        this.playerState = 'stop'
+        this.playCallback(audioName,audioTarget, {type: 'stop', message: 'stop play audio'})
+    }
+
+    releaseSound = (audioName)=> {
+        if (this.objSound[audioName]) {
+            this.objSound[audioName].release();//释放掉音频
+            this.objSound[audioName] = null;
+        }
+    }
+
+    callbackInit = (audioName,audioTarget, error)=> {
+        if (error) {
+            console.log('failed to load the sound', error.message)
+            this.playCallback(audioName,audioTarget,{type: 'initError', message: error.message})
+        } else {
+            if (this.objSound[audioName]) {
+                if (this.objAudioParam[audioName+audioTarget]) {
+                    console.log("减个速",this.objAudioParam[audioName+audioTarget])
+                    this.objSound[audioName].setRate(this.objAudioParam[audioName+audioTarget].rate)
+                }
+                this.objSound[audioName].play(this.callbackPlayEnd.bind(this, audioName,audioTarget))
+                this.setInterval(audioName,audioTarget)
+                this.playerState = 'play'
+                this.playTarget = audioTarget
+                this.nowPlayAudio = audioName
+                this.playCallback(audioName,audioTarget, {type: 'firstPlay', message: this.objSound[audioName].getDuration()})
+            }
+        }
+    }
+
+    callbackCurrentTime = (audioName,audioTarget)=> {
+        if (this.objSound[audioName]) {
+            this.objSound[audioName].getCurrentTime(
+                (time)=> {
+                    this.playerCurrentTime = time
+                    if (this.playerState == 'play') {
+                        this.playCallback(audioName,audioTarget, {type: 'cTime', message: time})
+                    }
+                }
+            )
+        }
+        //console.log("callBackCurrentTime:", data)
+    }
+
+    callbackPlayEnd = (audioName,audioTarget)=> {
+        if (this.objAudioParam[audioName+audioTarget]) {
+            if (this.objAudioParam[audioName+audioTarget].blnRepeat) {
+                this.setInterval(audioName)
+                this.objSound[audioName].play(this.callbackPlayEnd.bind(this, audioName,audioTarget))
+                this.playCallback(audioName,audioTarget, {type: 'repeat', message: 'audio repeat'})
+            } else {
+                this.freeInterval()
+                this.stopSound(audioName,audioTarget)
+                this.playCallback(audioName,audioTarget, {type: 'playEnd', message: 'audio play over'})
+            }
+        }
+        //console.log("callBackPlayEnd:", data)
+    }
+
+    setInterval = (audioName,audioTarget)=> {
+        this.freeInterval()
+        this.getCurrentTimeInterval = setInterval(this.callbackCurrentTime.bind(this, audioName,audioTarget), 250)
+    }
+    freeInterval = ()=> {
+        this.playerCurrentTime = 0
+        if (this.getCurrentTimeInterval) {
+            clearInterval(this.getCurrentTimeInterval)
+            this.getCurrentTimeInterval = null;
+        }
+    }
+
+    playCallback = (audioName,audioTarget,data)=> {
+        if (this.objCallbackPlayer[audioName+audioTarget]) {
+            this.objCallbackPlayer[audioName+audioTarget](data)
+        }
+    }
+    /*------------------RNSound end-------------------------------*/
 
     getLessonDate = ()=> {
         this.allLessonData[0] = require('../data/lessons/lesson1.json')
