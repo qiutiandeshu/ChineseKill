@@ -394,10 +394,17 @@ export default class S_PinyinChart extends Component {
         var data = this.selectGrid.child[this.selectGrid.select].data;
         console.log(data);
         if (data.arrTone == null || data.arrTone == undefined){
-          console.log('find tone array!');
+          data.arrTone = [];
           for(var i=0;i<5;i++){
-
+            var idx = this.getPYData(data.py, '' + i);
+            if (idx != null){
+              data.arrTone.push({
+                tone: i,
+                pyIdx: idx
+              });
+            }
           }
+          console.log(data.arrTone);
         }
         this.onOpenDialog();
       }
@@ -538,6 +545,7 @@ export default class S_PinyinChart extends Component {
   onCloseDialog(){
     this.blnDialog = false;
     app.onCancelChivox();
+    app.onStopRecord();
     this.setUpdate();
   }
   renderDialog(){
@@ -621,6 +629,7 @@ export default class S_PinyinChart extends Component {
   }
   stopRecord() {
     if (this.blnRecord){
+      app.onStopRecord();
       app.onStopChivox();
       this.blnRecord = false;
     }
@@ -641,8 +650,10 @@ export default class S_PinyinChart extends Component {
     });
   }
   renderDialogItem(){
-    var arr = [];
-    for(var i=0;i<1;i++){
+    var data = this.selectGrid.child[this.selectGrid.select].data;
+    var arr = [];//`声母:读的很好\n韵母:读的不好\n声调:读的一般`
+    for(var i=0;i<data.arrTone.length;i++){
+      var pyStr = this.chartData[data.arrTone[i].pyIdx].pyd;//`${data.py}${data.arrTone[i].tone}`
       arr.push(
         <View key={i} style={{
           width: MinUnit*12, 
@@ -652,10 +663,10 @@ export default class S_PinyinChart extends Component {
         }}>
           <PanButton name={'btnPCRead'+i} onPress={this.readPinyin.bind(this, i)} style={{justifyContent:'center', alignItems: 'center', height: MinUnit*8, width: MinUnit*8, marginTop: MinUnit*2}}>
             <Text style={{fontSize: MinUnit*2.2, textAlign: 'center', color: '#333'}}>
-              zhuang
+              {pyStr}
             </Text>
           </PanButton>
-          <Text style={{fontSize: MinUnit*1.5, textAlign: 'center', color: '#AAA', marginTop: MinUnit}}>
+          <Text style={{fontSize: MinUnit*1.5, textAlign: 'center', color: '#AAA', height: MinUnit*6 , marginTop: MinUnit}}>
             {this.pcResult?this.pcResult:''}
           </Text>
           <CircleIcon

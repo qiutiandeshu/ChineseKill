@@ -343,6 +343,14 @@ export default class App extends Component {
         this.getPlayRecordTime = setInterval(this.getCurrentTime.bind(this), 100)
     }
 
+    onStopRecord(){
+        this.chivox.stopPcm();
+    }
+
+    onPauseRecord(){
+        this.chivox.pausePcm();
+    }
+
     getCurrentTime() {
         this.chivox.getCurrentTime(
             (data)=> {
