@@ -36,7 +36,7 @@ export default class App extends Component {
         this.lessonChapterCount = [];
         this.routeProps = {allLessonData: this.allLessonData};//页面跳转时,从A页面到B页面需要传递的消息
         this.routeStackNowIndex = 0;//route堆栈的序号,其实现在只会一条堆栈的导航,还不会多条堆栈的
-        this.initRouteName = "Test";//初始页面的名称
+        this.initRouteName = "Home";//初始页面的名称
         this.nowSceneName = "";
         //..this.setNowPageName(this.getRoute(this.initRouteName))
         this.sceneRef = null;//当前页面的引用对象
@@ -313,7 +313,7 @@ export default class App extends Component {
         if (this.blnChivoxWorking) return false;//如果引擎正在工作,返回错误
         const {gategory, text, audioName}=param
         this.chivox.startISE({
-            VOLUME_TS: 0.7,//音量超过多少则表示检测到说话了，最大值为1
+            VOLUME_TS: 0.1,//音量超过多少则表示检测到说话了，最大值为1
             VAD_BOS: 3600,//静音超时时间，即用户多长时间不说话则当做超时处理vad_bos 毫秒 ms
             VAD_EOS: 1800,//后端点静音检测时间，即用户停止说话多长时间内即认为不再输入，自动停止录音 毫秒 ms
             ISE_CATEGORY: gategory,//,'word',//评测模式：word 字词, sent 句子
@@ -404,6 +404,7 @@ export default class App extends Component {
                 console.log('error', data.result);
             }
             if (this.callBackChivox) {
+
                 this.callBackChivox({type: 'error', error: data.result})
             }
             this.onChivoxEndOfWork()
@@ -806,7 +807,8 @@ export default class App extends Component {
         let blnRepeat = false
         let autoRelease = true
         let audioParam = {}
-        audioParam.mainPaht = param.mainPath ? param.mainPath : mainPath
+        console.log("你去哪里了",param)
+        audioParam.mainPath = param.mainPath ? param.mainPath : mainPath
         audioParam.rate = param.rate ? param.rate : rate
         audioParam.blnRepeat = param.blnRepeat ? param.blnRepeat : blnRepeat
         audioParam.autoRelease = param.autoRelease ? param.autoRelease : autoRelease
@@ -820,32 +822,33 @@ export default class App extends Component {
         }
 
         if (this.playerState == 'stop') {
-            this.playSound(audioName,audioTarget, mainPath,audioParam)
+            this.playSound(audioName,audioTarget, audioParam.mainPath,audioParam)
         } else if (this.playerState == 'play') {
             if (this.nowPlayAudio == audioName && this.playTarget == audioTarget) {
                 this.pauseSound(audioName,audioTarget)
             } else {
                 this.stopSound(this.nowPlayAudio,this.playTarget)
-                this.playSound(audioName,audioTarget, mainPath, audioParam)
+                this.playSound(audioName,audioTarget, audioParam.mainPath, audioParam)
             }
         } else if (this.playerState == 'pause') {
             if (this.nowPlayAudio == audioName && this.playTarget == audioTarget) {
                 this.resumeSound(audioName,audioTarget,audioParam)
             } else {
                 this.stopSound(this.nowPlayAudio,this.playTarget)
-                this.playSound(audioName,audioTarget,mainPath, audioParam)
+                this.playSound(audioName,audioTarget,audioParam.mainPath, audioParam)
             }
         }
 
     }
 
     initSound = (audioName,audioTarget,mainPath)=> {
+        console.log("主路径:",mainPath,Sound[mainPath])
         this.objSound[audioName] = new Sound(audioName, Sound[mainPath], this.callbackInit.bind(this, audioName,audioTarget))
     }
 
     playSound = (audioName,audioTarget, mainPath, param)=> {
         if (this.objSound[audioName]) { //如果有这个对象
-            console.log("减个速",param.rate)
+
             this.objSound[audioName].setRate(param.rate)
             this.objSound[audioName].play(this.callbackPlayEnd.bind(this, audioName,audioTarget))
             this.setInterval(audioName,audioTarget)
@@ -894,7 +897,6 @@ export default class App extends Component {
         } else {
             if (this.objSound[audioName]) {
                 if (this.objAudioParam[audioName+audioTarget]) {
-                    console.log("减个速",this.objAudioParam[audioName+audioTarget])
                     this.objSound[audioName].setRate(this.objAudioParam[audioName+audioTarget].rate)
                 }
                 this.objSound[audioName].play(this.callbackPlayEnd.bind(this, audioName,audioTarget))

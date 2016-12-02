@@ -59,12 +59,14 @@ export default class S_Practice extends Component {
         let rightCount = this.rightQuestion.length;
         let wrongCount = this.wrongQuestion.length;
         if (result == "Right") {
+            app.onPlaySound('Sounds/correct_sound.mp3',()=>{},0,{})
             if (this.props.blnGate) {
                 score += 10
             }
             answerColor[index] = "#4BCFE1"
             this.rightQuestion[rightCount] = this.props.questionData[index]
         } else {
+            app.onPlaySound('Sounds/wrong_sound.mp3',()=>{},0,{})
             if (this.props.blnGate) {
                 life -= 1
             }

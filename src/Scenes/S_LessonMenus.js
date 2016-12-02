@@ -5,7 +5,7 @@ import React, {Component, PropTypes} from 'react'
 import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView'
-
+import PanScrollView from '../UserInfo/PanScrollView'
 import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView, Image} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -80,9 +80,9 @@ export default class S_LessonMenus extends Component {
                     <View/>
                 </View>
                 <Image source = {{uri:uri}} style={styles.image}/>
-                <View style={{flexDirection:'row'}}>
+                <PanScrollView name="lessoncardScrollView" horizontal ={true}>
                     {LessonCards}
-                </View>
+                </PanScrollView>
 
             </PanView>
         );
@@ -94,7 +94,7 @@ export default class S_LessonMenus extends Component {
 
     startPractice = (index)=>{
         let lessonId = this.baseProps.lessonId
-         
+        app.onPlaySound('Sounds/page_into.mp3',()=>{},0,{})
         const {cardZis,cardCis,cardJus,practices} = this.baseProps.lessonData.chapters[index]
         app.setNextRouteProps({
             blnGate:true,

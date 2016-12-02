@@ -32,6 +32,9 @@ export default class QuestionRender extends Component {
         this.arrSyllableWord = [];//每个音节汉字的内容
         this.arrSyllablePY = [];//每个音节的拼音
         this.setSyllable(props.question,props.pinyin);
+        if(props.sound){
+            this.playQuestionSound(props.sound)
+        }
     }
 
     shouldComponentUpdate(nProps,nStates) {
@@ -112,13 +115,17 @@ export default class QuestionRender extends Component {
     renderSoundIcon = ()=>{
         if(this.props.sound){
             return (
-                    <PanButton name="btnPlaySound" style={{marginRight:MinUnit*4}}>
+                    <PanButton name="btnPlaySound" style={{marginRight:MinUnit*4}} onPress={this.playQuestionSound.bind(this,this.props.sound)}>
                         <Icon name = "play-circle" size = {IconSize} color="#4BCFE1"/>
                     </PanButton>
                 );
         }
     }
-    
+
+    playQuestionSound = (sound)=>{
+        app.onPlaySound("Sound/"+sound,()=>{},this.props.sound,{})
+    }
+
     renderContents = ()=>{
         if(this.props.pinyin){
             var arrSentence = [];

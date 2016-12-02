@@ -8,7 +8,7 @@ import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView'
 
-import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, TextInput,} from 'react-native'
+import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, TextInput, AlertIOS} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import QuestionRender from '../Common/QuestionRender'
@@ -23,6 +23,7 @@ export default class QuestionFive_PC extends Component {
             playRecordState: 'none',//无录音'none',等待播放'normal',播放中'playing',暂停'pause'
             timeProgress: 0,
         };
+        this.nowResultType = 'none';
     }
 
     static propTypes = {
@@ -34,7 +35,13 @@ export default class QuestionFive_PC extends Component {
 
     componentWillUpdate(nProps, nState) {
         if (nProps.questionData != this.props.questionData) {
-
+            this.nowResultType = 'none';
+            this.setState({
+                volumProgress: 0,
+                recordResult: '',
+                recordState: 'normal',//普通'normal',录音中'working',评测中'waiting'
+                playRecordState: 'none',//无录音'none',等待播放'normal',播放中'playing',暂停'pause'
+            })
         }
     }
 
@@ -65,7 +72,7 @@ export default class QuestionFive_PC extends Component {
     }
 
     renderContents = ()=> {
-        if(this.state.timeProgress  == 0){
+        if(this.nowResultType  == 'none'){
             return   (
                 <View style={{width:ScreenWidth*0.8,height:ScreenHeight*0.25 }}>
 
@@ -74,11 +81,18 @@ export default class QuestionFive_PC extends Component {
         }
         let list = []
         let str = this.props.questionData.Q_Question
-        for(let i=0;i<str.length;i++){
+        if(this.nowResultType == 'result'){
+            for(let i=0;i<str.length;i++){
+                list.push(
+                    <Text key={i}>{this.getResultMsg(str[i],this.state.recordResult.details[i])}</Text>
+                )
+            }
+        }else if(this.nowResultType == 'error'){
             list.push(
-                <Text key={i}>{this.getResultMsg(str[i],this.state.recordResult.details[i])}</Text>
+                <Text key={0}>评测错误:{this.state.recordResult}</Text>
             )
         }
+
         return (
             <View style={{width:ScreenWidth*0.8,height:ScreenHeight*0.25 }}>
                 <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
@@ -87,7 +101,7 @@ export default class QuestionFive_PC extends Component {
                 </View>
                 {list}
 
-                <Text>评测结果:{JSON.stringify(this.state.recordResult)}</Text>
+                {/*<Text>评测结果:{JSON.stringify(this.state.recordResult)}</Text>*/}
 
             </View>
         );
@@ -126,7 +140,7 @@ export default class QuestionFive_PC extends Component {
         return (
             <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
 
-                <PanButton name="btnRecord" onPress={this.onPressRecord.bind(this)}
+                <PanButton name="btnRecord" onPress= {this.onPressRecord.bind(this)}
                            style={[styles.bigCircle,{backgroundColor:'#00BDD3'}]}>
                     <Progress.Circle  thickness={MinUnit*0.5} borderWidth={0} style={{position:'absolute',left:0,top:0}}
                                       progress={Number(this.state.volumProgress)} size={IconSize * 2 + MinUnit * 2} color="#1BA2FF"/>
@@ -162,7 +176,7 @@ export default class QuestionFive_PC extends Component {
 
     onPressPlayRecord = ()=> {
         if (this.state.playRecordState == 'normal') {
-            app.onPlayRecord()
+            app.onPlaySound(this.props.questionInfo+'.wav',this.callBackPlayRecord.bind(this),'record',{mainPath:'CACHES'})
         }
     }
 
@@ -175,40 +189,61 @@ export default class QuestionFive_PC extends Component {
                 })
                 break;
             case 'result':
+                this.nowResultType = 'result';
                 console.log("得到评测结果:", data.result)
                 this.setState({
                     volumProgress: 0,
                     recordResult: data.result,
                     recordState: 'normal',
+                    playRecordState:'normal'
                 })
-                app.initPlayRecord(this.props.questionInfo,this.callBackPlayRecord)
+                //app.initPlayRecord(this.props.questionInfo,this.callBackPlayRecord)
                 this.props.setCheckBtn(true)
 
                 break;
             case 'error':
+                this.nowResultType = 'error';
                 console.log("评测出错:", data.error)
                 this.setState({
                     volumProgress: 0,
                     recordResult: data.error,
                     recordState: 'normal'
                 })
+
                 break;
             case 'working':
                 console.log("工作ing:", data.working)
         }
     }
 
+    
     callBackPlayRecord = (data)=> {
-        switch (data.type) {
-            case 'audioTime':
-                console.log("获取到录音时长:", data.audioTime)
-                this.setState({
-                    playRecordState:'normal',
-                    timeProgress:data.audioTime
-                })
+        console.log("callback play record:",data.type)
+        switch (data.type){
+            case 'initError'://音频初始化错误
+                AlertIOS.alert("音频","初始化错误"+data.message)
                 break;
-            case 'working':
-                console.log("获取到工作状态:", data.working)
+            case 'firstPlay': //首次播放会返回音频的时长
+                break;
+            case 'play': //非首次播放音频
+
+                break;
+            case 'pause'://音频被暂停
+
+                break;
+            case 'stop'://音频被停止
+
+                break;
+            case 'resume'://从暂停状态恢复
+
+                break;
+            case 'repeat'://重播
+
+                break;
+            case 'playEnd'://播放结束
+
+                break;
+            case 'cTime'://当前播放时间
                 break;
         }
     }

@@ -204,6 +204,7 @@ export default class S_Home extends Component {
         );
     }
     _onPressCard = (data,record,id)=> {
+        app.onPlaySound('Sounds/page_into.mp3',()=>{},0,{})
         app.setNextRouteProps({lessonData: data,lessonRecord:record,lessonId:id})
         this.props.navigator.push(app.getRoute("LessonMenus"));
     }
