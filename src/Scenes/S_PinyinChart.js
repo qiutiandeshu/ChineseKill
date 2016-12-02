@@ -90,8 +90,6 @@ export default class S_PinyinChart extends Component {
     this.blnLoading = true;
     this.showData = [];
     this.blnDialog = false;
-    this.blnRecord = false;
-    this.volume = 0;
     this.selectGrid = null;
     this.dialogWaiting = false;
   }
@@ -546,6 +544,9 @@ export default class S_PinyinChart extends Component {
             name: data.py + i + '.mp3',
             pcResult: null,
             volume: 0,
+            blnRecord: false,
+            blnPlay: false,
+            progress: 0,
           });
         }
       }
@@ -565,7 +566,7 @@ export default class S_PinyinChart extends Component {
   onCloseDialog(){
     this.blnDialog = false;
     app.onCancelChivox();
-    app.onStopRecord();
+    this.stopSound(true);
     this.setUpdate();
   }
   checkPinyinAudio(path, uri, index){
@@ -619,13 +620,59 @@ export default class S_PinyinChart extends Component {
     }
   }
   readPinyin(index){
-
+    this.stopSound();
+    var tempData = this.selectGrid.child[this.selectGrid.select].data;
+    var tone = tempData.arrTone[index];
+    var name = 'pyAudio/' + tempData.py + tone.tone + '.mp3';
+    tone.blnPlay = true;
+    app.onPlaySound(name, (result)=>{
+      console.log(result);
+      if (result.type == 'firstPlay'){
+        tone.allTime = result.message
+      }else if (result.type == 'cTime'){
+        // tone.progress = result.message / tone.allTime;
+        // this.setUpdate();
+      }else if (result.type == 'stop' || result.type == 'playEnd'){
+        // tone.progress = 0;
+        tone.blnPlay = false;
+        // this.setUpdate();
+      }else if (result.type == 'initError'){
+        tone.blnPlay = false;
+        Alert.alert(
+          '提示',
+          '没有音频文件！',
+          [
+            {text: 'OK', onPress: ()=>{}}
+          ]
+        );
+      }
+    }, index, {mainPath: 'CACHES'});
+  }
+  stopSound(blnRelease = false){
+    if (this.selectGrid){
+      var tempData = this.selectGrid.child[this.selectGrid.select].data;
+      for(var i=0;i<tempData.arrTone.length;i++){
+        if (tempData.arrTone[i].blnRecord){
+          app.stopSound(tempData.py + tempData.arrTone[i].tone + '.wav', i);
+          if (blnRelease){
+            app.releaseSound(tempData.py + tempData.arrTone[i].tone + '.wav');
+          }
+        }else if (tempData.arrTone[i].blnPlay){
+          app.stopSound('pyAudio/' + tempData.py + tempData.arrTone[i].tone + '.mp3', i);
+          if (blnRelease){
+            app.releaseSound('pyAudio/' + tempData.py + tempData.arrTone[i].tone + '.mp3');
+          }
+        }
+        tempData.arrTone[i].blnRecord = false;
+        tempData.arrTone[i].blnPlay = false;
+        tempData.arrTone[i].progress = 0;
+        tempData.arrTone[i].pcResult = null;
+        tempData.arrTone[i].volume = 0;
+      }
+    }
   }
   onPressChivox(index){
-    if (this.blnRecord) {
-      this.stopRecord();
-      return;
-    }
+    this.stopSound();
     var tempData = this.selectGrid.child[this.selectGrid.select].data;
     var tone = tempData.arrTone[index];
     let param = {
@@ -637,9 +684,6 @@ export default class S_PinyinChart extends Component {
       switch (data.type) {
         case 'volume':
           console.log("获得音量回调:",data.volume);
-          if (this.blnRecord == false) {
-            this.blnRecord = true;
-          }
           tone.volume = data.volume;
           tone.pcResult = null;
           this.setUpdate();
@@ -658,14 +702,20 @@ export default class S_PinyinChart extends Component {
               str += '\n声调：100';
             }
             tone.pcResult = str;
+            this.setUpdate();
           });
-          // this.initPlayRecord();
-          this.stopRecord();
           break;
         case 'error':
           // console.log("评测出错:", data.error)
           tone.volume = 0;
-          this.stopRecord();
+          Alert.alert(
+            '提示',
+            data.error,
+            [
+              {text: 'OK', onPress: ()=>{}}
+            ]
+          );
+          this.setUpdate();
           break;
         case 'working':
           // console.log("工作ing:", data.working)
@@ -673,27 +723,34 @@ export default class S_PinyinChart extends Component {
       }
     });
   }
-  stopRecord() {
-    if (this.blnRecord){
-      app.onStopRecord();
-      app.onStopChivox();
-      this.blnRecord = false;
-    }
-    this.volume = 0;
-    this.setUpdate();
-  }
   onPressPlay(index){
-    app.initPlayRecord('flash',(data)=>{
-      this.blnFlashVoice = false;
-      switch (data.type) {
-        case 'audioTime':
-            // console.log("获取到录音时长:", data.audioTime)
-            app.onPlayRecord();
-            break;
-        case 'working':
-            break;
+    this.stopSound();
+    var tempData = this.selectGrid.child[this.selectGrid.select].data;
+    var tone = tempData.arrTone[index];
+    var name = tempData.py + tone.tone + '.wav';
+    tone.blnRecord = true;
+    app.onPlaySound(name, (result)=>{
+      console.log(result);
+      if (result.type == 'firstPlay'){
+        tone.allTime = result.message
+      }else if (result.type == 'cTime'){
+        tone.progress = result.message / tone.allTime;
+        this.setUpdate();
+      }else if (result.type == 'stop' || result.type == 'playEnd'){
+        tone.progress = 0;
+        tone.blnRecord = false;
+        this.setUpdate();
+      }else if (result.type == 'initError'){
+        tone.blnRecord = false;
+        Alert.alert(
+          '提示',
+          '没有音频文件！',
+          [
+            {text: 'OK', onPress: ()=>{}}
+          ]
+        );
       }
-    });
+    }, index, {mainPath: 'CACHES'});
   }
   renderDialogItem(w, h){
     if (this.dialogWaiting){
@@ -749,7 +806,18 @@ export default class S_PinyinChart extends Component {
               style={[styles.btnBackView, {borderColor: '#8BCBED', marginTop: MinUnit}]}
               iconName={'volume-up'}
               iconSize={4} 
-              iconStyle={{color: '#8BCBED'}} />
+              iconStyle={{color: '#8BCBED'}} >
+              {
+                <Progress.Circle 
+                  thickness={MinUnit*0.3} 
+                  borderWidth={0} 
+                  style={{position:'absolute',left:0,top:0}}
+                  progress={Number(data.arrTone[i].progress)} 
+                  size={MinUnit*5.4} 
+                  color="#1BA2FF"
+                />
+              }
+            </CircleIcon>
           </View>
         );
       }

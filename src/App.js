@@ -817,7 +817,7 @@ export default class App extends Component {
         let blnRepeat = false
         let autoRelease = true
         let audioParam = {}
-        console.log("你去哪里了",param)
+        
         audioParam.mainPath = param.mainPath ? param.mainPath : mainPath
         audioParam.rate = param.rate ? param.rate : rate
         audioParam.blnRepeat = param.blnRepeat ? param.blnRepeat : blnRepeat
