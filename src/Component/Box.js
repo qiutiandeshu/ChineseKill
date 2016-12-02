@@ -1156,9 +1156,12 @@ class DoubleText extends Component {
 class CardBox extends Box {
   static propTypes = {
     kind: React.PropTypes.string,
+    list: React.PropTypes.array,      //key数组[]
+    blnRight: React.PropTypes.bool,   //是否右上方按钮
   };
   static defaultProps = {
     kind: 'Character',
+    blnRight: true,
   }
   constructor(props) {
     super(props);
@@ -1197,7 +1200,7 @@ class CardBox extends Box {
     return (
       <PopupBox ref={'PopupBox'} name={_name}
         leftIconName={'close'} onLeftPress={this.hidden.bind(this, "Character")} 
-        rightIconName={'pencil-square-o'} onRightPress={this.onPracticePress.bind(this)}
+        rightIconName={this.props.blnRight?'pencil-square-o':''} onRightPress={this.onPracticePress.bind(this)}
         showAnimatedEnd={this.showEnd.bind(this)} hiddenAnimatedEnd={this.hiddenEnd.bind(this)} >
         <PanListView
           name={'l_characterBox'}
@@ -1496,12 +1499,16 @@ class CardBox extends Box {
   }
   showEnd(bln) {
     var data = null;
-    if (this.props.kind == 'Character') {
-      data = app.storageCardInfo.learnCards.ziKey;
-    } else if (this.props.kind == 'Word') {
-      data = app.storageCardInfo.learnCards.ciKey;
-    } else if (this.props.kind == 'Sentence') {
-      data = app.storageCardInfo.learnCards.juKey;
+    if (this.props.list) {
+      data = this.props.list;
+    } else {
+      if (this.props.kind == 'Character') {
+        data = app.storageCardInfo.learnCards.ziKey;
+      } else if (this.props.kind == 'Word') {
+        data = app.storageCardInfo.learnCards.ciKey;
+      } else if (this.props.kind == 'Sentence') {
+        data = app.storageCardInfo.learnCards.juKey;
+      }
     }
     var list = [];
     this.jsonList = data;

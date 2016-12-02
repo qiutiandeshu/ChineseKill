@@ -601,8 +601,8 @@
           "Q_Title": "speak the sentence", 
           "Q_Type": 4, 
           "Q_Answer": "shi2 yi1 yue4 shi2 san1 hao4", 
-          "Q_Question_PY": "shí yī_yuè_shí sān_rì", 
-          "Q_Question": "十一月_十三_日", 
+          "Q_Question_PY": "shí yī yuè_shí sān rì", 
+          "Q_Question": "十一月_十三日", 
           "Q_Sound": "shiyiyueshisanhao.MP3", 
           "Q_JuCards": [
             7
