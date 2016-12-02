@@ -606,8 +606,11 @@ export default class App extends Component {
     }
 
     saveUserInfo = (saveData, expires = null)=> {
-        saveData.flashCard = null;
-        saveData.learnCards = null;
+        if (saveData != null) {
+            saveData.Review = null;
+            saveData.CardInfo = null;
+            saveData.Learning = null;
+        }
         this.storage.save({
             key: 'UserInfo',
             rawData: saveData,
@@ -659,7 +662,6 @@ export default class App extends Component {
                     this.storageLearning[i].chapterTimes[j] = 0
                 }
             }
-            if (retData.length == 0) continue;
             this.storage.save({
                 key: 'Learning',
                 id: this.getSaveId(i),

@@ -154,13 +154,14 @@ class LogoutBox extends Box {
 
       })
     }
-    app.removeAllStorageData()
-    app.removeStorageData('UserInfo')
     app.storageUserInfo = null;
-    app.removeStorageData('CardInfo')
-    app.removeStorageData('Review')
+    app.saveUserInfo(app.storageUserInfo);
+    app.storageReview = null;
+    app.saveReview(app.storageReview);
     app.noneCardInfoStorage()
+    app.saveCardInfoMing()
     app.noneLearningStorage([]);
+
     this.hidden();
     HomeMenuLeft.userLogout();
     Home.Refresh();
