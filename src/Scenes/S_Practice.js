@@ -20,6 +20,10 @@ export default class S_Practice extends Component {
         super(props);
         this.questionCount = props.questionData.length;
         let arrayColor = Array.from({length: this.questionCount}, ()=>'white');
+        console.log("练习页面属性:",props)
+        if(props.blnGate){
+            this.saveProps = props
+        }
         this.state = {
             life: 4,
             score: 0,
@@ -338,7 +342,7 @@ export default class S_Practice extends Component {
                 <View
                     style={{width: ScreenWidth - MinUnit * 16,height:MinUnit*4,flexDirection:'row',justifyContent:'space-between'}}>
                     <PanButton style={[styles.btnCheck,{backgroundColor:'#4BCFE1',width:ScreenWidth*0.38}]}
-                               name="btnRedo" onPress={()=>{ this.props.navigator.replace(app.getRoute("Practice"))}}>
+                               name="btnRedo" onPress={this.redoPractices.bind(this)}>
                         <Text style={[UtilStyles.fontSmall,{color:'white'}]}>REDO</Text>
                     </PanButton>
                     <PanButton style={[styles.btnCheck,{backgroundColor:'#4BCFE1',width:ScreenWidth*0.38}]}
@@ -365,6 +369,11 @@ export default class S_Practice extends Component {
                 <Text style={[UtilStyles.fontNormal]}>{title}</Text>
             </View>
         )
+    }
+    
+    redoPractices = ()=>{
+        app.setNextRouteProps(this.saveProps)
+        this.props.navigator.replace(app.getRoute("Practice"))
     }
 
     tempRenderGameOver = ()=> {
@@ -422,6 +431,7 @@ export default class S_Practice extends Component {
                 AlertIOS.alert('你都全对了还嘚瑟啥')
             }
         }
+        console.log("看看数据真面貌",data)
         app.setNextRouteProps({
             questionData:data,
         })

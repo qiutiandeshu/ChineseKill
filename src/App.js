@@ -889,7 +889,7 @@ export default class App extends Component {
     }
 
     initSound = (audioName,audioTarget,mainPath)=> {
-        console.log("主路径:",mainPath,Sound[mainPath])
+        //console.log("主路径:",mainPath,Sound[mainPath])
         this.objSound[audioName] = new Sound(audioName, Sound[mainPath], this.callbackInit.bind(this, audioName,audioTarget))
     }
 
