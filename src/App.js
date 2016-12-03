@@ -977,6 +977,7 @@ export default class App extends Component {
     }
 
     stopSound = (audioName,audioTarget)=> {
+        if (this.objSound[audioName] == null) return;
         this.objSound[audioName].stop()
         this.nowPlayAudio = ''
         this.playTarget = -1
@@ -1060,21 +1061,21 @@ export default class App extends Component {
 
     /*-----------------推送消息 Start-----------*/
     onRegister = (deviceToken)=> {
-        AlertIOS.alert(
+        /*AlertIOS.alert(
             'Register回调',
             `Device Token:${deviceToken}`,
             [{
                 text: '应该上传Token',
                 onPress: null,
             }]
-        )
+        )*/
     }
 
     onRegistrationError = (error)=> {
-        AlertIOS.alert(
+        /*AlertIOS.alert(
             'RegistrationError回调',
             `Error (${error.code}): ${error.message}`,
-        )
+        )*/
     }
 
     getNotification = (notification)=> {

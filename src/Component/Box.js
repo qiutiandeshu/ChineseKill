@@ -76,9 +76,10 @@ class Box extends Component {
       callback('fail');
       return;
     }
+    console.log(webData.DOCUMENT+"/Sound");
     var param = {
       name: name,
-      path: pyPath,
+      path: webData.DOCUMENT+"/Sound", //文件路径
       uri: pyUrl+name,
       type: "none",
       over: false,
@@ -1483,8 +1484,10 @@ class CardBox extends Box {
   }
   stopPlay() {
     if (this.playKind == 1) {
-      app.stopSound('pyAudio/'+this.selectData.play, 'play');
-      app.releaseSound('pyAudio/'+this.selectData.play);
+      if (this.blnPlayAudio) {
+        app.stopSound('pyAudio/'+this.selectData.play, 'play');
+        app.releaseSound('pyAudio/'+this.selectData.play);
+      }
     } else if (this.playKind == 2) {
       app.stopSound('flash.wav', 'flash');
       app.releaseSound('flash.wav');
@@ -1566,11 +1569,19 @@ class CardBox extends Box {
     }
   }
   renderCharacter() {
-    var wordData = require('../../data/characters/你.json');
+    if (this.selectData) {
+      console.log(this.selectData.character);
+    }
     return (
       <PanView name={'v_characterBox'} style={styles.character}>
-        <PanView name={'v_characterBox_c'} style={[styles.c_view, styles.border]}>
-          <DrawWord curWidth={MinUnit*20} blnTouch={false} fillArray={['#62DC51', '#DC9069', '#8D7ADC']} data={wordData.character} showAll={true} />
+        <PanView name={'v_characterBox_c'} style={[styles.c_view, ]}>
+          <DrawWord 
+            curWidth={MinUnit*20} blnTouch={false} fillArray={['#62DC51', '#DC9069', '#8D7ADC']} 
+            data={{
+            path: webData.CACHES + '/mhJson',
+            name: '你',
+            uri: 'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/'}}
+            showAll={true} />
           <View style={[{height: MinUnit*3, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }]} >
             <View style={{flexDirection: 'row'}}>
               <View style={{backgroundColor: '#DC9069', width:MinUnit*1.4, height: MinUnit*1.4, borderRadius: MinUnit*0.7, marginHorizontal: MinUnit*0.5}} />
