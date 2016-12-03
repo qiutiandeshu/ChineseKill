@@ -105,29 +105,35 @@ export default class S_Home extends Component {
 
     componentDidMount() {
         if(!app.storageSys.blnDownloadAudio){
-            this.downloadSounds();
-            this.downloadAudio({lessonId:0,chapterId:0,practiceId:0})
+            this.downloadSounds({lessonId:0,chapterId:0,practiceId:0});
+            // this.downloadAudio({lessonId:0,chapterId:0,practiceId:0});
         }
     }
 
     downloadAudio = (lessonInfo)=>{ //{lessonId:0,chapterId:0,practiceId:0}
-        let download = this.getAudioName(lessonInfo)
-        let audioName = download.audioName
-        if(audioName != 'lastFile'){
-            let uri = 'http://192.169.1.19:8080/ChineseSkill/Sound/' + audioName
-            console.log("打印链接:",uri)
-            console.log("打印文件名:",audioName,download.nextLesson)
-            wd.Instance().getWebFile(audioName,wd.DOCUMENT+"/Sound", null, 'none', (result)=>{
-                console.log('aaaaa',result);
-                if (result.error == '文件不存在'){
-                    wd.Instance().downloadData(audioName, wd.DOCUMENT+"/Sound", uri, 'none',this.callbackDownload.bind(this, download.nextLesson));
-                }else if(!result.error){
-                    this.downloadAudio(download.nextLesson)
+        let download = this.getAudioName(lessonInfo);
+        let audioName = download.audioName;
+        if (audioName != 'lastFile'){
+            let uri = 'http://192.169.1.19:8080/ChineseSkill/Sound/' + audioName;
+            console.log("打印链接:",uri);
+            console.log("打印文件名:",audioName,download.nextLesson);
+            var param = {
+                name: audioName,  //文件名，带后缀
+                path: wd.DOCUMENT+"/Sound", //文件路径
+                uri: uri, //下载地址，如果为空，则返回错误，文件不存在
+                type: 'none', //打开方式，‘utf8’则返回文件数据，其他则返回文件路径
+                over: false, //是否覆盖，默认是不覆盖，如果是true，则直接下载文件覆盖原有文件
+            };
+            wd.Instance().getWebFile(param, (result)=>{
+                console.log('aaaa', result);
+                if (result.code == wd.CODE_DOWNLOAD){
+                    this.downloadAudio(download.nextLesson);
+                }else if (result.code == wd.CODE_ERROR){
+                    console.log(result.error);
                 }
             });
-            // wd.Instance().downloadData(audioName,wd.DOCUMENT+"/Sound",uri,this.callbackDownload.bind(download.nextLesson));
         }else{
-            app.saveSys({blnDownloadAudio:true})
+            app.saveSys({blnDownloadAudio: true});
         }
     }
 
@@ -166,30 +172,31 @@ export default class S_Home extends Component {
         }
     }
 
-    downloadSounds = ()=>{
+    downloadSounds = (lessonInfo)=>{
         if(this.downLoadIndex<this.audioName.length){
-            let name = this.audioName[this.downLoadIndex]
-            let uniName = name//..Utils.Utf8ToUnicode(name);
+            let name = this.audioName[this.downLoadIndex];
+            let uniName = name;//..Utils.Utf8ToUnicode(name);
             let uri = 'http://192.169.1.19:8080/ChineseSkill/Sounds/' + uniName ;
-            console.log("download name:",uniName)
-            console.log("download url:",uri)
-
-            wd.Instance().getWebFile(uniName,wd.DOCUMENT+"/Sounds", null, 'none', (result)=>{
-                console.log('bbbbb',result);
-                if (result.error == '文件不存在'){
-                    wd.Instance().downloadData(uniName, wd.DOCUMENT+"/Sounds", uri, 'none',(results)=>{
-                        if(results.error){
-                            console.log("下载错误:",result.data)
-                        }else{
-                            this.downLoadIndex += 1
-                            this.downloadSounds()
-                        }
-                        console.log(console.log("下载数据结果:",this.downLoadIndex,results))
-                    });
-                }else if(!result.error){
-                    this.downloadAudio(download.nextLesson)
+            console.log("download name:",uniName);
+            console.log("download url:",uri);
+            var param = {
+                name: uniName,  //文件名，带后缀
+                path: wd.DOCUMENT+"/Sounds", //文件路径
+                uri: uri, //下载地址，如果为空，则返回错误，文件不存在
+                type: 'none', //打开方式，‘utf8’则返回文件数据，其他则返回文件路径
+                over: false, //是否覆盖，默认是不覆盖，如果是true，则直接下载文件覆盖原有文件
+            };
+            wd.Instance().getWebFile(param, (result)=>{
+                console.log('bbbb', result);
+                if (result.code == wd.CODE_DOWNLOAD){
+                    this.downLoadIndex += 1
+                    this.downloadSounds(lessonInfo);
+                }else if (result.code == wd.CODE_ERROR){
+                    console.log(result.error);
                 }
             });
+        }else{
+            this.downloadAudio(lessonInfo);
         }
     }
 

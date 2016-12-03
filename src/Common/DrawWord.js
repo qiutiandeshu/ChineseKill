@@ -594,7 +594,7 @@ export default class DrawWord extends Component {
     this.tempDrawLine = null;
     this.setRestart();
     this.stopAutoWrite();
-    this._autoWrite = setInterval(this.autoWrite.bind(this), 1/60);
+    this._autoWrite = setInterval(this.autoWrite.bind(this), 1000/60);
   }
   stopAutoWrite(){
     if (this.blnDownload){

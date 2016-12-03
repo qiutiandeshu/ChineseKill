@@ -93,6 +93,15 @@ export default class S_PinyinChart extends Component {
     this.blnDialog = false;
     this.selectGrid = null;
     this.dialogWaiting = false;
+
+    // var temp = 0;
+    // this.temp2 = 1;
+    // var f = (select)=>{
+    //   console.log(temp);
+    //   console.log(this.temp2);
+    //   console.log(select);
+    // };
+    // f(2);
   }
   static propTypes = {
   }
@@ -120,6 +129,10 @@ export default class S_PinyinChart extends Component {
   componentWillUnmount() {
     this.clearDeltaMove();
     this._deltaUpdate && clearTimeout(this._deltaUpdate);
+    if (this.dialogWaiting){
+      webData.Release();
+      this.dialogWaiting = false;
+    }
   }
   deltaUpdate(){
     if (this.blnLoading){
@@ -375,7 +388,7 @@ export default class S_PinyinChart extends Component {
     if (pressTime < 100 || (this.deltaSpeed.x == 0 && this.deltaSpeed.y == 0)){
       if (this.checkMove()){
         // console.log('still move');
-        this._deltaMove = setInterval(this.deltaMove.bind(this), 1/60);
+        this._deltaMove = setInterval(this.deltaMove.bind(this), 1000/60);
       }else{
         this.clickGrid({
           x: e.nativeEvent.locationX,
@@ -386,7 +399,7 @@ export default class S_PinyinChart extends Component {
       if (this.blnInTouch){
         // this.deltaSpeed = Utils.PMulV(this.deltaSpeed, 2);
         // console.log('deltaSpeed', this.deltaSpeed);
-        this._deltaMove = setInterval(this.deltaMove.bind(this), 1/60);
+        this._deltaMove = setInterval(this.deltaMove.bind(this), 1000/60);
       }
     }
     this.blnInTouch = false;
@@ -571,20 +584,33 @@ export default class S_PinyinChart extends Component {
       this.setUpdate();
     }
   }
-  checkPinyinAudio(path, uri, index){
+  checkPinyinAudio(path, uri, index){ 
+    if (!this.dialogWaiting) return;
     var data = this.selectGrid.child[this.selectGrid.select].data;
     if (index < data.arrTone.length){
-      webData.Instance().getWebFile(data.arrTone[index].name, path, uri+data.arrTone[index].name, 'none', (result)=>{
-        if (result.error){
+      var param = {
+        name: data.arrTone[index].name,  //文件名，带后缀
+        path: path, //文件路径
+        uri: uri+data.arrTone[index].name, //下载地址，如果为空，则返回错误，文件不存在
+        type: 'none', //打开方式，‘utf8’则返回文件数据，其他则返回文件路径
+        over: false, //是否覆盖，默认是不覆盖，如果是true，则直接下载文件覆盖原有文件
+      };
+      webData.Instance().getWebFile(param, (result)=>{
+        if (result.code == webData.CODE_ERROR){
           Alert.alert(
             '提示',
             '错误：' + result.error,
             [
-              {text: 'OK', onPress: () => {this.onCloseDialog()}},
+              {text:'OK', onPress: ()=>{
+                this.dialogWaiting = false;
+                this.onCloseDialog()
+              }},
             ]
           );
-        }else{
+        }else if (result.code == webData.CODE_DOWNLOAD){
           this.checkPinyinAudio(path, uri, ++index);
+        }else{
+          console.log(result);
         }
       });
     }else{
