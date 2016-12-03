@@ -165,6 +165,7 @@ export default class QuestionFive_PC extends Component {
                 audioName: this.props.questionInfo
             }
             if (app.onStartChivox(param, this.callBackRecord)) {
+                this.props.setCheckBtn(false)
                 this.setState({
                     recordState: 'working'
                 })

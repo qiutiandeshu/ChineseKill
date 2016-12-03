@@ -272,7 +272,7 @@ export default class S_Practice extends Component {
     renderBtnCheck = ()=> {//显示答题页面中的check按钮
         let question = this.props.questionData[this.state.index];
         if (!this.state.canCheck) {
-            if (question.Q_Type === 3 || question.Q_Type === 4) {
+            if (question.Q_Type === 3 ) {
                 return this.renderSkipCheck()
             }
         }
