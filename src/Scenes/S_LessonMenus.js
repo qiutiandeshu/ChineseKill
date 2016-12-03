@@ -9,7 +9,8 @@ import PanScrollView from '../UserInfo/PanScrollView'
 import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView, Image} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import Icon from 'react-native-vector-icons/FontAwesome'
-
+import PopupBox from '../Common/PopupBox'
+import PushNotification from '../Component/PushNotification'
 export default class S_LessonMenus extends Component {
     constructor(props) {
         super(props);
@@ -66,6 +67,7 @@ export default class S_LessonMenus extends Component {
                             chapterRecord={this.state.chaptersRecord[i]}
                              contentData={chapters[i]}
                              onPressStart={this.startPractice.bind(this,i)}
+                            onPressReview = {this.showPopupBox.bind(this,i)}
                 />
             )
         }
@@ -83,7 +85,9 @@ export default class S_LessonMenus extends Component {
                 <PanScrollView name="lessoncardScrollView" horizontal ={true}>
                     {LessonCards}
                 </PanScrollView>
+                <PopupBox ref="reviewBox" name="REVIEEW" onLeftPress = {()=>{this.refs.reviewBox.hidden();}} leftIconName="close">
 
+                </PopupBox>
             </PanView>
         );
     }
@@ -105,6 +109,11 @@ export default class S_LessonMenus extends Component {
         })
         this.props.navigator.push(app.getRoute("Practice"));
     }
+
+    showPopupBox = (index)=>{
+        console.log("显示弹出框")
+        this.refs.reviewBox.show()
+    }
 }
 
 
@@ -120,7 +129,8 @@ class LessonCard extends Component {
         contentData:PropTypes.object.isRequired,
 
         onPressStart:PropTypes.func.isRequired,
-        chapterRecord:PropTypes.object.isRequired
+        chapterRecord:PropTypes.object.isRequired,
+        onPressReview:PropTypes.func.isRequired,
     }
     static defaultProps = {
 
@@ -162,18 +172,27 @@ class LessonCard extends Component {
 
     renderCardButton = ()=>{
         const {chapterState} = this.props.chapterRecord
-        if(chapterState=="passed"){
+        /*if(chapterState=="passed"){ //先去掉2个按钮吧
             return (
                 <View style={{width:ScreenWidth*0.4,flexDirection:'row',justifyContent:'space-around'}}>
                     <PanButton style={styles.btnShort} name="btnShort1" onPress={this._onStartPractice.bind(this)}>
                         <Text style={[UtilStyles.fontSmall,{color:'white'}]}>REDO</Text>
                     </PanButton>
-                    <PanButton style={styles.btnShort} name="btnShort2">
+                    <PanButton style={styles.btnShort} name="btnShort2" onPress={()=>{this.props.onPressReview()}}>
                         <Text style={[UtilStyles.fontSmall,{color:'white'}]}>REVIEW</Text>
                     </PanButton>
                 </View>
             );
+        }*/
+        if(chapterState=="passed"){ //先去掉2个按钮吧
+            return (
+                <PanButton name = 'btnLong'style={[styles.btnLong,{backgroundColor:'#00BCD4'}]}
+                           onPress={this._onStartPractice.bind(this)} >
+                    <Text style={[UtilStyles.fontSmall,{color:'white'}]}>START</Text>
+                </PanButton>
+            );
         }
+
         let text = chapterState == "unlocked"?"START":"LOCKED"
         let bgColor = chapterState == "unlocked"?'#00BCD4':'#ADADAD'
         let canPress = chapterState == "unlocked"?true:false

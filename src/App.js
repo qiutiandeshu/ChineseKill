@@ -54,6 +54,7 @@ export default class App extends Component {
         this.storageLearning = [];//学习进度
         this.storageCardInfo = null;//卡片情况
         this.storageReview = null;//用户复习
+        this.storageSys = null;//一些系统状态的保存 如:是否下载完音乐文件
         /*-----------本地存储数据有关的变量 End--------------*/
 
         /*------------------RNSound Start-------------------------------*/
@@ -81,6 +82,7 @@ export default class App extends Component {
         this.initLearningByStorage();
         this.initCardInfoByStorage();
         this.initReviewByStorage()
+        this.initSysByStorage()
         //驰声接口
         this.chivox = Chivox.Instance();//调用初始化静态函数
         //这里需要设置回调函数，评测回调，录音音量回调，录音播放回调（播放进度）
@@ -123,7 +125,7 @@ export default class App extends Component {
 
     addLoadingIndex = ()=> {
         this.loadIndex += 1
-        if (this.loadIndex == 4) {
+        if (this.loadIndex == 5) {
             this.setState({
                 blnLoading: false,
             })
@@ -552,6 +554,41 @@ export default class App extends Component {
     /*--------------------------驰声接口 end-----------------------*/
 
     /*--------------------------本地数据存储部分 Start-----------------------*/
+    
+    initSysByStorage = ()=>{
+        this.storage.load({key:'Sys'}).then(
+            ret=>{
+                console.log("读取到Sys",ret)
+                this.storageSys = ret
+                this.addLoadingIndex()
+            }
+        ).catch(err=>{
+            switch (err.name) {
+                case 'NotFoundError'://没有找到相关数据
+                    console.log("没有找到Sys相关数据")
+                    this.noneSysStorage()
+                    break;
+                case 'ExpiredError'://相关数据已过期
+                    console.log("Sys数据过期了")
+                    break;
+            }
+            this.addLoadingIndex()
+        })
+    }
+
+    noneSysStorage = ()=>{
+        this.storageSys = {blnDownloadAudio:false}
+        this.saveSys(this.storageSys)
+    }
+    
+    saveSys = (saveData, expires = null)=>{
+        this.storage.save({
+            key: 'Sys',
+            rawData: saveData,
+            expires: expires
+        })
+    }
+    
     initReviewByStorage = ()=> {
         this.storage.load({key: 'Review'}).then(
             ret=> {

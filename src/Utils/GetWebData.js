@@ -94,7 +94,14 @@ export default class GetWebData{
       }else{
         RNFS.mkdir(path)//创建路径
         .then(()=>{
-          this.downloadData(name, path, uri, type, callback);
+          if (uri && uri != ''){//如果uri为空，则不下载，直接返回错误，提示文件未找到
+            this.downloadData(name, path, uri, type, callback);
+          }else{
+            callback && callback({
+              error: '文件不存在',
+              err_dsc: '检测的文件' + path + '/' + name + '不存在'
+            });
+          }
         })
         .catch((err)=>{
           console.log(err);

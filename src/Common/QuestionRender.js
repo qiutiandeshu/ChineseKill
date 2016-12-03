@@ -32,14 +32,25 @@ export default class QuestionRender extends Component {
         this.arrSyllableWord = [];//每个音节汉字的内容
         this.arrSyllablePY = [];//每个音节的拼音
         this.setSyllable(props.question,props.pinyin);
-        if(props.sound){
-            this.playQuestionSound(props.sound)
-        }
+
+    }
+
+    componentDidMount() {
+        InteractionManager.runAfterInteractions(
+            ()=>{
+                if(this.props.sound){
+                    this.playQuestionSound(this.props.sound)
+                }
+            }
+        )
     }
 
     shouldComponentUpdate(nProps,nStates) {
         if(this.props.question != nProps.question){
             this.initSyllabel(nProps)
+            if(nProps.sound){
+                this.playQuestionSound(nProps.sound)
+            }
             return true
         }
         if(this.state != nStates){

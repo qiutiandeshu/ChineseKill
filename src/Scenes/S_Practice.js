@@ -373,26 +373,59 @@ export default class S_Practice extends Component {
         if (this.state.showGameOver == "TheEnd") {
             return <Text>恭喜你练习结束啦</Text>
         } else if (this.state.showGameOver == "Fail") {
-            return <Text>您已经挂掉了心碎人亡</Text>
+            return <Text>用光了所有的生命</Text>
         } else if (this.state.showGameOver == "Success") {
             return (
                 <View>
-                    <Text>此时此刻你不是一个人,分数:{this.state.score},耗时:{this.practiceTime.toString()}毫秒,做对了{rightCount}个题,做错了{wrongCount}
-                        个题,正确率:自己算去</Text>
-                    {rightCount > 0 &&
-                    <PanButton name="btnReViewRight" onPress={this.onPressReview.bind(this,this.rightQuestion)}>
-                        <Text>吃饱了撑的</Text>
-                    </PanButton >}
-                    {wrongCount > 0 &&
-                    <PanButton name="btnReViewWrong" onPress={this.onPressReview.bind(this,this.wrongQuestion)}>
-                        <Text>死磕到底</Text>
-                    </PanButton>}
+                    <Text style={UtilStyles.fontSmall}>过关详情:</Text>
+                    <Text style={[UtilStyles.fontSmall,{marginLeft:MinUnit*2}]}>得分:{this.state.score}</Text>
+                    <Text style={[UtilStyles.fontSmall,{marginLeft:MinUnit*2}]}>耗时:{this.getPracticeTime(this.practiceTime)}</Text>
+                    <Text style={[UtilStyles.fontSmall,{marginLeft:MinUnit*2}]}>正确:{rightCount} 错误:{wrongCount} 正确率:{(rightCount*100/(rightCount+wrongCount)).toFixed(2)}%</Text>
+
+                    <View style={{width:ScreenWidth*0.7,flexDirection:'row',justifyContent:'space-between',marginTop:MinUnit*2}}>
+                        <PanButton name="btnReViewRight" onPress={this.onPressReview.bind(this,this.rightQuestion,'right')}>
+                            <Text>再做一遍正确的题目</Text>
+                        </PanButton >
+                        <PanButton name="btnReViewWrong" onPress={this.onPressReview.bind(this,this.wrongQuestion,'wrong')}>
+                            <Text>再做一遍错误的题目</Text>
+                        </PanButton>
+                    </View>
+
                 </View>)
         }
     }
 
-    onPressReview = (data)=> {
+    getPracticeTime = (usetime)=>{ //根据毫秒转换为 时 分和秒
+        usetime = 200000000
+        if(usetime > 60*60*1000*24){
+            return " 大于1天"
+        }else{
+            let timeStr = ' '
+            let hour = parseInt(usetime/1000/60/60)%24
+            let minute = parseInt((usetime/1000/60))%60
+            if(hour > 0){
+                timeStr += hour+'h '
+            }
+            if(minute>0){
+                timeStr += minute + 'min '
+            }
+            timeStr += parseInt(usetime/1000)%60 + 's'
+            return timeStr
+        }
+    }
 
+    onPressReview = (data,type)=> {
+        if(data.length==0){
+            if(type == 'right'){
+                AlertIOS.alert('没有一道做对的题目')
+            }else{
+                AlertIOS.alert('你都全对了还嘚瑟啥')
+            }
+        }
+        app.setNextRouteProps({
+            questionData:data,
+        })
+        this.props.navigator.push(app.getRoute("Practice"));
     }
 
     renderGameOver = ()=> {//显示结束界面中心内容

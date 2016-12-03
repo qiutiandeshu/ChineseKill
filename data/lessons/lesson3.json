@@ -18,7 +18,7 @@
           ], 
           "Q_Answer": "今天/jīn tiān", 
           "Q_Question": "today", 
-          "Q_Sound": "jin1tian1.MP3"
+          "Q_Sound": "jin1tian1.mp3"
         }, 
         {
           "Q_CiCards": [
@@ -73,7 +73,7 @@
           "Q_Answer": "day", 
           "Q_Question_PY": "tiān", 
           "Q_Question": "天", 
-          "Q_Sound": "tian1.MP3"
+          "Q_Sound": "tian1.mp3"
         }, 
         {
           "Q_CiCards": [
@@ -91,7 +91,7 @@
           "Q_Answer": "Monday", 
           "Q_Question_PY": "xīng qì_yī", 
           "Q_Question": "星期_一", 
-          "Q_Sound": "xing1qi1yi1.MP3"
+          "Q_Sound": "xing1qi1yi1.mp3"
         }, 
         {
           "Q_ZiCards": [
@@ -120,7 +120,7 @@
           "Q_Answer": "jin1 tian1 shi4 xing1 qi1 er4", 
           "Q_Question_PY": "jīn tiān_shì_xīng qī_èr.", 
           "Q_Question": "今天_是_星期_二。", 
-          "Q_Sound": "jintianshixingqier.MP3", 
+          "Q_Sound": "jintianshixingqier.mp3", 
           "Q_JuCards": [
             6
           ]
@@ -136,7 +136,7 @@
           "Q_Answer": "ming2 tian1 shi4 xing1 qi1 wu3", 
           "Q_Question_PY": "míng tiān_shì_xīng qī_wǔ.", 
           "Q_Question": "明天_是_星期_五。", 
-          "Q_Sound": "mingtianshixingqiwu.MP3", 
+          "Q_Sound": "mingtianshixingqiwu.mp3", 
           "Q_JuCards": [
             6
           ]
@@ -206,7 +206,7 @@
           ], 
           "Q_Answer": "明天/míng tiān", 
           "Q_Question_PY": "*_shì_xīng qī_tiān.", 
-          "Q_Sound": "mingtianshixingqitian.MP3", 
+          "Q_Sound": "mingtianshixingqitian.mp3", 
           "Q_Title": "select the missing character", 
           "Q_Question": "*_是_星期_天。", 
           "Q_JuCards": [
@@ -240,7 +240,7 @@
             "yesterdayisThursday"
           ], 
           "Q_Question_PY": "zuó tiān_shì_xīng qī_sì.", 
-          "Q_Sound": "zuotianshixingqisi.MP3", 
+          "Q_Sound": "zuotianshixingqisi.mp3", 
           "Q_Title": "write down the translation", 
           "Q_Question": "昨天_是_星期_四。", 
           "A_Tips": "write down the translation", 
@@ -341,7 +341,7 @@
           ], 
           "Q_Answer": "月/yuè", 
           "Q_Question": "month", 
-          "Q_Sound": "yue4.MP3"
+          "Q_Sound": "yue4.mp3"
         }, 
         {
           "Q_CiCards": [
@@ -363,7 +363,7 @@
           ], 
           "Q_Answer": "一月/yī yuè", 
           "Q_Question": "January", 
-          "Q_Sound": "1yue.MP3"
+          "Q_Sound": "1yue.mp3"
         }, 
         {
           "Q_CiCards": [
@@ -385,7 +385,7 @@
           ], 
           "Q_Answer": "日/rì", 
           "Q_Question": "day", 
-          "Q_Sound": "ri4.MP3"
+          "Q_Sound": "ri4.mp3"
         }, 
         {
           "Q_CiCards": [
@@ -449,7 +449,7 @@
           ], 
           "Q_Answer": "二月/èr yuè", 
           "Q_Question": "March", 
-          "Q_Sound": "3yue.MP3"
+          "Q_Sound": "3yue.mp3"
         }, 
         {
           "Q_CiCards": [
@@ -508,7 +508,7 @@
           "Q_Answer": "si4 yue4 ba1 hao4", 
           "Q_Question_PY": "sì yuè_bā rì", 
           "Q_Question": "四月_八日", 
-          "Q_Sound": "4yue8ri.MP3", 
+          "Q_Sound": "4yue8ri.mp3", 
           "Q_JuCards": [
             7
           ]
@@ -524,7 +524,7 @@
           "Q_Answer": "ming2 tian1 shi4 san1 yue4 qi1 ri4", 
           "Q_Question_PY": "míng tiān_shì_sān yuè_qī rì", 
           "Q_Question": "明天_是_三月_七日", 
-          "Q_Sound": "mingtianshisanyueqiri.MP3", 
+          "Q_Sound": "mingtianshisanyueqiri.mp3", 
           "Q_JuCards": [
             7
           ]
@@ -543,7 +543,7 @@
           ], 
           "Q_Answer": "五月/wǔ yuè", 
           "Q_Question": "May", 
-          "Q_Sound": "5yue.MP3"
+          "Q_Sound": "5yue.mp3"
         }, 
         {
           "Q_CiCards": [
@@ -557,7 +557,7 @@
           ], 
           "Q_Question_PY": "lìu yuè", 
           "Q_Question": "六月", 
-          "Q_Sound": "6yue.MP3"
+          "Q_Sound": "6yue.mp3"
         }, 
         {
           "Q_CiCards": [
@@ -603,7 +603,7 @@
           "Q_Answer": "shi2 yi1 yue4 shi2 san1 hao4", 
           "Q_Question_PY": "shí yī yuè_shí sān rì", 
           "Q_Question": "十一月_十三日", 
-          "Q_Sound": "shiyiyueshisanhao.MP3", 
+          "Q_Sound": "shiyiyueshisanhao.mp3", 
           "Q_JuCards": [
             7
           ]
@@ -662,7 +662,7 @@
           ], 
           "Q_Answer": "年/nián", 
           "Q_Question": "year", 
-          "Q_Sound": "nian2.MP3"
+          "Q_Sound": "nian2.mp3"
         }, 
         {
           "Q_CiCards": [
@@ -827,7 +827,7 @@
             "2006"
           ], 
           "Q_Question_PY": "jīn tiān_shì_èr líng líng lìu nián_yī yuè_yī rì.", 
-          "Q_Sound": "2006nian1yue1ri.MP3", 
+          "Q_Sound": "2006nian1yue1ri.mp3", 
           "Q_Title": "select the correct translation", 
           "Q_Question": "今天_是_二零零六年_一月_一日。", 
           "Q_JuCards": [
@@ -881,7 +881,7 @@
             "November2016"
           ], 
           "Q_Question_PY": "èr líng yī lìu nián_shí yī yuè", 
-          "Q_Sound": "2016nian11yue.MP3", 
+          "Q_Sound": "2016nian11yue.mp3", 
           "Q_Title": "write down the translation", 
           "Q_Question": "二零一六年_十一月", 
           "A_Tips": "write down the translation", 

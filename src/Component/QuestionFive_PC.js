@@ -81,6 +81,7 @@ export default class QuestionFive_PC extends Component {
         }
         let list = []
         let str = this.props.questionData.Q_Question
+        str = str.replace(/_|。|，|？|！|；|：/g,'')
         if(this.nowResultType == 'result'){
             for(let i=0;i<str.length;i++){
                 list.push(
@@ -108,6 +109,7 @@ export default class QuestionFive_PC extends Component {
     }
 
     getResultMsg = (str,detail)=>{
+        console.log('getResultMsg',detail)
         const {overallScore,phnScore,pronScore,toneScore,originalTone,recordTone,phoneScores} = detail
         let toneStr = ["轻声","一声","二声","三声","四声"]
         let result = str + ": "

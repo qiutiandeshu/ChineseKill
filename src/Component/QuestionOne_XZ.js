@@ -157,13 +157,35 @@ export default class QuestionOne_XZ extends Component {
     }
 
     renderContents = ()=> {
+        let opition = []
+        for(let i=0;i<this.listData.length;i++){
+            const {content,blnSelect,pic} = this.listData[i]
+            if(this.props.questionData.Q_Pics){
+                opition.push(
+                    <PhotoOpition key={i} blnSelect={blnSelect} content={content} imageName = {pic}
+                                  opitionId={i} _onPress={this.onPressOpition.bind(this)}/>
+                )
+            }else{
+                opition.push(
+                    <TextOpition key={i} blnSelect={blnSelect} content={content}
+                                 opitionId={i} _onPress={this.onPressOpition.bind(this)}
+                    />
+                )
+            }
+        }
+        let flexDirection = this.props.questionData.Q_Pics?'row':'column'
         return (
+            <View style={{flexDirection:flexDirection}}>
+                {opition}
+            </View>
+        )
+        /*return (
             <ListView name="content" dataSource={this.state.dataSource}
                       renderRow={this.renderOpition.bind(this)}
                       scrollEnabled={false}
                       contentContainerStyle={this.props.questionData.Q_Pics?styles.photoList:styles.textList}
             />
-        );
+        );*/
     }
     renderOpition = (rowData, sectionID, rowID)=> {
         const {content, blnSelect, pic} = rowData
@@ -287,9 +309,10 @@ const styles = StyleSheet.create({
     photoOpition: {
         width: ScreenWidth * 0.2+2*MinWidth,
         height: ScreenWidth * 0.2 + MinUnit*3,
-        borderRadius: 10,
+        borderRadius: 5,
         backgroundColor: '#EAEAEA',
         padding:MinWidth,
+        marginHorizontal:MinUnit*0.5,
     },
     image:{
         width: ScreenWidth * 0.2,

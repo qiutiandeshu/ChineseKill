@@ -11,6 +11,8 @@ import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from
 import MenuLeft from '../Component/HomeSideMenuLeft'
 import MenuRight from '../Component/HomeSideMenuRight'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import wd from '../Utils/GetWebData.js';
+import Utils from '../Utils/Utils.js';
 var Box = require('../Component/Box.js');
 export default class S_Home extends Component {
     constructor(props) {
@@ -25,6 +27,8 @@ export default class S_Home extends Component {
         this.blnContentOffX = false;
         global.Home = this;
         this.baseProps = props;
+        this.audioName = ['page_into.mp3','correct_sound.mp3','wrong_sound.mp3'];
+        this.downLoadIndex = 0
     }    
     Refresh() {
         var str = JSON.stringify(app.storageLearning);
@@ -97,6 +101,96 @@ export default class S_Home extends Component {
             return true;
         }
         return false;
+    }
+
+    componentDidMount() {
+        if(!app.storageSys.blnDownloadAudio){
+            this.downloadSounds();
+            this.downloadAudio({lessonId:0,chapterId:0,practiceId:0})
+        }
+    }
+
+    downloadAudio = (lessonInfo)=>{ //{lessonId:0,chapterId:0,practiceId:0}
+        let download = this.getAudioName(lessonInfo)
+        let audioName = download.audioName
+        if(audioName != 'lastFile'){
+            let uri = 'http://192.169.1.19:8080/ChineseSkill/Sound/' + audioName
+            console.log("打印链接:",uri)
+            console.log("打印文件名:",audioName,download.nextLesson)
+            wd.Instance().getWebFile(audioName,wd.DOCUMENT+"/Sound", null, 'none', (result)=>{
+                console.log('aaaaa',result);
+                if (result.error == '文件不存在'){
+                    wd.Instance().downloadData(audioName, wd.DOCUMENT+"/Sound", uri, 'none',this.callbackDownload.bind(this, download.nextLesson));
+                }else if(!result.error){
+                    this.downloadAudio(download.nextLesson)
+                }
+            });
+            // wd.Instance().downloadData(audioName,wd.DOCUMENT+"/Sound",uri,this.callbackDownload.bind(download.nextLesson));
+        }else{
+            app.saveSys({blnDownloadAudio:true})
+        }
+    }
+
+    getAudioName = (lessonInfo)=>{
+        const {lessonId,chapterId,practiceId}=lessonInfo
+        let nowLessonId = lessonId
+        let nowChapterId = chapterId
+        let nowPracticeId = practiceId
+        let lessonLength = this.props.allLessonData.length
+        while(nowLessonId<lessonLength){
+            let lessonData = this.props.allLessonData[nowLessonId]
+            let chapterLength = lessonData.chapters.length
+            let practiceLength = lessonData.chapters[nowChapterId].practices.length
+            let practice = lessonData.chapters[nowChapterId].practices[nowPracticeId]
+
+            nowPracticeId = (nowPracticeId+1)%practiceLength
+
+            if(nowPracticeId == 0){
+                nowChapterId = (nowChapterId+1)%chapterLength
+                if(nowChapterId == 0){
+                    nowLessonId += 1
+                }
+            }
+            if(practice.Q_Sound){
+                return {audioName: practice.Q_Sound,nextLesson:{lessonId:nowLessonId,chapterId:nowChapterId,practiceId:nowPracticeId}}
+            }
+        }
+        return {audioName: 'lastFile',nextLesson:{lessonId:nowLessonId,chapterId:nowChapterId,practiceId:nowPracticeId}}
+    }
+
+    callbackDownload = (lessonInfo,results)=>{
+        if(results.error){
+            console.log("下载错误:",lessonInfo,results.data)
+        }else{
+            this.downloadAudio(lessonInfo)
+        }
+    }
+
+    downloadSounds = ()=>{
+        if(this.downLoadIndex<this.audioName.length){
+            let name = this.audioName[this.downLoadIndex]
+            let uniName = name//..Utils.Utf8ToUnicode(name);
+            let uri = 'http://192.169.1.19:8080/ChineseSkill/Sounds/' + uniName ;
+            console.log("download name:",uniName)
+            console.log("download url:",uri)
+
+            wd.Instance().getWebFile(uniName,wd.DOCUMENT+"/Sounds", null, 'none', (result)=>{
+                console.log('bbbbb',result);
+                if (result.error == '文件不存在'){
+                    wd.Instance().downloadData(uniName, wd.DOCUMENT+"/Sounds", uri, 'none',(results)=>{
+                        if(results.error){
+                            console.log("下载错误:",result.data)
+                        }else{
+                            this.downLoadIndex += 1
+                            this.downloadSounds()
+                        }
+                        console.log(console.log("下载数据结果:",this.downLoadIndex,results))
+                    });
+                }else if(!result.error){
+                    this.downloadAudio(download.nextLesson)
+                }
+            });
+        }
     }
 
     render() {
