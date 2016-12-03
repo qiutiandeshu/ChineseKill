@@ -26,6 +26,7 @@ import FBLogin from '../Utils/FBLogin.js';
 import TWLogin from '../Utils/TWLogin.js';
 import GGLogin from '../Utils/GGLogin.js';
 import* as Progress from 'react-native-progress'
+import PushNotification from './PushNotification.js'
 
 import webData from '../Utils/GetWebData.js';
 var pyUrl = 'http://192.169.1.19:8080/ChineseSkill/audio/';
@@ -34,10 +35,13 @@ var pyPath = webData.CACHES + '/pyAudio';
 const DAY_TIME = 86400000;
 class Box extends Component {
   blnPlayAudio = false;
+  blnSleep = false;
 	show() {
+    this.blnSleep = false;
 		this.refs.PopupBox.show();
 	}
 	hidden() {
+    this.blnSleep = true;
 		this.refs.PopupBox.hidden();
 	}
   shouldComponentUpdate(nextProps, nextState) {
@@ -74,12 +78,12 @@ class Box extends Component {
     }
     webData.Instance().getWebFile(name, pyPath, pyUrl+name, 'none', (result)=>{
       if (result.error){
-        this.blnPlayAudio = false;
         callback('fail');
       } else {
         app.onPlaySound('pyAudio/'+name, (result)=>{
-          this.blnPlayAudio = true;
-          callback(result.type);
+          console.log('播放声音 '+name);
+          console.log(result);
+          callback(result);
           // if (result.type == 'firstPlay'){
           // }else if (result.type == 'cTime'){
           // }else if (result.type == 'stop'){
@@ -96,7 +100,8 @@ class Box extends Component {
 class SettingBox extends Box {
 	render() {
 		return (
-			<PopupBox ref={'PopupBox'} name={'Setting'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)} backPress={this.backPress.bind(this)}>
+			<PopupBox ref={'PopupBox'} name={'每日提醒'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)} backPress={this.backPress.bind(this)}>
+        <PushNotification />      
 			</PopupBox>
 		);
 	}
@@ -684,6 +689,7 @@ class FlashCardBox extends Box {
       ciList: [],
       juList: []
     };
+    // app.storageReview = null;
     this.jsonList = [];
     for (var i=0;i<3;i++) {
       var data = app.storageCardInfo.learnCards.ziKey;
@@ -870,11 +876,9 @@ class FlashCardBox extends Box {
     if (this.state.status == 'menu') {
       this.hidden();
     } else {
-      // if (this.blnPlayAudio) {
-      //   if (this.testObj) {
-      //     app.stopSound('pyAudio/'+this.testObj.play, 'play');
-      //   }
-      // }
+      if (this.testObj) {
+        app.stopSound('pyAudio/'+this.testObj.play, 'play');
+      }
       Animated.timing(
         this.state.moveX,
         {
@@ -949,12 +953,15 @@ class FlashCardBox extends Box {
   autoPlaySound() {
     if (this.blnAuto) {
         if (this.reviewList.length != 0) {
-          // var obj = this.reviewList[this.testIndex];
-          // this.playAudio(obj.play,(msg)=>{
-
-          // });
+          var obj = this.reviewList[this.testIndex];
+          this.timer = setTimeout(()=>{
+            this.playSound(obj.play);
+          },100);
         }
       }
+  }
+  componentWillUnmount() {
+    this.timer && clearTimeout(this.timer);
   }
   getReviewList() {
     var _reviewList = [];
@@ -1037,7 +1044,7 @@ class FlashCardBox extends Box {
           <View style={[{height: MinUnit*5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: MinUnit}, ]}>
             <View style={{width: MinUnit*5}} />
             <Text style={{fontSize: MinUnit*2.6, color: '#E1E1E1'}} >{this.testIndex+1}/{this.reviewList.length}</Text>
-            <IconButton name={'volume-up'} size={MinUnit*4} color={'#E1E1E1'} onPress={()=>{this.playAudio(obj.play, (msg)=>{Alert.alert('sorry','没有音频文件')})}} />
+            <IconButton name={'volume-up'} size={MinUnit*4} color={'#E1E1E1'} onPress={this.playSound.bind(this, obj.play)} />
           </View>
           <View style={{flex: 1, alignItems: 'center', justifyContent: 'center',}}>
             <Text style={{fontSize: MinUnit*3, color: '#FFFFFF'}}>{_question}</Text>
@@ -1055,6 +1062,13 @@ class FlashCardBox extends Box {
         {this.renderButtonWrong()}
       </Animated.View>
     );
+  }
+  playSound(name) {
+    this.playAudio(name, (msg)=>{
+      if (msg == 'fail') {
+        Alert.alert('警告','没有声音数据');
+      }
+    });
   }
   renderButtonShow() {
     if (this.state.showKind != 1) return null;
@@ -1218,6 +1232,10 @@ class MicorphoneVolume extends Component {
       volume: _num,
     });
   }
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState != this.state) return true;
+    return false;
+  }
   render() {
     return (
       <Progress.Circle  thickness={MinUnit*0.5} borderWidth={0} style={{position:'absolute',left:0,top:0}}
@@ -1258,7 +1276,6 @@ class CardBox extends Box {
     }
   }
   initialize() {
-
     this.jsonList = null;
     this.selectData = null,
     this.selectId = 0;
@@ -1275,13 +1292,18 @@ class CardBox extends Box {
   }
   release() {
     this.initialize();
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows([]),
+      blnWait: true,
+    });
     this.stopPlay();
   }
   render() {
     var _name = this.props.kind + ' Review';
+    console.log('blnRecord: '+this.blnRecord);
     return (
       <PopupBox ref={'PopupBox'} name={_name}
-        leftIconName={'close'} onLeftPress={()=>{this.hidden();this.stopPlay()}} 
+        leftIconName={'close'} onLeftPress={()=>{this.hidden();this.stopPlay();app.onStopChivox();}} 
         rightIconName={this.props.blnRight?'pencil-square-o':''} onRightPress={this.onPracticePress.bind(this)}
         showAnimatedEnd={this.showEnd.bind(this)} hiddenAnimatedEnd={this.hiddenEnd.bind(this)} >
         <PanListView
@@ -1323,7 +1345,9 @@ class CardBox extends Box {
           onPress={this.onRecordKey.bind(this)}>
           {this.blnRecord && <MicorphoneVolume ref={'MicorphoneVolume'} />}
         </CircleIcon>
-        {this.blnShowPlay && <CircleIcon name={this.blnPlay?'pause-circle':'play-circle'} size={MinUnit*5} color={'#F6F6F6'} backStyle={styles.microphone} onPress={this.onPlayKey.bind(this)} />}
+        {this.blnShowPlay && 
+          <CircleIcon name={this.blnPlay?'pause-circle':'play-circle'} size={MinUnit*5} color={'#F6F6F6'} backStyle={styles.microphone} onPress={this.onPlayKey.bind(this)} >
+          </CircleIcon>}
         {!this.blnShowPlay && <View style={{width}} />}
       </View>
     );
@@ -1400,44 +1424,40 @@ class CardBox extends Box {
     if (kind == 0) {
       this.blnShowPlay = true;
       this.blnPlay = true;
-      this.playSound(1);
+      this.playSound(0);
     }
     this.Refresh();
   }
   // 播放按钮
   onPlayKey() {
     this.blnPlay = !this.blnPlay;
-    // if (this.blnPlay) {
+    if (this.playKind == 0) {
+      this.playSound(0);
+    } else if (this.playKind == 1) {
+      this.playSound(0);
+    } else if (this.playKind == 2) {
       this.playSound(1);
-    // } else {
-    //   app.pauseSound('flash.wav', 'flash');
-    // }
-    // if (this.blnPlay) {
-    //   if (this.playKind == 0) {
-    //     this.playSound(0);
-    //   } else if (this.playKind == 1) {
-    //     this.playSound(0);
-    //   } else if (this.playKind == 2) {
-    //     this.playSound(1);
-    //   }
-    // } else {
-    //   if (this.playKind == 1) {
-    //     this.playSound(0);
-    //   } else if (this.playKind == 2) {
-    //     this.playSound(1);
-    //   }
-    // }
+    }
     this.Refresh();
   }
   // 播放功能
   playSound(kind) {
-    if (this.blnPlay == false) return;
+    if (this.blnSleep) return;
     if (kind == 0) {
       this.playKind = 1;
       if (this.selectData && this.selectData.play) {
-        this.playAudio(this.selectData.play, (msg)=>{
-          console.log('playSound1: '+msg);
-          if (msg == 'playEnd' || msg == "initError") {
+        this.playAudio(this.selectData.play, (result)=>{
+          var bln = false;
+          if (result == 'fail') {
+            bln = true;
+          } else {
+            if (result.type == 'playEnd' || result.type == "initError") {
+              bln = true;
+            } else if (result.type == 'cTime') {
+              // this.refs.playProgress.changeVolume(result.message);
+            }
+          }
+          if (bln) {
             this.playSound(1);
           }
         });
@@ -1447,12 +1467,13 @@ class CardBox extends Box {
     } else {
       this.playKind = 2;
       app.onPlaySound('flash.wav', (result)=>{
-        console.log('playSound2: '+result.type);
-        if (result.type == 'pause') {
-        } else if (result.type == 'playEnd' || result=='initError'){
+        if (result.type == 'playEnd' || result=='initError'){
           this.playKind = 0;
           this.blnPlay = false;
+          // this.refs.playProgress.changeVolume(0);
           this.Refresh();
+        } else if (result.type == 'cTime') {
+          // this.refs.playProgress.changeVolume(result.message);
         }
       }, 'flash', {mainPath: 'CACHES'});
     }
@@ -1671,6 +1692,7 @@ class CardBox extends Box {
   hiddenEnd(bln) {
     app.onCancelChivox();
     this.release();
+    this.Refresh();
   }
   getCharacterMsg(json) {
     var array = [];
@@ -1719,7 +1741,14 @@ class ListItem extends Component {
     onPress: ()=>{},
     kind: "Character",
   };
+  shouldComponentUpdate(nextProps, nextState) {
+    var str1 = JSON.stringify(nextProps);
+    var str2 = JSON.stringify(this.props);
+    if (str1 != str2) return true;
+    return false;
+  }
   render() {
+    console.log('renderListItem');
     if (this.props.kind == 'Sentence') {
       return this.renderSentenceListItem();
     }
@@ -1804,6 +1833,9 @@ class BarShowNum extends Component {
     color: '#C4E6D3',
     num: 5
   };
+  shouldComponentUpdate(nextProps, nextState) {
+    return false;
+  }
   render() {
     return (
       <View style={[styles.barNum, styles.center]}>
