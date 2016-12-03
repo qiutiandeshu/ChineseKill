@@ -67,7 +67,7 @@ class PopupBox extends Component {
   	}
     return (
       <View name={this.props.name} style={[styles.container, {backgroundColor: '#00000078'}]}>
-        <PanButton name={'b_popupBox_back'} style={styles.container} />
+        <PanButton name={'b_popupBox_back'} style={styles.container} onPress={this.props.backPress} />
       	<Animated.View style={[styles.frame, {width:this.props.width, height: this.props.height, top: this.state.top}]}>
       		<PanView name="v_popupTop" style={[styles.top]}>
       			{this.renderLeftIcon()}

@@ -447,7 +447,7 @@
             "三月/sān yuè", 
             "四月/sì yuè"
           ], 
-          "Q_Answer": "二月/èr yuè", 
+          "Q_Answer": "三月/sān yuè", 
           "Q_Question": "March", 
           "Q_Sound": "3yue.mp3"
         }, 
@@ -474,7 +474,7 @@
             "March", 
             "1st"
           ], 
-          "Q_Question_PY": "jīn_tiān_shì_sān yuè_yī rì.", 
+          "Q_Question_PY": "jīn tiān_shì_sān yuè_yī rì.", 
           "Q_Sound": "jintianshisanyueyiri.mp3", 
           "Q_Title": "select a correct translation", 
           "Q_Question": "今天_是_三月_一日。", 

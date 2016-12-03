@@ -12,6 +12,7 @@ import {
   WebView,
   TextInput,
   InteractionManager,
+  ActivityIndicator,
 } from 'react-native';
 import PanView from '../UserInfo/PanView';
 import PanButton from '../UserInfo/PanButton';
@@ -27,7 +28,9 @@ export default class S_TreeZ extends Component {
 
     this.state = {
       blnRefresh: false,
+      blnWeb: false,
     };
+    this.blnWait = true;
   }
   Refresh() {
     this.setState({
@@ -42,16 +45,26 @@ export default class S_TreeZ extends Component {
   }
   componentDidMount() {
     InteractionManager.runAfterInteractions(()=>{
-      this.postMessage(Home.searchWord);
+      // this.postMessage(Home.searchWord);
+      this.setState({
+        blnWeb: true
+      });
+      this.timer = setTimeout(()=>{
+        this.blnWait = false;
+        this.Refresh();
+        this.postMessage(Home.searchWord);
+      }, 500);
     });
   }
   componentWillUnmount() {
+    this.timer && clearTimeout(this.timer);
   }
   render() {
     return (
       <View style={styles.container}>
         {this.renderTop()}
         <View style={{flex: 1,}}>
+        {this.state.blnWeb && 
           <WebViewBridge
             source={{uri: 'http://192.168.1.110:8811/hzsvg'}}
             scalesPageToFit={true}
@@ -59,6 +72,7 @@ export default class S_TreeZ extends Component {
             onBridgeMessage={this.onMessage.bind(this)}
             ref={(webview)=>{this.webview = webview;}}>
           </WebViewBridge>
+        }
           {/*<View style={styles.inputView}>
             <TextInput
               ref={'Input'}
@@ -75,7 +89,23 @@ export default class S_TreeZ extends Component {
             <YxPoint text={"记号"} color={"#E5ADB2"}/>
             <YxPoint text={"其他"} color={"#B1E5E0"}/>
           </View>
+          {this.str &&
+            <PanButton name={'b_treez_old'} 
+              onPress={this.searchWord.bind(this,this.str)}
+              style={{position:'absolute', left:MinUnit, top:MinUnit, width:MinUnit*5, height:MinUnit*5, backgroundColor:'#FFFFFF00' }}>
+              <Text style={{fontSize:MinUnit*3}}>{this.str}</Text>
+            </PanButton>
+          }
+          {this.renderWait()}
         </View>
+      </View>
+    );
+  }
+  renderWait() {
+    if (this.blnWait == false) return null;
+    return (
+      <View style={{position: 'absolute', left:0, right:0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center',}}>
+        <ActivityIndicator color={'#787878'}/>
       </View>
     );
   }
@@ -83,6 +113,10 @@ export default class S_TreeZ extends Component {
     if (this.SearchWord.length != 0) {
       this.postMessage(this.SearchWord);
     }
+  }
+  searchWord(word) {
+    this.postMessage(word);
+    this.str = null;
   }
   postMessage(message) {
     var json = {
@@ -95,8 +129,12 @@ export default class S_TreeZ extends Component {
     var json = JSON.parse(message);
     if (json.kind == 'style') {
     } else if (json.kind == 'yxmsg') {
-    } else if (json.kind = 'log') {
+    } else if (json.kind == 'log') {
       console.log(json.str);
+    } else if (json.kind == 'SearchHz') {
+      // console.log(json);
+      this.str = json.old;
+      this.Refresh();
     }
   }
 

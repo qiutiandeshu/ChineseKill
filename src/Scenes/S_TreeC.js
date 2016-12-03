@@ -13,6 +13,7 @@ import {
   TextInput,
   ScrollView,
   InteractionManager,
+  ActivityIndicator,
 } from 'react-native';
 import PanView from '../UserInfo/PanView';
 import PanButton from '../UserInfo/PanButton';
@@ -32,7 +33,9 @@ export default class S_TreeZ extends Component {
 
     this.state = {
       blnRefresh: false,
+      blnWeb: false,
     };
+    this.blnWait = true;
   }
   Refresh() {
     this.setState({
@@ -47,10 +50,18 @@ export default class S_TreeZ extends Component {
   }
   componentDidMount() {
     InteractionManager.runAfterInteractions(()=>{
-      this.postMessage(Home.searchWord);
+      this.setState({
+        blnWeb: true
+      });
+      this.timer = setTimeout(()=>{
+        this.blnWait = false;
+        this.Refresh();
+        this.postMessage(Home.searchWord);
+      }, 500);
     });
   }
   componentWillUnmount() {
+    this.timer && clearTimeout(this.timer);
   }
   render() {
     return (
@@ -85,6 +96,15 @@ export default class S_TreeZ extends Component {
               placeholder={'输入要查询的词汇'}/>
           </View>*/}
         </View>
+        {this.renderWait()}
+      </View>
+    );
+  }
+  renderWait() {
+    if (this.blnWait == false) return null;
+    return (
+      <View style={{position: 'absolute', left:0, right:0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center',}}>
+        <ActivityIndicator color={'#787878'}/>
       </View>
     );
   }
@@ -159,7 +179,7 @@ export default class S_TreeZ extends Component {
         animated: false,
       });
       this.Refresh();
-    } else if (json.kind = 'log') {
+    } else if (json.kind == 'log') {
       console.log(json.str);
     }
   }
@@ -272,7 +292,7 @@ const styles = StyleSheet.create({
   yxMsg: {
     width: MinUnit*29,
     marginLeft: MinUnit*0.5,
-    marginTop: MinUnit*5,
+    marginTop: MinUnit*0.5,
     marginBottom: MinUnit*0.5,
     paddingHorizontal: MinUnit,
   },
