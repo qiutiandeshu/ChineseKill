@@ -43,20 +43,21 @@ var sectionData = [
 ];
 
 var rowData = [
-  require('../../data/characters/不.json'),
-  require('../../data/characters/八.json'),
-  require('../../data/characters/口.json'),
-  require('../../data/characters/吞.json'),
-  require('../../data/characters/哀.json'),
-  require('../../data/characters/器.json'),
+  require('../../data/characters/一.json'),
+  require('../../data/characters/二.json'),
+  require('../../data/characters/三.json'),
+  require('../../data/characters/四.json'),
+  require('../../data/characters/人.json'),
+  require('../../data/characters/他.json'),
+  require('../../data/characters/她.json'),
+  require('../../data/characters/你.json'),
+  require('../../data/characters/几.json'),
+  require('../../data/characters/只.json'),
   require('../../data/characters/天.json'),
-  require('../../data/characters/拥.json'),
-  require('../../data/characters/永.json'),
-  require('../../data/characters/波.json'),
-  require('../../data/characters/盲.json'),
-  require('../../data/characters/睁.json'),
-  require('../../data/characters/秋.json'),
-  require('../../data/characters/问.json')
+  require('../../data/characters/岁.json'),
+  require('../../data/characters/我.json'),
+  require('../../data/characters/猫.json'),
+  require('../../data/characters/狗.json')
 ];
 // var rowData = {
 // 	"hz": "永",

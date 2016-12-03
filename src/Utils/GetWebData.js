@@ -66,14 +66,14 @@ export default class GetWebData{
   static ERR_DELETEFILE = 7;//删除文件错误
 
   /*
-  param:{
-    name：文件名，带后缀
-    path：文件路径
-    uri：下载地址，如果为空，则返回错误，文件不存在
-    type：打开方式，‘utf8’则返回文件数据，其他则返回文件路径
-    over: 是否覆盖，默认是不覆盖，如果是true，则直接下载文件覆盖原有文件
+  param={
+    name:'name', 文件名，带后缀
+    path:'path', 文件路径
+    uri:'uri', 下载地址，如果为空，则返回错误，文件不存在
+    type:'utf8', 打开方式，‘utf8’则返回文件数据，其他则返回文件路径
+    over:false, 是否覆盖，默认是不覆盖，如果是true，则直接下载文件覆盖原有文件
   } 
-  callback: 回调函数
+  callback:回调函数
   */
   getWebFile(param, callback){
     this.callback = callback;

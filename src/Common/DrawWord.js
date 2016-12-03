@@ -63,6 +63,7 @@ export default class DrawWord extends Component {
     this.arrLine = [];
     this.showArrow = [];
     this.blnDownload = false;
+    this.isData = false;
     this.createBackLine();
   }
   static propTypes = {
@@ -128,16 +129,26 @@ export default class DrawWord extends Component {
     var uniName = Utils.Utf8ToUnicode(name);
     uniName = uniName.replace('\\u', '') + '.json';
     console.log(uniName);
-    webData.Instance().getWebFile(uniName, this.props.data.path, this.props.data.uri+uniName, 'utf8', (result)=>{
-      if (result.error){
+    var param={
+      name:uniName,//文件名，带后缀
+      path:this.props.data.path,//文件路径
+      uri:this.props.data.uri+uniName,//下载地址，如果为空，则返回错误，文件不存在
+      type:'utf8',//打开方式，‘utf8’则返回文件数据，其他则返回文件路径
+      over:false,//是否覆盖，默认是不覆盖，如果是true，则直接下载文件覆盖原有文件
+    };
+    webData.Instance().getWebFile(param, (result)=>{
+      if (result.code == webData.CODE_ERROR){
         Alert.alert(
           '提示',
           '错误：未找到文件或者服务器没有数据，' + result.error,
           [
-            {text: 'OK', onPress: () => {}},
+            {text: 'OK', onPress: () => {
+              this.blnDownload = false;
+              this.setUpdate();
+            }},
           ]
         );
-      }else{
+      }else if (result.code == webData.CODE_READFILE) {
         console.log(result.data);
         var data = JSON.parse(result.data);
         this.blnDownload = false;
@@ -147,6 +158,7 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   updateData(data){
+    this.isData = true;
     this.InitWord(data);
     this.tempColor = [];
     this.tempColor.push(this.props.fillColor);
@@ -473,7 +485,7 @@ export default class DrawWord extends Component {
     }
   }
   setBeginDraw(){
-    if (this.blnDownload){
+    if (this.blnDownload || !this.isData){
       return;
     }
     this.wrongCount = 0;
@@ -515,7 +527,7 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   setEndDraw(){
-    if (this.blnDownload){
+    if (this.blnDownload || !this.isData){
       return;
     }
     var character = this.data;
@@ -526,7 +538,7 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   setRestart(){
-    if (this.blnDownload){
+    if (this.blnDownload || !this.isData){
       return;
     }
     var character = this.data;
@@ -547,7 +559,7 @@ export default class DrawWord extends Component {
     }
   }
   stopBlink(){
-    if (this.blnDownload){
+    if (this.blnDownload || !this.isData){
       return;
     }
     this.blnBlink = false;
@@ -560,7 +572,7 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   setStrokeBlink(){
-    if (this.blnDownload){
+    if (this.blnDownload || !this.isData){
       return;
     }
     if (!this.blnBlink){
@@ -588,7 +600,7 @@ export default class DrawWord extends Component {
     }
   }
   setAutoWrite(){
-    if (this.blnDownload){
+    if (this.blnDownload || !this.isData){
       return;
     }
     this.tempDrawLine = null;
@@ -597,7 +609,7 @@ export default class DrawWord extends Component {
     this._autoWrite = setInterval(this.autoWrite.bind(this), 1000/60);
   }
   stopAutoWrite(){
-    if (this.blnDownload){
+    if (this.blnDownload || !this.isData){
       return;
     }
     this._autoWrite && clearInterval(this._autoWrite);
@@ -654,13 +666,13 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   onStartShouldSetPanResponder(e, g){
-    if (this.blnDownload || this.drawIdx >= this.data.length){
+    if (this.blnDownload || !this.isData || this.drawIdx >= this.data.length){
       return false;
     }
     return this.props.blnTouch;
   }
   onMoveShouldSetPanResponder(e, g){
-    if (this.blnDownload || this.drawIdx >= this.data.length){
+    if (this.blnDownload || !this.isData || this.drawIdx >= this.data.length){
       return false;
     }
     return this.props.blnTouch;
@@ -788,10 +800,19 @@ export default class DrawWord extends Component {
           {arrayArrow}
         </Surface>
         {this.showPoints}
-        <Waiting style={{width: this.props.curWidth, height: this.props.curWidth}} 
-          text='Loading'
-          textStyle={{fontSize: MinUnit * 5, color:'white'}}
+        <Waiting style={{width: this.props.curWidth, height: this.props.curWidth, backgroundColor: 'rgba(0,0,0,0)'}} 
+          text=''
+          textStyle={{fontSize: MinUnit * 3, color:'white'}}
           show={this.blnDownload}
+          icon={{
+            type: Waiting.SYSTEM,
+            style: {transform:[{scale: 2}]},
+            anim: true,
+            param: {
+              color: 'red',
+              size: 'large',
+            }
+          }}
         />
       </View>
     );
