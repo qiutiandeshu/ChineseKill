@@ -86,7 +86,7 @@ export default class S_LessonMenus extends Component {
                     {LessonCards}
                 </PanScrollView>
                 <PopupBox ref="reviewBox" name="REVIEEW" onLeftPress = {()=>{this.refs.reviewBox.hidden();}} leftIconName="close">
-
+                    <PushNotification/>
                 </PopupBox>
             </PanView>
         );
@@ -156,7 +156,7 @@ class LessonCard extends Component {
                 <Text style={[UtilStyles.fontNormal,{color:'black',}]}>
                     {nowIndex + "/" + this.props.chapterCount}
                 </Text>
-                {chapterState=="passed"&&<Icon style={{position:'absolute',top:MinUnit,right:-MinUnit*4}} name="check-circle" color="#00BCD4" size={IconSize*0.5}/>}
+                {chapterState=="passed"&&<Icon style={{position:'absolute',top:MinUnit,right:-MinUnit*4}} name="check-circle" color="#00BCD4" size={IconSize*0.75}/>}
             </View>
         );
     }
@@ -172,7 +172,7 @@ class LessonCard extends Component {
 
     renderCardButton = ()=>{
         const {chapterState} = this.props.chapterRecord
-        /*if(chapterState=="passed"){ //先去掉2个按钮吧
+       /*if(chapterState=="passed"){ //先去掉2个按钮吧
             return (
                 <View style={{width:ScreenWidth*0.4,flexDirection:'row',justifyContent:'space-around'}}>
                     <PanButton style={styles.btnShort} name="btnShort1" onPress={this._onStartPractice.bind(this)}>

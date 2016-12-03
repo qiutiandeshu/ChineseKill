@@ -24,6 +24,15 @@ export default class PushNotification extends Component {
     };
     static defaultProps = {};
 
+    componentWillMount() {
+        if(app.storagePush){
+            this.setState({
+                setTime:new Date(app.storagePush.setTime),
+                blnSwitch:app.storagePush.blnSwitch,
+            })
+        }
+    }
+
     componentWillUpdate(nProps,nState) {
         
     }
@@ -79,6 +88,10 @@ export default class PushNotification extends Component {
             this.scheduleLocalNotification(userInfo, this.state.setTime, "亲,开始学习哟!")
             //设置推送1
         }
+        app.savePush({
+            setTime:this.state.setTime,
+            blnSwitch:!this.state.blnSwitch
+        })
         this.setState({blnSwitch: !this.state.blnSwitch})
     }
 
@@ -90,8 +103,9 @@ export default class PushNotification extends Component {
             alertAction: '这是alertAction的信息',
             repeatInterval: 'day',
             applicationIconBadgeNumber: 1,
-            userInfo: 0,
+            userInfo: userInfo,
         }
+        console.log("看看这个推送消息详情:",notification)
         PushNotificationIOS.scheduleLocalNotification(notification)
     }
 

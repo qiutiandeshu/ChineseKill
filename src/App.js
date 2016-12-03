@@ -5,7 +5,7 @@
 import React, {Component} from 'react'
 import {
     View, Text, Navigator, StyleSheet, StatusBar,
-    AppState, AsyncStorage, AlertIOS, Platform
+    AppState, AsyncStorage, AlertIOS, Platform, PushNotificationIOS
 } from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, SyllableData} from './AppStyles'
 import Storage from 'react-native-storage'
@@ -55,6 +55,7 @@ export default class App extends Component {
         this.storageCardInfo = null;//卡片情况
         this.storageReview = null;//用户复习
         this.storageSys = null;//一些系统状态的保存 如:是否下载完音乐文件
+        this.storagePush = null;//关于本地推送信息的保存
         /*-----------本地存储数据有关的变量 End--------------*/
 
         /*------------------RNSound Start-------------------------------*/
@@ -83,6 +84,7 @@ export default class App extends Component {
         this.initCardInfoByStorage();
         this.initReviewByStorage()
         this.initSysByStorage()
+        this.initPushByStorage()
         //驰声接口
         this.chivox = Chivox.Instance();//调用初始化静态函数
         //这里需要设置回调函数，评测回调，录音音量回调，录音播放回调（播放进度）
@@ -95,13 +97,31 @@ export default class App extends Component {
         this.twLogin.SetCallback(this.twCallback.bind(this));
         this.ggLogin = GGLogin.Instance();
         this.ggLogin.SetCallback(this.ggCallback.bind(this));
+        //推送消息
+        PushNotificationIOS.addEventListener('register', this.onRegister)
+        PushNotificationIOS.addEventListener('registrationError', this.onRegistrationError)
+        PushNotificationIOS.addEventListener('notification', this.getNotification)
+        PushNotificationIOS.addEventListener('localNotification', this.getLocalNotification)
+        PushNotificationIOS.setApplicationIconBadgeNumber(0)
+        PushNotificationIOS.getInitialNotification().then(permis=> {
+            console.log("getInitial", permis);//点击推送消息进入的APP
+            if (permis) {
+                //..PushNotificationIOS.setApplicationIconBadgeNumber(0)
+            }
+        }).catch(error=> {
+            console.log("getInitialError:", error)
+        });
     }
 
     componentDidMount() {
         //..this.logDeviceInfo(); 打印设备信息
         AppState.addEventListener('change', this._handleAppStateChange.bind(this));
         global.UB = new UserBehavior(this, require('react-native-device-info'));
-        //this.removeAllStorageData()
+        PushNotificationIOS.requestPermissions().then(permissions=> {
+            console.log("RequestPermissions:", permissions)
+        }).catch(error => {
+            console.log("RequestPerError:", error)
+        })
     }
 
     componentWillUnMount() {
@@ -121,11 +141,17 @@ export default class App extends Component {
         this.twLogin = null;
         GGLogin.Remove();
         this.ggLogin = null;
+        
+        //消息推送
+        PushNotificationIOS.removeEventListener('register', this.onRegister)
+        PushNotificationIOS.removeEventListener('registrationError', this.onRegistrationError)
+        PushNotificationIOS.removeEventListener('notification', this.getNotification)
+        PushNotificationIOS.removeEventListener('localNotification', this.getLocalNotification)
     }
 
     addLoadingIndex = ()=> {
         this.loadIndex += 1
-        if (this.loadIndex == 5) {
+        if (this.loadIndex == 6) {
             this.setState({
                 blnLoading: false,
             })
@@ -588,6 +614,34 @@ export default class App extends Component {
             expires: expires
         })
     }
+
+    initPushByStorage = ()=>{
+        this.storage.load({key:'Push'}).then(
+            ret=>{
+                console.log("读取到Push",ret)
+                this.storagePush = ret
+                this.addLoadingIndex()
+            }
+        ).catch(err=>{
+            switch (err.name) {
+                case 'NotFoundError'://没有找到相关数据
+                    console.log("没有找到Push相关数据")
+                    break;
+                case 'ExpiredError'://相关数据已过期
+                    console.log("Push数据过期了")
+                    break;
+            }
+            this.addLoadingIndex()
+        })
+    }
+
+    savePush = (saveData, expires = null)=>{
+        this.storage.save({
+            key: 'Push',
+            rawData: saveData,
+            expires: expires
+        })
+    }
     
     initReviewByStorage = ()=> {
         this.storage.load({key: 'Review'}).then(
@@ -1004,6 +1058,51 @@ export default class App extends Component {
     }
     /*------------------RNSound end-------------------------------*/
 
+    /*-----------------推送消息 Start-----------*/
+    onRegister = (deviceToken)=> {
+        AlertIOS.alert(
+            'Register回调',
+            `Device Token:${deviceToken}`,
+            [{
+                text: '应该上传Token',
+                onPress: null,
+            }]
+        )
+    }
+
+    onRegistrationError = (error)=> {
+        AlertIOS.alert(
+            'RegistrationError回调',
+            `Error (${error.code}): ${error.message}`,
+        )
+    }
+
+    getNotification = (notification)=> {
+        AlertIOS.alert(
+            '获得远程推送回调',
+            '消息内容:' + notification.getMessage(),
+            [{
+                text: '收到',
+                onPress: null,
+            }]
+        )
+    }
+
+    getLocalNotification = (notification)=> {
+        console.log("Get Local Notification");
+        PushNotificationIOS.setApplicationIconBadgeNumber(0)
+        /*AlertIOS.alert(
+            '获得本地推送回调',
+            '消息内容:' + notification.getMessage(),
+            //`消息内容:${notification.getMessage()}`,
+            [{
+                text: '收到',
+                onPress: null,
+            }]
+        )*/
+    }
+    /*-----------------推送消息 End-----------*/
+    
     getLessonDate = ()=> {
         this.allLessonData[0] = require('../data/lessons/lesson1.json')
         this.allLessonData[1] = require('../data/lessons/lesson2.json')

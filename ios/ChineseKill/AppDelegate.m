@@ -15,7 +15,7 @@
 #import <Fabric/Fabric.h>
 #import <TwitterKit/TwitterKit.h>
 #import <GoogleSignIn/GoogleSignIn.h>
-
+#import "RCTPushNotificationManager.h"
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -47,6 +47,39 @@
   [self.window makeKeyAndVisible];
   return YES;
 }
+
+
+// Required to register for notifications 需要注册通知
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+  [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
+}
+
+// Required for the register event. 注册事件所需
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+  [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+// Required for the registrationError event. 注册错误事件需要
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+  [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
+}
+
+// Required for the notification event. 通知事件需要。
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+{
+  [RCTPushNotificationManager didReceiveRemoteNotification:notification];
+}
+
+// Required for the localNotification event. 本地通知事件需要。
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+  [RCTPushNotificationManager didReceiveLocalNotification:notification];
+}
+
+
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [FBSDKAppEvents activateApp];
 }
@@ -60,5 +93,7 @@
                                                      annotation:annotation];
   BOOL gg =[[GIDSignIn sharedInstance]handleURL:url sourceApplication:sourceApplication annotation:annotation];
   return fb || gg;
+  
+  
 }
 @end

@@ -5,7 +5,7 @@ import React, {Component, PropTypes} from 'react'
 import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 
-import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView} from 'react-native'
+import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, ListView, AlertIOS} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import QuestionOne_XZ from '../Component/QuestionOne_XZ'
 import QuestionTwo_TK from '../Component/QuestionTwo_TK'
@@ -232,23 +232,41 @@ export default class S_Practice extends Component {
                       style={[styles.smallBlock,{width: parseInt((ScreenWidth*0.8) / this.questionCount),backgroundColor:this.state.answerColor[i]}]}/>
             )
         }
-        return (
-            <View >
-                <View style={styles.top}>
-                    <PanButton name="btnBackView" onPress={()=>{this.props.navigator.pop()}}>
-                        <Icon name="times" size={IconSize}/>
-                    </PanButton>
+        if(this.props.blnGate){
+            return (
+                <View >
+                    <View style={styles.top}>
+                        <PanButton name="btnBackView" onPress={()=>{this.props.navigator.pop()}}>
+                            <Icon name="times" size={IconSize}/>
+                        </PanButton>
 
-                    <View style={{flexDirection:'row'}}>
-                        {lifeIcon}
+                        <View style={{flexDirection:'row'}}>
+                            {lifeIcon}
+                        </View>
+                        <Text style={UtilStyles.fontNormal}>{this.state.score}</Text>
                     </View>
-                    <Text style={UtilStyles.fontNormal}>{this.state.score}</Text>
+                    <View style={{flexDirection:'row',marginTop:MinUnit}}>
+                        {answerBlock}
+                    </View>
                 </View>
-                <View style={{flexDirection:'row',marginTop:MinUnit}}>
-                    {answerBlock}
+            );
+        }else{
+            return (
+                <View >
+                    <View style={styles.top}>
+                        <PanButton name="btnBackView" onPress={()=>{this.props.navigator.pop()}}>
+                            <Icon name="times" size={IconSize}/>
+                        </PanButton>
+                        <Text style={UtilStyles.fontNormal}>REVIEW</Text>
+                        <View/>
+                    </View>
+                    <View style={{flexDirection:'row',marginTop:MinUnit}}>
+                        {answerBlock}
+                    </View>
                 </View>
-            </View>
-        );
+            );
+        }
+
     }
 
     renderBtnCheck = ()=> {//显示答题页面中的check按钮
