@@ -76,20 +76,28 @@ class Box extends Component {
       callback('fail');
       return;
     }
-    webData.Instance().getWebFile(name, pyPath, pyUrl+name, 'none', (result)=>{
-      if (result.error){
+    var param = {
+      name: name,
+      path: pyPath,
+      uri: pyUrl+name,
+      type: "none",
+      over: false,
+    };
+    webData.Instance().getWebFile(param, (result)=>{
+      if (result.code == webData.CODE_ERROR){
         callback('fail');
-      } else {
+        this.blnPlayAudio = false;
+      } else if (result.code == webData.CODE_DOWNLOAD){
         app.onPlaySound('pyAudio/'+name, (result)=>{
-          console.log('播放声音 '+name);
-          console.log(result);
           callback(result);
-          // if (result.type == 'firstPlay'){
-          // }else if (result.type == 'cTime'){
-          // }else if (result.type == 'stop'){
-          // }else if (result.type == 'playEnd'){
-          // }else if (result.type == 'initError'){
-          // }
+          if (result.type == 'firstPlay'){
+            this.blnPlayAudio = true;
+          }else if (result.type == 'cTime'){
+            this.blnPlayAudio = true;
+          }else if (result.type == 'stop'){
+          }else if (result.type == 'playEnd'){
+          }else if (result.type == 'initError'){
+          }
         }, 'play', {mainPath: 'CACHES'});
       }
     });
@@ -876,7 +884,7 @@ class FlashCardBox extends Box {
     if (this.state.status == 'menu') {
       this.hidden();
     } else {
-      if (this.testObj) {
+      if (this.testObj && this.blnPlayAudio) {
         app.stopSound('pyAudio/'+this.testObj.play, 'play');
       }
       Animated.timing(
@@ -954,14 +962,9 @@ class FlashCardBox extends Box {
     if (this.blnAuto) {
         if (this.reviewList.length != 0) {
           var obj = this.reviewList[this.testIndex];
-          this.timer = setTimeout(()=>{
-            this.playSound(obj.play);
-          },100);
+          this.playSound(obj.play);
         }
       }
-  }
-  componentWillUnmount() {
-    this.timer && clearTimeout(this.timer);
   }
   getReviewList() {
     var _reviewList = [];
