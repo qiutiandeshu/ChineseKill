@@ -174,7 +174,7 @@ export default class DrawWord extends Component {
     var uniName = Utils.Utf8ToUnicode(name);
     uniName = uniName.replace('\\u', '') + '.json';
     console.log(this.props.data.path, uniName);
-    webData.Instance().deleteFile(this.props.data.path + '/' + uniName, null);
+    // webData.Instance().deleteFile(this.props.data.path + '/' + uniName, null);
     var param={
       name: uniName,//文件名，带后缀
       path: this.props.data.path,//文件路径
