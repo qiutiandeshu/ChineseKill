@@ -104,9 +104,7 @@ export default class DrawWord extends Component {
     }
   }
   componentDidMount() {
-    if (this.props.data){
-      this.checkData();
-    }
+    this.checkData();
   }
   componentWillUnmount() {
     this._blinkTime && clearTimeout(this._blinkTime);
@@ -122,11 +120,26 @@ export default class DrawWord extends Component {
     return false;
   }
   checkData(){
+    if (this.props.data == null || this.props.data == undefined){
+      this.blnDownload = false;
+    }
     if (Utils.isArray(this.props.data)){
       this.updateData(this.props.data);
     }else{
       this.downloadData();
     }
+  }
+  setAlert(message){
+    Alert.alert(
+      '提示',
+      message,
+      [
+        {text: 'OK', onPress: () => {
+          this.blnDownload = false;
+          this.setUpdate();
+        }},
+      ]
+    );
   }
   downloadData(){
     this.blnDownload = true;
@@ -143,16 +156,7 @@ export default class DrawWord extends Component {
     };
     webData.Instance().getWebFile(param, (result)=>{
       if (result.code == webData.CODE_ERROR){
-        Alert.alert(
-          '提示',
-          '错误：未找到文件或者服务器没有数据，' + result.error,
-          [
-            {text: 'OK', onPress: () => {
-              this.blnDownload = false;
-              this.setUpdate();
-            }},
-          ]
-        );
+        this.setAlert('错误：未找到文件或者服务器没有数据，' + result.error);
       }else if (result.code == webData.CODE_READFILE) {
         console.log(result.data);
         var data = JSON.parse(result.data);
