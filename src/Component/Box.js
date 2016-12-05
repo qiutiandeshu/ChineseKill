@@ -327,7 +327,7 @@ class LoginBox extends Box {
 		return (
 			<PopupBox ref={'PopupBox'} name={'Sign In / Sign Up'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)} hiddenAnimatedEnd={this.hiddenAnimatedEnd.bind(this)} hiddenAnimatedEnd={this.hiddenEnd.bind(this)}>
 				<PanView name={'v_login'} style={styles.Login}>
-	        <IconInput name={'p_login_email'} iconName={'envelope'} placeholder={'Email'} clearButtonMode={"unless-editing"} onChangeText={this.onEmailChange.bind(this)} />
+	        <IconInput name={'p_login_email'} iconName={'envelope'} placeholder={'Email'} clearButtonMode={"always"} onChangeText={this.onEmailChange.bind(this)} />
 	        <IconInput name={'p_login_password'} iconName={'lock'} placeholder={'You password'} secureTextEntry={true} onChangeText={this.onPasswordChange.bind(this)} />
           <PanButton name={'b_signin'} style={styles.button} onPress={this.onSignIn.bind(this)} >
             <Text style={[styles.buttonWord, {color: '#FFFFFF'}]}>Sign In</Text>
@@ -523,7 +523,7 @@ class ForgetBox extends Box {
     return (
       <PopupBox ref={'PopupBox'} name={'Forget Password'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)}>
         <PanView name={'v_login'} style={styles.Login}>
-          <IconInput name={'p_forget_password'} iconName={'envelope'} placeholder={'Email'}  clearButtonMode={"unless-editing"} />
+          <IconInput name={'p_forget_password'} iconName={'envelope'} placeholder={'Email'}  clearButtonMode={"always"} />
           <PanButton name={'b_confirm'} style={styles.button} onPress={this.onConfirm.bind(this)} >
             <Text style={[styles.buttonWord, {color: '#FFFFFF'}]}>Confirm</Text>
           </PanButton>
@@ -554,7 +554,7 @@ class SignUpBox extends Box {
     return (
       <PopupBox ref={'PopupBox'} name={'Sign Up'} leftIconName={'close'} onLeftPress={this.closeBox.bind(this)} hiddenAnimatedEnd={this.hiddenEnd.bind(this)} >
         <PanView name={'v_login'} style={styles.Login}>
-          <IconInput name={'p_signup_email'} iconName={'envelope'} placeholder={'Email'} onChangeText={this.onEmailChange.bind(this)} clearButtonMode={"unless-editing"} />
+          <IconInput name={'p_signup_email'} iconName={'envelope'} placeholder={'Email'} onChangeText={this.onEmailChange.bind(this)} clearButtonMode={"always"} />
           <IconInput name={'p_signup_lock1'} iconName={'lock'} placeholder={'At least six characters required'} secureTextEntry={true} onChangeText={this.onPassword1.bind(this)} />
           <IconInput name={'p_signup_lock2'} iconName={'lock'} placeholder={'Confirm New Password'} secureTextEntry={true} onChangeText={this.onPassword2.bind(this)} />
           <PanButton name={'b_signup'} style={styles.button} onPress={this.onSignUp.bind(this)}>
