@@ -111,7 +111,7 @@ export default class DrawWord extends Component {
     this._autoWrite && clearInterval(this._autoWrite);
   }
   componentWillUpdate(nextProps, nextState) {
-    if (nextProps.data != this.props.data){
+    if (nextProps.data != this.props.data || (!Utils.isArray(this.props.data) && this.props.data.uri != nextProps.data.uri)){
       this.checkData();
     }
     if (nextProps != this.props || nextState != this.state){
@@ -122,11 +122,12 @@ export default class DrawWord extends Component {
   checkData(){
     if (this.props.data == null || this.props.data == undefined){
       this.blnDownload = false;
-    }
-    if (Utils.isArray(this.props.data)){
-      this.updateData(this.props.data);
     }else{
-      this.downloadData();
+      if (Utils.isArray(this.props.data)){
+        this.updateData(this.props.data);
+      }else{
+        this.downloadData();
+      }
     }
   }
   setAlert(message){
@@ -142,6 +143,10 @@ export default class DrawWord extends Component {
     );
   }
   downloadData(){
+    if (this.props.data.uri == null){
+      console.log('传递的网址不正确');
+      return;
+    }
     this.blnDownload = true;
     var name = this.props.data.name;
     var uniName = Utils.Utf8ToUnicode(name);
