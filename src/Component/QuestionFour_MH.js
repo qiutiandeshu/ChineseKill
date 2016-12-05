@@ -9,6 +9,7 @@ import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, 
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import DrawWord from '../Common/DrawWord'
+import WB from '../Utils/GetWebData'
 var itemHeight = MinUnit * 7;
 var curWidth = parseInt(ScreenHeight * 0.48);
 export default class QuestionFour_MH extends Component {
@@ -17,7 +18,7 @@ export default class QuestionFour_MH extends Component {
         this.state = {
         };
         this.drawWord = null;
-        this.initWriteQuestion()
+        this.initWriteQuestion(this.props.questionData.Q_Question)
     }
 
     static propTypes = {
@@ -26,8 +27,9 @@ export default class QuestionFour_MH extends Component {
     };
     static defaultProps = {};
 
-    initWriteQuestion = ()=>{
-        let characterValue = this.props.questionData.Q_Question //..获取到要写的字
+    initWriteQuestion = (word)=>{
+
+        this.character = word//..获取到要写的字
         let scaleWidth = curWidth*0.8 / 400;
         let offsetXY = curWidth*0.2 / 2;
         this.blnAutoWrite = false;
@@ -35,22 +37,23 @@ export default class QuestionFour_MH extends Component {
         this.blnSeeBack = true;
         this.blnSeeLine = true;
 
-        let base = require('../../data/characters/不.json')
-        var jsonStr = JSON.stringify(base.character);
-        this.character = JSON.parse(jsonStr);
-        for(var i=0;i<this.character.length;i++){
+        //let base = require('../../data/characters/不.json')
+        //var jsonStr = JSON.stringify(base.character);
+        //this.character = JSON.parse(jsonStr);
+
+        /*for(var i=0;i<this.character.length;i++){
             var points = this.character[i].points;
             for(var k=0;k<points.length;k++){
                 points[k].x = points[k].x * scaleWidth + offsetXY;
                 points[k].y = points[k].y * scaleWidth + offsetXY;
             }
-        }
+        }*/
     }
 
     componentWillUpdate(nProps,nState) {
         if(nProps.questionData != this.props.questionData){
             console.log("更新了写字题")
-            this.initWriteQuestion()
+            this.initWriteQuestion(nProps.questionData.Q_Question)
             console.log("blnAutoWrite",this.blnAutoWrite)
             if (this.blnSeeBack){
                 this.setSeeBack(this.blnSeeBack);
@@ -90,7 +93,7 @@ export default class QuestionFour_MH extends Component {
     }
 
     renderContents = ()=> {
-        console.log('11111')
+        console.log('uri:','http://192.169.1.19:8080/ChineseSkill/miaohongSrc/'+this.character)
         return (
             <View style={styles.bodyCenterView}>
                 <View style={styles.bodyMiddleLeftView}>
@@ -111,7 +114,10 @@ export default class QuestionFour_MH extends Component {
                 </View>
                 <DrawWord ref={(r)=>{this.drawWord = r}}
                           style={styles.bodyMiddleCenterView}
-                          data={this.character}
+                          data={{path:WB.CACHES + 'mhJson',name:this.character,
+                            uri:'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/',
+                          }}
+                          firstPlay={true}
                           curWidth={curWidth}
                           blnTouch={true}
                           writeOver={this.writeOver.bind(this)}
