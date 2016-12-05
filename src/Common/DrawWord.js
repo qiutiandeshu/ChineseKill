@@ -110,11 +110,17 @@ export default class DrawWord extends Component {
     this._blinkTime && clearTimeout(this._blinkTime);
     this._autoWrite && clearInterval(this._autoWrite);
   }
-  componentWillUpdate(nextProps, nextState) {
-    if (nextProps.data != this.props.data || (!Utils.isArray(this.props.data) && this.props.data.uri != nextProps.data.uri)){
+  componentDidUpdate(prevProps, prevState) {
+    var str1 = JSON.stringify(prevProps);
+    var str2 = JSON.stringify(this.props);
+    if (str1 != str2){
       this.checkData();
     }
-    if (nextProps != this.props || nextState != this.state){
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    var str1 = JSON.stringify(nextProps);
+    var str2 = JSON.stringify(this.props);
+    if (str1 != str2 || nextState != this.state){
       return true;
     }
     return false;
@@ -794,6 +800,7 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   render() {
+    console.log('render DrawWord '+this.props.data.name);
     var arrayArrow = null;
     if (this.blnShowArrow && this.showArrow){
       for(var i=0;i<this.showArrow.length;i++){

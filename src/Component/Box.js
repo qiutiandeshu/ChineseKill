@@ -1569,9 +1569,11 @@ class CardBox extends Box {
     }
   }
   renderCharacter() {
+    var _name = null;
     if (this.selectData) {
-      console.log(this.selectData.character);
+      _name = this.selectData.character;
     }
+    console.log('renderCharacter: '+_name);
     return (
       <PanView name={'v_characterBox'} style={styles.character}>
         <PanView name={'v_characterBox_c'} style={[styles.c_view, ]}>
@@ -1579,7 +1581,7 @@ class CardBox extends Box {
             curWidth={MinUnit*20} blnTouch={false} fillArray={['#62DC51', '#DC9069', '#8D7ADC']} 
             data={{
             path: webData.CACHES + '/mhJson',
-            name: '你',
+            name: _name,
             uri: 'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/'}}
             showAll={true} />
           <View style={[{height: MinUnit*3, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }]} >
