@@ -104,9 +104,7 @@ export default class DrawWord extends Component {
     }
   }
   componentDidMount() {
-    if (Utils.isArray(this.props.data)){
-      this.updateData(this.props.data);
-    }else{
+    if (this.props.data){
       this.checkData();
     }
   }
@@ -114,27 +112,34 @@ export default class DrawWord extends Component {
     this._blinkTime && clearTimeout(this._blinkTime);
     this._autoWrite && clearInterval(this._autoWrite);
   }
+  componentWillUpdate(nextProps, nextState) {
+    if (nextProps.data != this.props.data){
+      this.checkData();
+    }
+    if (nextProps != this.props || nextState != this.state){
+      return true;
+    }
+    return false;
+  }
   checkData(){
-    // var name = '八';
-    // var uniName = Utils.Utf8ToUnicode(name);
-    // uniName = uniName.replace('\\u', '');
-    // console.log('uniName', uniName);
-    // var uri = 'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/' + uniName + '.json';
-    // wd.Instance().getWebFile(uniName + '.json', wd.DOCUMENT, uri, 'utf8', (result)=>{
-    //   console.log(result);
-    // });
-
+    if (Utils.isArray(this.props.data)){
+      this.updateData(this.props.data);
+    }else{
+      this.downloadData();
+    }
+  }
+  downloadData(){
     this.blnDownload = true;
     var name = this.props.data.name;
     var uniName = Utils.Utf8ToUnicode(name);
     uniName = uniName.replace('\\u', '') + '.json';
     console.log(uniName);
     var param={
-      name:uniName,//文件名，带后缀
-      path:this.props.data.path,//文件路径
-      uri:this.props.data.uri+uniName,//下载地址，如果为空，则返回错误，文件不存在
-      type:'utf8',//打开方式，‘utf8’则返回文件数据，其他则返回文件路径
-      over:false,//是否覆盖，默认是不覆盖，如果是true，则直接下载文件覆盖原有文件
+      name: uniName,//文件名，带后缀
+      path: this.props.data.path,//文件路径
+      uri: this.props.data.uri+uniName,//下载地址，如果为空，则返回错误，文件不存在
+      type: 'utf8',//打开方式，‘utf8’则返回文件数据，其他则返回文件路径
+      over: false,//是否覆盖，默认是不覆盖，如果是true，则直接下载文件覆盖原有文件
     };
     webData.Instance().getWebFile(param, (result)=>{
       if (result.code == webData.CODE_ERROR){
