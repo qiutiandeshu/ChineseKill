@@ -291,7 +291,7 @@ export default class S_Home extends Component {
         let canPress = true
         if(chapterStates[0] == 'locked'){
             color = 'gray'
-            canPress = false
+            //..canPress = false
         }
         let passCount = 0
         for(let i=0;i<chapterStates.length;i++){
@@ -300,7 +300,7 @@ export default class S_Home extends Component {
             }
         }
         const uri = "http://192.169.1.19:8080/ChineseSkill/Icon/"+lessonIcon
-        
+        console.log('canPress: '+canPress);
         return (
             <PanButton  name={"btn"+lessonTitle} style={styles.card} disabled={!canPress}
                         onPress={this._onPressCard.bind(this,this.baseProps.allLessonData[rowID],rowData,parseInt(rowID))}>

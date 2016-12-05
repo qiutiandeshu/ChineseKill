@@ -23,43 +23,7 @@ function SocketLink(app, _callback) {
     app.ws.onmessage = (e) => {
       // a message was received
       var obj = JSON.parse(e.data);
-      if (obj.from == 'Login') {
-        if (obj.msg == '成功') {
-          var bln = false;
-          if (app.storageUserInfo == null) {
-            bln = true;
-          } else {
-            if (app.storageUserInfo.userid != obj.data.userid) {
-              bln = true;
-            } else if (app.storageUserInfo.time < obj.data.time) {
-              bln = true;
-            }
-          }
-          if (bln) {
-            if (obj.data.Review != null) {
-              app.storageReview = JSON.parse(obj.data.Review);
-              app.saveReview(app.storageReview);
-            } else {
-              app.storageReview = null;
-              app.initReviewByStorage();
-            }
-            if (obj.data.CardInfo != null) {
-              app.storageCardInfo = JSON.parse(obj.data.CardInfo);
-              app.saveCardInfoMing();
-            } else {
-              app.storageCardInfo = null;
-              app.initCardInfoByStorage();
-            }
-            if (obj.data.Learning != null) {
-              var _learning = JSON.parse(obj.data.Learning);
-              app.noneLearningStorage(_learning);
-            } else {
-              app.noneLearningStorage([]);
-            }
-            Home.Refresh();
-          }
-        }
-      }
+      this.updateUserInfo(obj);
       if (this.fromServer) {
       	this.fromServer(obj);
       	this.fromServer = null;
@@ -71,30 +35,62 @@ function SocketLink(app, _callback) {
       this.server_k = SERVER_K.CLOSE;
       // console.log('socket close');
       this.callback('close');
-      if (this.fromServer) {
-        var json = {
-          from: 'error',
-          msg: '失败',
-        };
-        this.fromServer(json);
-        this.fromServer = null;
-      }
     };
     app.ws.onerror = (e) => {
       // an error occurred
       this.server_k = SERVER_K.ERROE;
       // console.log('socket error');
       this.callback('error');
-      if (this.fromServer) {
-        var json = {
-          from: 'error',
-          msg: '失败',
-        };
-        this.fromServer(json);
-        this.fromServer = null;
-      }
     };
 	}
+  /**
+   * [updateUserInfo 用户登陆后下载用户存档]
+   * @param  {[type]} json [server返回的json数据]
+   * @return {[type]}      [description]
+   */
+  this.updateUserInfo = function(obj) {
+    if (obj.from == 'Login') {
+      if (obj.msg == '成功') {
+        var bln = false;
+        if (app.storageUserInfo == null) {
+          bln = true;
+        } else {
+          if (app.storageUserInfo.userid != obj.data.userid) {
+            bln = true;
+          } else if (app.storageUserInfo.time < obj.data.time) {
+            bln = true;
+          }
+        }
+        if (bln) {
+          if (obj.data.Review != null) {
+            app.storageReview = JSON.parse(obj.data.Review);
+            app.saveReview(app.storageReview);
+          } else {
+            app.storageReview = null;
+            app.initReviewByStorage();
+          }
+          if (obj.data.CardInfo != null) {
+            app.storageCardInfo = JSON.parse(obj.data.CardInfo);
+            app.saveCardInfoMing();
+          } else {
+            app.storageCardInfo = null;
+            app.initCardInfoByStorage();
+          }
+          if (obj.data.Learning != null) {
+            var _learning = JSON.parse(obj.data.Learning);
+            app.noneLearningStorage(_learning);
+          } else {
+            app.noneLearningStorage([]);
+          }
+          Home.Refresh();
+        }
+      }
+    }
+  }
+  /**
+   * [fromServerFail 联网超时提示联网失败（10000毫秒后提示）]
+   * @return {[type]} [description]
+   */
   this.fromServerFail = function() {
     this.timer = setTimeout(()=>{
       if (this.fromServer) {
@@ -108,6 +104,11 @@ function SocketLink(app, _callback) {
       }
     }, 10000);
   }
+
+  /**
+   * [stopLink 停止socket连接]
+   * @return {[type]} [description]
+   */
 	this.stopLink = function() {
 		app.ws.close();
 	}

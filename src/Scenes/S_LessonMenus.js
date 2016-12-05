@@ -196,6 +196,7 @@ class LessonCard extends Component {
         let text = chapterState == "unlocked"?"START":"LOCKED"
         let bgColor = chapterState == "unlocked"?'#00BCD4':'#ADADAD'
         let canPress = chapterState == "unlocked"?true:false
+        canPress = true
         return (
             <PanButton name = 'btnLong'style={[styles.btnLong,{backgroundColor:bgColor}]}
                        onPress={this._onStartPractice.bind(this)} disabled={!canPress}>
