@@ -62,6 +62,7 @@ export default class DrawWord extends Component {
     this.delayPlay = this.props.autoDelay;
     this.arrLine = [];
     this.showArrow = [];
+    this.tempDrawLine = null;
     this.blnDownload = false;
     this.isData = false;
     this.createBackLine();
@@ -166,11 +167,13 @@ export default class DrawWord extends Component {
       console.log('传递的路径不正确');
       return;
     }
+    this.resetBaseData();
     this.blnDownload = true;
     var name = this.props.data.name;
     var uniName = Utils.Utf8ToUnicode(name);
     uniName = uniName.replace('\\u', '') + '.json';
-    console.log(uniName);
+    console.log(this.props.data.path, uniName);
+    webData.Instance().deleteFile(this.props.data.path + '/' + uniName, null);
     var param={
       name: uniName,//文件名，带后缀
       path: this.props.data.path,//文件路径
@@ -182,7 +185,7 @@ export default class DrawWord extends Component {
       if (result.code == webData.CODE_ERROR){
         this.setAlert('错误：未找到文件或者服务器没有数据，' + result.error);
       }else if (result.code == webData.CODE_READFILE) {
-        console.log(result.data);
+        // console.log(result.data);
         var data = JSON.parse(result.data);
         this.blnDownload = false;
         this.updateData(data.character);
@@ -249,6 +252,19 @@ export default class DrawWord extends Component {
       }
     }
   }
+  resetBaseData(){
+    this.drawIdx = -1;
+    this.minDisStart = Number.MAX_VALUE;
+    this.minDisEnd = Number.MAX_VALUE;
+    this.startIdx = -1;
+    this.endIdx = -1;
+    this.max_Step = 0;
+    this.now_Step = 0;
+    this.tempDrawData = {};
+    this.tempDrawLine = null;
+    this.showPoints = [];
+    this.showArrow = [];
+  }
   InitWord(data){
     if (this.props.curWidth != 400){
       var scaleWidth = this.props.curWidth*0.9 / 400;//变成原来的0.8倍
@@ -264,17 +280,7 @@ export default class DrawWord extends Component {
       }
     }
     this.data = data;
-    this.drawIdx = -1;
-    this.minDisStart = Number.MAX_VALUE;
-    this.minDisEnd = Number.MAX_VALUE;
-    this.startIdx = -1;
-    this.endIdx = -1;
-    this.max_Step = 0;
-    this.now_Step = 0;
-    this.tempDrawData = {};
-    this.tempDrawLine = null;
-    this.showPoints = [];
-    this.showArrow = [];
+    this.resetBaseData();
     this.loadWord();
   }
   loadWord(){
@@ -808,7 +814,7 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   render() {
-    console.log('render DrawWord '+this.props.data.name);
+    // console.log('render DrawWord '+this.props.data.name);
     var arrayArrow = null;
     if (this.blnShowArrow && this.showArrow){
       for(var i=0;i<this.showArrow.length;i++){

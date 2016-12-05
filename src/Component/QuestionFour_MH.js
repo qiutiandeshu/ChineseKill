@@ -114,7 +114,7 @@ export default class QuestionFour_MH extends Component {
                 </View>
                 <DrawWord ref={(r)=>{this.drawWord = r}}
                           style={styles.bodyMiddleCenterView}
-                          data={{path:WB.CACHES + 'mhJson',name:this.character,
+                          data={{path:WB.CACHES + '/mhJson',name:this.character,
                             uri:'http://192.169.1.19:8080/ChineseSkill/miaohongSrc/',
                           }}
                           firstPlay={true}
