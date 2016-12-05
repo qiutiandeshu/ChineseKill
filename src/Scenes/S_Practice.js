@@ -448,6 +448,7 @@ export default class S_Practice extends Component {
             }else{
                 AlertIOS.alert('你都全对了还嘚瑟啥')
             }
+            return;
         }
         console.log("看看数据真面貌",data)
         app.setNextRouteProps({

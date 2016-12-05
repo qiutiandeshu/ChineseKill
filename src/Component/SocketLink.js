@@ -101,6 +101,7 @@ function SocketLink(app, _callback) {
         var json = {
           from: 'error',
           msg: '失败',
+          data: '网络连接失败，请稍候重试'
         };
         this.fromServer(json);
         this.fromServer = null;

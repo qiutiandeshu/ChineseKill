@@ -145,7 +145,7 @@ export default class QuestionFive_PC extends Component {
                 <PanButton name="btnRecord" onPress= {this.onPressRecord.bind(this)}
                            style={[styles.bigCircle,{backgroundColor:'#00BDD3'}]}>
                     <Progress.Circle  thickness={MinUnit*0.5} borderWidth={0} style={{position:'absolute',left:0,top:0}}
-                                      progress={Number(this.state.volumProgress)} size={IconSize * 2 + MinUnit * 2} color="#1BA2FF"/>
+                                      progress={Number(this.state.volumProgress)} size={IconSize * 2 + MinUnit * 2} color="#191970"/>
                     <Icon name="microphone" style={{backgroundColor:'#00000000'}}  size={IconSize*2} color="white"/>
                 </PanButton >
                 <PanButton name="btnPlayRecord" style={[styles.smallCircle]}

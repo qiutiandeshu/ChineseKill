@@ -399,22 +399,14 @@ class LoginBox extends Box {
               blnWait: false,
             });
         }else if (data.code == TWLogin.CB_CODE_LOGIN){
-            this.setState({
-              blnWait: false,
-            });
-            this.hidden();
-            HomeMenuLeft.userLogin();
         }else if (data.code == TWLogin.CB_CODE_LOGOUT){
         }else if (data.code == TWLogin.CB_CODE_EXPIRED){
-          if (data.result == TWLogin.EXPIRED_OUT){
-            }else {
-                this.setState({
-                  blnWait: false,
-                });
-                this.hidden();
-                HomeMenuLeft.userLogin();
-            }
         }else if (data.code == TWLogin.CB_CODE_GETINFO){
+          this.setState({
+            blnWait: false,
+          });
+          this.hidden();
+          HomeMenuLeft.userLogin();
         }
     });
   }
