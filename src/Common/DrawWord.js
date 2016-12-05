@@ -143,8 +143,16 @@ export default class DrawWord extends Component {
     );
   }
   downloadData(){
-    if (this.props.data.uri == null){
+    if (!this.props.data.uri){
       console.log('传递的网址不正确');
+      return;
+    }
+    if (!this.props.data.name){
+      console.log('传递的名字不正确');
+      return;
+    }
+    if (!this.props.data.path){
+      console.log('传递的路径不正确');
       return;
     }
     this.blnDownload = true;
