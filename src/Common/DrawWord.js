@@ -63,6 +63,7 @@ export default class DrawWord extends Component {
     this.arrLine = [];
     this.showArrow = [];
     this.tempDrawLine = null;
+    this.blinkLine = null;
     this.blnDownload = false;
     this.isData = false;
     this.createBackLine();
@@ -264,6 +265,7 @@ export default class DrawWord extends Component {
     this.tempDrawLine = null;
     this.showPoints = [];
     this.showArrow = [];
+    this.blinkLine = null;
   }
   InitWord(data){
     if (this.props.curWidth != 400){
@@ -429,9 +431,9 @@ export default class DrawWord extends Component {
         );
       }
       
-      // for(var k=0;k<character[i].dashPoints.length;k++){
+      // for(var k=0;k<character[i].orgPoints.length;k++){
       //   this.showPoints.push(
-      //     <View style={{
+      //     <View key={`${i}_${k}`} style={{
       //       position: 'absolute',
       //       left: character[i].dashPoints[k].x - 3,
       //       top: character[i].dashPoints[k].y - 3,
@@ -483,6 +485,12 @@ export default class DrawWord extends Component {
     loc5.pos = arg3.pos;
     loc5.org = arg3.org;
     arg1.push(loc5);
+    var num = arg3.num;
+    if (num && num>0){
+      for(var i=0;i<num;i++){
+        arg1.push(loc5);
+      }
+    }
 
     var dis = Utils.DisP(loc5, this.startPoint);
     if (dis < this.minDisStart) {
@@ -573,7 +581,6 @@ export default class DrawWord extends Component {
     this.arrLine[this.drawIdx] = (
       <Shape key={this.drawIdx} d={character[this.drawIdx].line} fill={this.tempDrawData.color}/>
     );
-    // this.tempDrawLine = null;
     this.setUpdate();
   }
   setRestart(){
@@ -604,9 +611,7 @@ export default class DrawWord extends Component {
     this.blnBlink = false;
     var character = this.data;
     var color = character[this.blinkIdx].color;
-    this.arrLine[this.blinkIdx] = (
-      <Shape key={this.blinkIdx} d={character[this.blinkIdx].line} fill={color}/>
-    );
+    this.blinkLine = null;
     this._blinkTime && clearTimeout(this._blinkTime);
     this.setUpdate();
   }
@@ -626,8 +631,8 @@ export default class DrawWord extends Component {
       this.blinkFrame++;
       var character = this.data;
       var color =  this.blinkFrame % 2 == 0 ? 'rgb(155,0,0)' : 'rgb(255,0,0)';
-      this.arrLine[this.blinkIdx] = (
-        <Shape key={this.blinkIdx} d={character[this.blinkIdx].line} fill={color}/>
+      this.blinkLine = (
+        <Shape d={character[this.blinkIdx].line} fill={color}/>
       );
       this.setUpdate();
     
@@ -796,7 +801,7 @@ export default class DrawWord extends Component {
           this.setUpdate();
           console.log('书写完毕!');
         }
-      }else if (this.nowPos == 0 && this.props.errorTip > 0){ //设置描红错误提示
+      }else if (this.props.errorTip > 0){ //设置描红错误提示
         this.wrongCount ++;
         if (this.wrongCount == this.props.errorTip){
           this.setStrokeBlink();
@@ -839,6 +844,7 @@ export default class DrawWord extends Component {
         <Surface ref={'lineView'} width={this.props.curWidth} height={this.props.curWidth}>
           {this.backLine}
           {arrayLine}
+          {this.blinkLine}
           {this.tempDrawLine}
           {arrayArrow}
         </Surface>

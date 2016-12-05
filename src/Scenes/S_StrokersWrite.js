@@ -247,6 +247,7 @@ export default class StrokersWrite extends Component {
           blnTouch={true}
           writeOver={this.writeOver.bind(this)}
           firstPlay={true}
+          errorTip={2}
         />
         <View style={styles.bodyMiddleRightView}>
           <ButtonIcon ref={(r)=>{this.refAutoWrite = r}}
