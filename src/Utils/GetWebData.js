@@ -36,8 +36,14 @@ export default class GetWebData{
     this.jobId = -1;
     this.filePath = '';
     this.callback = null;
+    this.timeOut = null;
+    this.downloadPath = null;
+    this.nowError = null;
+    this.timeoutTime = 9000;//默认下载超时时间，单位毫秒
   }
   remove(){
+    this.downloadPath = null;
+    this.clearDownloadTimeout();
     this.callback = null;
     if (this.jobId != -1){
       RNFS.stopDownload(this.jobId);
@@ -61,6 +67,7 @@ export default class GetWebData{
   static ERR_DOWNLOAD = 5;//下载错误
   static ERR_READFILE = 6;//读取文件错误
   static ERR_DELETEFILE = 7;//删除文件错误
+  static ERR_TIMEOUT = 8;//下载超时
 
   /*
   param={
@@ -142,6 +149,9 @@ export default class GetWebData{
   }
 
   /* 基本方法 */
+  setTimeoutTime(time){//设置下载超时时间
+    this.timeoutTime = time;
+  }
   toCallback(data){
     if (this.callback){
       this.callback(data);
@@ -232,17 +242,21 @@ export default class GetWebData{
       return;//如果正在下载，则不处理
     }
     this.isDownloading = true;
+    this.downloadPath = path;
+    this.setDownloadTimeout();
     var dl =RNFS.downloadFile({
       fromUrl: uri,
       toFile: path,
-      begin: this.downloadBegin.bind(this),
-      progress: this.downloadProgress.bind(this)
+      begin: this.downloadBegin.bind(this, callback),
+      progress: this.downloadProgress.bind(this, callback)
     });
     this.jobId = dl.jobId;
     this.filePath = path;
     dl.promise.then((response)=>{
+      this.clearDownloadTimeout();
       this.jobId = -1;
       this.isDownloading = false;
+      this.downloadPath = null;
       if (response.statusCode == 200){//下载成功
         callback && callback({
           code: GetWebData.CODE_DOWNLOAD,
@@ -259,32 +273,57 @@ export default class GetWebData{
       }
     })
     .catch((err)=>{
+      this.downloadPath = null;
+      this.clearDownloadTimeout();
       this.isDownloading = false;
       this.jobId = -1;
       this.deleteFile(path, null);
       console.log('下载文件错误', err);
-      callback && callback({
-        code: GetWebData.CODE_ERROR,
-        data: GetWebData.ERR_DOWNLOAD,
-        error: '下载错误'
-      })
+      if (this.nowError){
+        callback && callback(this.nowError);
+        this.nowError = null;
+      }else{
+        callback && callback({
+          code: GetWebData.CODE_ERROR,
+          data: GetWebData.ERR_DOWNLOAD,
+          error: '下载错误'
+        });
+      }
     });
   }
-  downloadBegin(result){
+  downloadBegin(callback, result){
     // this.downloadJobId = result.jobId;
-    this.toCallback({
+    callback && callback({
       code: GetWebData.CODE_DOWNLOAD_BEGIN,
       data: result,
       error: null,
     });
   }
-  downloadProgress(result){
+  downloadProgress(callback, result){
+    this.setDownloadTimeout();
     var progress = result.bytesWritten/result.contentLength;
     console.log('downloading: ' + progress);
-    this.toCallback({
+    callback && callback({
       code: GetWebData.CODE_DOWNLOAD_PROGRESS,
       data: result,
       error: null,
     });
+  }
+  setDownloadTimeout(){
+    this.clearDownloadTimeout();
+    this.timeOut = setTimeout(()=>{
+      if (this.jobId != -1){
+        RNFS.stopDownload(this.jobId);
+        this.nowError = {
+          code: GetWebData.CODE_ERROR,
+          data: GetWebData.ERR_TIMEOUT,
+          error: '下载超时',
+        };
+      }
+    }, this.timeoutTime);
+  }
+  clearDownloadTimeout(){
+    this.timeOut && clearTimeout(this.timeOut);
+    this.timeOut = null;
   }
 }
