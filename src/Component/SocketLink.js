@@ -115,7 +115,6 @@ function SocketLink(app, _callback) {
       time: timer,
       kind: kind,
     };
-    console.log(app.storageUserInfo);
     this.sendToSocket('New', 'helloworld', app.storageUserInfo);
     app.storageUserInfo.blnSign = true;
     app.saveUserInfo(app.storageUserInfo);

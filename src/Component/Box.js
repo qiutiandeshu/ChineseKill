@@ -361,14 +361,19 @@ class LoginBox extends Box {
       blnWait: true,
     });
     app.onLoginThird('facebook', (json)=>{
-      this.setState({
-        blnWait: false,
-      });
-
       var data = json.data;
       if (parseInt(data.code) == FBLogin.CB_Error){
+        this.setState({
+          blnWait: false,
+        });
       }else if (parseInt(data.code)== FBLogin.CB_Expired){
+        this.setState({
+          blnWait: false,
+        });
       }else if (parseInt(data.code) == FBLogin.CB_GetInfo){
+        this.setState({
+          blnWait: false,
+        });
         this.hidden();
         HomeMenuLeft.userLogin();
       }else if (parseInt(data.code) == FBLogin.CB_Login){
@@ -381,10 +386,6 @@ class LoginBox extends Box {
       blnWait: true,
     });
     app.onLoginThird('twitter', (json)=>{
-      this.setState({
-        blnWait: false,
-      });
-
       var data = json.data;
       if (data.code == TWLogin.CB_CODE_ERROR){
             var ret = JSON.parse(data.result);
@@ -394,13 +395,22 @@ class LoginBox extends Box {
             }else if (ret.id == TWLogin.ERROR_NOTLOGIN){
             }else {
             }
+            this.setState({
+              blnWait: false,
+            });
         }else if (data.code == TWLogin.CB_CODE_LOGIN){
+            this.setState({
+              blnWait: false,
+            });
             this.hidden();
             HomeMenuLeft.userLogin();
         }else if (data.code == TWLogin.CB_CODE_LOGOUT){
         }else if (data.code == TWLogin.CB_CODE_EXPIRED){
           if (data.result == TWLogin.EXPIRED_OUT){
             }else {
+                this.setState({
+                  blnWait: false,
+                });
                 this.hidden();
                 HomeMenuLeft.userLogin();
             }
@@ -413,24 +423,32 @@ class LoginBox extends Box {
       blnWait: true,
     });
     app.onLoginThird('google', (json)=>{
-      this.setState({
-        blnWait: false,
-      });
-
       var data = json.data;
       if (data.code == GGLogin.CB_CODE_ERROR){
-        }else if (data.code == GGLogin.CB_CODE_LOGIN){
+        this.setState({
+          blnWait: false,
+        });
+      }else if (data.code == GGLogin.CB_CODE_LOGIN){
+          this.setState({
+            blnWait: false,
+          });
+          this.hidden();
+          HomeMenuLeft.userLogin();
+      }else if (data.code == GGLogin.CB_CODE_LOGOUT){
+      }else if (data.code == GGLogin.CB_CODE_EXPIRED){
+          if (data.result == GGLogin.EXPIRED_OUT){
+          }else {
+            this.setState({
+              blnWait: false,
+            });
             this.hidden();
             HomeMenuLeft.userLogin();
-        }else if (data.code == GGLogin.CB_CODE_LOGOUT){
-        }else if (data.code == GGLogin.CB_CODE_EXPIRED){
-            if (data.result == GGLogin.EXPIRED_OUT){
-            }else {
-                this.hidden();
-                HomeMenuLeft.userLogin();
-            }
-        }else if (data.code == GGLogin.CB_CODE_DISCONNECT){
-        }
+          }
+      }else if (data.code == GGLogin.CB_CODE_DISCONNECT){
+        this.setState({
+          blnWait: false,
+        });
+      }
     });
   }
   hiddenEnd(bln) {
