@@ -71,14 +71,42 @@ function SocketLink(app, _callback) {
       this.server_k = SERVER_K.CLOSE;
       // console.log('socket close');
       this.callback('close');
+      if (this.fromServer) {
+        var json = {
+          from: 'error',
+          msg: '失败',
+        };
+        this.fromServer(json);
+        this.fromServer = null;
+      }
     };
     app.ws.onerror = (e) => {
       // an error occurred
       this.server_k = SERVER_K.ERROE;
       // console.log('socket error');
       this.callback('error');
+      if (this.fromServer) {
+        var json = {
+          from: 'error',
+          msg: '失败',
+        };
+        this.fromServer(json);
+        this.fromServer = null;
+      }
     };
 	}
+  this.fromServerFail = function() {
+    this.timer = setTimeout(()=>{
+      if (this.fromServer) {
+        var json = {
+          from: 'error',
+          msg: '失败',
+        };
+        this.fromServer(json);
+        this.fromServer = null;
+      }
+    }, 10000);
+  }
 	this.stopLink = function() {
 		app.ws.close();
 	}
@@ -102,6 +130,7 @@ function SocketLink(app, _callback) {
 		} else {
 			callback('fail');
 		}
+    this.fromServerFail();
 	}
   // 第三方facebook登陆
   this.thirdSignUp = function(_id, _name, kind) {
@@ -118,6 +147,7 @@ function SocketLink(app, _callback) {
     this.sendToSocket('New', 'helloworld', app.storageUserInfo);
     app.storageUserInfo.blnSign = true;
     app.saveUserInfo(app.storageUserInfo);
+    this.fromServerFail();
   }
   // 用户信息修改
   this.userChangePassword = function(_id, callback, _fromServer) {
@@ -131,6 +161,7 @@ function SocketLink(app, _callback) {
     } else {
       callback('fail');
     }
+    this.fromServerFail();
   }
   // 用户登录
   this.userSignIn = function(_id, _password, callback, _fromServer) {
@@ -144,6 +175,7 @@ function SocketLink(app, _callback) {
     } else {
       callback('fail');
     }
+    this.fromServerFail();
   }
   // 用户数据上传
   this.userUpdate = function(callback, _fromServer) {
@@ -162,6 +194,7 @@ function SocketLink(app, _callback) {
     } else {
       callback('fail');
     }
+    this.fromServerFail();
   }
   // 默认登陆 用户信息验证，更新
   this.verifyUserInfo = function(obj) {
@@ -186,6 +219,7 @@ function SocketLink(app, _callback) {
         }
       }
     });
+    this.fromServerFail();
   }
   // 从服务器获得card信息
   this.getCardMsg = function(kind, data, callback, _fromServer) {
@@ -211,6 +245,7 @@ function SocketLink(app, _callback) {
         callback('fail');
       }
     }
+    this.fromServerFail();
   }
   // 得到描红信息
   this.getCharacter = function(name, callback, _fromServer) {
@@ -223,6 +258,7 @@ function SocketLink(app, _callback) {
     } else {
       callback('fail');
     }
+    this.fromServerFail();
   }
   // 得到课程信息
   this.getLesson = function(name, callback, _fromServer) {
@@ -235,6 +271,7 @@ function SocketLink(app, _callback) {
     } else {
       callback('fail');
     }
+    this.fromServerFail();
   }
 
   // 客户端向服务器发送消息
