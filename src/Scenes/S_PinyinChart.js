@@ -785,7 +785,7 @@ export default class S_PinyinChart extends Component {
       return (
         <Waiting
           show={this.dialogWaiting}
-          style={{width: w, height: h}} 
+          style={{width: w, height: h, borderRadius: MinUnit}} 
           text={'Loading'} 
           textStyle={{fontSize: MinUnit*5, color: '#6699CC', textAlign: 'center'}}
         />

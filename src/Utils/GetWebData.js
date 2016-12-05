@@ -9,8 +9,6 @@ import {
 } from 'react-native';
 
 var RNFS = require('react-native-fs');
-// var sound = require('react-native-sound');
-// Sound.MAIN_BUNDLE, Sound.DOCUMENT, Sound.LIBRARY, Sound.CACHES
 
 var webData = null;
 export default class GetWebData{
@@ -43,7 +41,6 @@ export default class GetWebData{
     this.callback = null;
     if (this.jobId != -1){
       RNFS.stopDownload(this.jobId);
-      // this.jobId = -1;
     }
   }
   

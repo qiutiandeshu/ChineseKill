@@ -71,46 +71,46 @@ export default class GGLogin{
   }
   gglCallback(data){
     this.CallbackTo(data);
-    if (data.code == GoogleLogin.CB_CODE_ERROR){
-      var ret = JSON.parse(data.result);
-      if (ret.id == GoogleLogin.ERROR_LOGIN){
-        alert('登录失败：' + ret.dsc);
-      }else if (ret.id == GoogleLogin.ERROR_DISCONNECT){
-        alert('断开连接失败：' + ret.dsc);
-      }else {
-        alert("未知错误！");
-      }
-    }else if (data.code == GoogleLogin.CB_CODE_LOGIN){
-      var ret = JSON.parse(data.result);
-      console.log('登录成功：' + ret.fullName + '!');
-      // this.setState({
-      //   glName: ret.fullName,
-      //   glEmail: ret.email,
-      //   glLoginStatus: true
-      // });
-      alert('欢迎回来，' + ret.fullName + '!');
-    }else if (data.code == GoogleLogin.CB_CODE_LOGOUT){
-      // this.setState({
-      //   glName: '',
-      //   glEmail: '',
-      //   glLoginStatus: false,
-      // });
-      alert('登出成功！');
-    }else if (data.code == GoogleLogin.CB_CODE_EXPIRED){
-      if (data.result == GoogleLogin.EXPIRED_OUT){
-        console.log('登录已经过期');
-        // this.LoginGoolge();
-      }else {
-        console.log('登录成功！');
-        // this.LoginGoogleSilently();
-      }
-    }else if (data.code == GoogleLogin.CB_CODE_DISCONNECT){
-      // this.setState({
-      //   glName: '',
-      //   glEmail: '',
-      //   glLoginStatus: false,
-      // });
-      alert('登出成功：' + ret.fullName);
-    }
+    // if (data.code == GoogleLogin.CB_CODE_ERROR){
+    //   var ret = JSON.parse(data.result);
+    //   if (ret.id == GoogleLogin.ERROR_LOGIN){
+    //     alert('登录失败：' + ret.dsc);
+    //   }else if (ret.id == GoogleLogin.ERROR_DISCONNECT){
+    //     alert('断开连接失败：' + ret.dsc);
+    //   }else {
+    //     alert("未知错误！");
+    //   }
+    // }else if (data.code == GoogleLogin.CB_CODE_LOGIN){
+    //   var ret = JSON.parse(data.result);
+    //   console.log('登录成功：' + ret.fullName + '!');
+    //   // this.setState({
+    //   //   glName: ret.fullName,
+    //   //   glEmail: ret.email,
+    //   //   glLoginStatus: true
+    //   // });
+    //   alert('欢迎回来，' + ret.fullName + '!');
+    // }else if (data.code == GoogleLogin.CB_CODE_LOGOUT){
+    //   // this.setState({
+    //   //   glName: '',
+    //   //   glEmail: '',
+    //   //   glLoginStatus: false,
+    //   // });
+    //   alert('登出成功！');
+    // }else if (data.code == GoogleLogin.CB_CODE_EXPIRED){
+    //   if (data.result == GoogleLogin.EXPIRED_OUT){
+    //     console.log('登录已经过期');
+    //     // this.LoginGoolge();
+    //   }else {
+    //     console.log('登录成功！');
+    //     // this.LoginGoogleSilently();
+    //   }
+    // }else if (data.code == GoogleLogin.CB_CODE_DISCONNECT){
+    //   // this.setState({
+    //   //   glName: '',
+    //   //   glEmail: '',
+    //   //   glLoginStatus: false,
+    //   // });
+    //   alert('登出成功：' + ret.fullName);
+    // }
   }
 }

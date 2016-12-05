@@ -65,6 +65,9 @@ export default class DrawWord extends Component {
     this.blnDownload = false;
     this.isData = false;
     this.createBackLine();
+    this.blnBlink = false;
+    this.blinkIdx = -1;
+    this.blinkFrame = 0;
   }
   static propTypes = {
     curWidth: PropTypes.number.isRequired, //宽高必须
@@ -79,6 +82,7 @@ export default class DrawWord extends Component {
     arrowShow: PropTypes.bool, //是否显示箭头
     showAll: PropTypes.bool, //是否一开始都显示 
     firstPlay: PropTypes.bool, //是否初始化自动播放
+    errorTip: PropTypes.number, //描红错误提示，书写错误几次就提示，0：表示不提示，默认不提示
   }
   static defaultProps = {
     autoSpeed: 3,
@@ -90,6 +94,7 @@ export default class DrawWord extends Component {
     arrowShow: true,
     showAll: false,
     firstPlay: false,
+    errorTip: 0,
   }
   componentWillMount() {
     if (this.props.blnTouch){
@@ -591,7 +596,7 @@ export default class DrawWord extends Component {
       return;
     }
     this.blnBlink = false;
-    var character = this.data.character;
+    var character = this.data;
     var color = character[this.blinkIdx].color;
     this.arrLine[this.blinkIdx] = (
       <Shape key={this.blinkIdx} d={character[this.blinkIdx].line} fill={color}/>
@@ -613,7 +618,7 @@ export default class DrawWord extends Component {
   blinkUpdate(){
     if (this.blnBlink){
       this.blinkFrame++;
-      var character = this.data.character;
+      var character = this.data;
       var color =  this.blinkFrame % 2 == 0 ? 'rgb(155,0,0)' : 'rgb(255,0,0)';
       this.arrLine[this.blinkIdx] = (
         <Shape key={this.blinkIdx} d={character[this.blinkIdx].line} fill={color}/>
@@ -635,11 +640,13 @@ export default class DrawWord extends Component {
     this.setRestart();
     this.stopAutoWrite();
     this._autoWrite = setInterval(this.autoWrite.bind(this), 1000/60);
+    this.blnAutoWrite = true;
   }
   stopAutoWrite(){
     if (this.blnDownload || !this.isData){
       return;
     }
+    this.blnAutoWrite = false;
     this._autoWrite && clearInterval(this._autoWrite);
     this._autoWrite = null;
     this.nowPos = 0;
@@ -663,6 +670,7 @@ export default class DrawWord extends Component {
             if (this.props.writeOver){
               this.props.writeOver();
             }
+            this.blnAutoWrite = false;
             this._autoWrite && clearInterval(this._autoWrite);
             this._autoWrite = null;
             this.setUpdate();
@@ -694,13 +702,13 @@ export default class DrawWord extends Component {
     this.setUpdate();
   }
   onStartShouldSetPanResponder(e, g){
-    if (this.blnDownload || !this.isData || this.drawIdx >= this.data.length){
+    if (this.blnDownload || !this.isData || this.drawIdx >= this.data.length || this.blnAutoWrite){
       return false;
     }
     return this.props.blnTouch;
   }
   onMoveShouldSetPanResponder(e, g){
-    if (this.blnDownload || !this.isData || this.drawIdx >= this.data.length){
+    if (this.blnDownload || !this.isData || this.drawIdx >= this.data.length || this.blnAutoWrite){
       return false;
     }
     return this.props.blnTouch;
@@ -782,10 +790,10 @@ export default class DrawWord extends Component {
           this.setUpdate();
           console.log('书写完毕!');
         }
-      }else if (this.nowPos == 0){
+      }else if (this.nowPos == 0 && this.props.errorTip > 0){ //设置描红错误提示
         this.wrongCount ++;
-        if (this.wrongCount == 3){
-          this.drawWord.setStrokeBlink();
+        if (this.wrongCount == this.props.errorTip){
+          this.setStrokeBlink();
           this.wrongCount = 0;
         }
       }
