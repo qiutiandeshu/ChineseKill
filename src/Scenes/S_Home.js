@@ -6,7 +6,7 @@ import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView'
 
-import {StyleSheet, Text, View, InteractionManager, Animated,Image,TouchableOpacity, ListView} from 'react-native'
+import {StyleSheet, Text, View, InteractionManager, Animated,Image,TouchableOpacity, ListView, Alert} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import MenuLeft from '../Component/HomeSideMenuLeft'
 import MenuRight from '../Component/HomeSideMenuRight'
@@ -248,6 +248,30 @@ export default class S_Home extends Component {
                         app.removeStorageData('Review')
                     }}>
                     <Text>删除存档</Text>
+                    </PanButton>}
+                {this.state.menuState == 'none'&&
+                    <PanButton name="btnDeleteSave" style={[styles.delBtn, {left: MinUnit*11}]} onPress={()=>{
+                        wd.Instance().deleteFile(wd.CACHES + '/mhJson', (result)=>{
+                            if (result.code == wd.CODE_DELETEFILE){
+                                Alert.alert(
+                                    '提示',
+                                    '删除描红文件成功',
+                                    [
+                                        {text: 'OK', onPress:()=>{}}
+                                    ]
+                                );
+                            }else{
+                                Alert.alert(
+                                    '提示',
+                                    result.error,
+                                    [
+                                        {text: 'OK', onPress:()=>{}}
+                                    ]
+                                );
+                            }
+                        });
+                    }}>
+                    <Text>删除描红文件</Text>
                     </PanButton>}
             </View>
         );

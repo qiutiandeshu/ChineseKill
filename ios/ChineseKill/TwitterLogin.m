@@ -24,7 +24,7 @@ RCT_EXPORT_METHOD(Login)
 //  [[Twitter sharedInstance] logInWithCompletion:^(TWTRSession* session, NSError* error){
 //    if (session){
 //      NSLog(@"signed in as %@", [session userName]);
-//      [self twlCallback:@"1" result:
+//      [self twlCallback:CB_CODE_LOGIN result:
 //       [NSString stringWithFormat:@"{\"userName\": \"%@\",\"userID\": \"%@\",\"authToken\": \"%@\",\"authTokenSecret\": \"%@\"}",
 //        [session userName],
 //        [session userID],
@@ -34,14 +34,13 @@ RCT_EXPORT_METHOD(Login)
 //       ];
 //    }else{
 //      NSLog(@"error: %@", [error localizedDescription]);
-//      [self twlCallback:@"0" result:
-//       [NSString stringWithFormat:@"{\"eroor\":\"%@\"}",
-//        [error localizedDescription]
-//        ]
-//       ];
+//      [self twlCallback:CB_CODE_ERROR
+//                 result:[NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"%@\"}",
+//                         ERROR_LOGIN,
+//                         [error localizedDescription]]];
 //    }
 //  }];
-  [[Twitter sharedInstance] logInWithMethods:TWTRLoginMethodWebBased completion:^(TWTRSession* session, NSError* error) {
+  [[Twitter sharedInstance] logInWithMethods:TWTRLoginMethodAll completion:^(TWTRSession* session, NSError* error) {
     if (session){
       NSLog(@"signed in as %@", [session userName]);
       [self twlCallback:CB_CODE_LOGIN result:
