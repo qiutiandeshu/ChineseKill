@@ -98,10 +98,10 @@ export default class QuestionTwo_TK extends Component {
         let checkAnswer = this.writeText
         checkAnswer = checkAnswer.replace(/\s/g,"")
         checkAnswer = checkAnswer.toLowerCase()
-        answerData = answerData.replace(/\s/g,"")
         console.log("我的答案:",checkAnswer,"正确答案:",answerData)
         for(let i=0;i<answerData.length;i++){
-            let answer = answerData[i].toLowerCase()
+            let answer = answerData[i].replace(/\s/g,"")
+            answer = answer.toLowerCase()
             if(answer == checkAnswer){
                 return "Right";
             }

@@ -20,7 +20,7 @@ export default class S_Practice extends Component {
         super(props);
         this.questionCount = props.questionData.length;
         let arrayColor = Array.from({length: this.questionCount}, ()=>'white');
-        console.log("练习页面属性:",props)
+       
         if(props.blnGate){
             this.saveProps = props
         }
@@ -200,10 +200,13 @@ export default class S_Practice extends Component {
                 </PanView>
             )
         }
-
+        let pointerEvents = 'auto'
+        if(this.state.showResult != ""){
+            //..pointerEvents = 'box-only'
+        }
         return (
             <View style={{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'#fff'}}>
-                <PanView style={styles.container} name="s_practice">
+                <PanView style={styles.container} name="s_practice" pointerEvents={pointerEvents}>
                     {this.renderTop()}
                     {this.renderQuestion()}
                     {this.renderBtnCheck()}
@@ -626,7 +629,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     resultView: {
-        backgroundColor: '#00000088', width: ScreenWidth, height: ScreenHeight, position: 'absolute', top: 0, left: 0
+        backgroundColor: '#00000088',
+        width: ScreenWidth,
+        height: ScreenHeight,
+        position: 'absolute',
+        top: 0,
+        left: 0
     },
     resultContent: {
         //backgroundColor: 'yellow',
