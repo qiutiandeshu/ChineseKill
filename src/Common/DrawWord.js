@@ -116,6 +116,7 @@ export default class DrawWord extends Component {
   componentWillUnmount() {
     this._blinkTime && clearTimeout(this._blinkTime);
     this._autoWrite && clearInterval(this._autoWrite);
+    webData.Release();
   }
   componentDidUpdate(prevProps, prevState) {
     var str1 = JSON.stringify(prevProps);
