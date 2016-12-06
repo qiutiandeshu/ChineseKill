@@ -1396,6 +1396,13 @@ class CardBox extends Box {
   }
   // 录音按钮
   onRecordKey() {
+    if (this.selectData == null) {
+      Alert.alert(
+        '警告',
+        '没有评测信息',
+      );
+      return;
+    }
     if (this.blnRecord == false) {
       this.stopPlay();
       // 开启语音评测

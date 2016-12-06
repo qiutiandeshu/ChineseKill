@@ -92,6 +92,7 @@ function SocketLink(app, _callback) {
    * @return {[type]} [description]
    */
   this.fromServerFail = function() {
+    if (this.fromServer == null) return;
     this.timer = setTimeout(()=>{
       if (this.fromServer) {
         var json = {
@@ -131,6 +132,7 @@ function SocketLink(app, _callback) {
 			callback('success');
 		} else {
 			callback('fail');
+      this.fromServer = null;
 		}
     this.fromServerFail();
 	}
@@ -162,6 +164,7 @@ function SocketLink(app, _callback) {
       callback('success');
     } else {
       callback('fail');
+      this.fromServer = null;
     }
     this.fromServerFail();
   }
@@ -176,6 +179,7 @@ function SocketLink(app, _callback) {
       callback('success');
     } else {
       callback('fail');
+      this.fromServer = null;
     }
     this.fromServerFail();
   }
@@ -195,6 +199,7 @@ function SocketLink(app, _callback) {
       callback('success');
     } else {
       callback('fail');
+      this.fromServer = null;
     }
     this.fromServerFail();
   }
@@ -231,6 +236,7 @@ function SocketLink(app, _callback) {
         callback('success');
       } else {
         callback('fail');
+        this.fromServer = null;
       }
     } else if (kind == 'Word') {
       this.fromServer = _fromServer;
@@ -238,6 +244,7 @@ function SocketLink(app, _callback) {
         callback('success');
       } else {
         callback('fail');
+        this.fromServer = null;
       }
     } else if (kind == 'All') {
       this.fromServer = _fromServer;
@@ -245,6 +252,7 @@ function SocketLink(app, _callback) {
         callback('success');
       } else {
         callback('fail');
+        this.fromServer = null;
       }
     }
     this.fromServerFail();
@@ -259,6 +267,7 @@ function SocketLink(app, _callback) {
       callback('success');
     } else {
       callback('fail');
+      this.fromServer = null;
     }
     this.fromServerFail();
   }
@@ -272,6 +281,7 @@ function SocketLink(app, _callback) {
       callback('success');
     } else {
       callback('fail');
+      this.fromServer = null;
     }
     this.fromServerFail();
   }
