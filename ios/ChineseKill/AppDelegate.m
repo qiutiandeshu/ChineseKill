@@ -93,7 +93,9 @@
                                                      annotation:annotation];
   BOOL gg =[[GIDSignIn sharedInstance]handleURL:url sourceApplication:sourceApplication annotation:annotation];
   return fb || gg;
-  
-  
+}
+-(BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString*, id> *)options
+{
+  return [[Twitter sharedInstance] application:app openURL:url options:options];
 }
 @end

@@ -291,7 +291,7 @@ export default class App extends Component {
         if (data.code == GGLogin.CB_CODE_ERROR) {
             var ret = JSON.parse(data.result);
             if (ret.id == GGLogin.ERROR_LOGIN) {
-                alert()('登录失败：' + ret.dsc);
+                alert('登录失败：' + ret.dsc);
             } else if (ret.id == GGLogin.ERROR_DISCONNECT) {
                 alert('断开连接失败：' + ret.dsc);
             } else {

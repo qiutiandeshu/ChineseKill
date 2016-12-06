@@ -55,7 +55,9 @@ RCT_EXPORT_METHOD(Login)
     }else{
       NSLog(@"error: %@", [error localizedDescription]);
       [self twlCallback:CB_CODE_ERROR
-                 result:[NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"%@\"}", ERROR_LOGIN, [error localizedDescription]]];
+                 result:[NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"%@\"}",
+                         ERROR_LOGIN,
+                         [error localizedDescription]]];
     }
   }];
 }
@@ -74,10 +76,9 @@ RCT_EXPORT_METHOD(GetInfos)
       [self twlCallback:CB_CODE_GETINFO result:[[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding]];
     }else{
       [self twlCallback:CB_CODE_ERROR
-                 result:
-       [NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"%@\"}",
-        ERROR_GETINFO,
-        [connectionError localizedDescription]]];
+                 result:[NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"%@\"}",
+                         ERROR_GETINFO,
+                         [connectionError localizedDescription]]];
     }
   }];
 }
@@ -94,11 +95,8 @@ RCT_EXPORT_METHOD(Logout)
   }else{
     NSLog(@"not login!");
     [self twlCallback:CB_CODE_ERROR
-               result:
-     [NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"not login!\"}",
-      ERROR_NOTLOGIN
-      ]
-     ];
+               result:[NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"not login!\"}",
+                       ERROR_NOTLOGIN]];
   }
 }
 
@@ -114,10 +112,9 @@ RCT_EXPORT_METHOD(IsExpired)
       }else if (error) {
         NSLog(@"isExpired error: %@", error.localizedDescription);
         [self twlCallback:CB_CODE_ERROR
-                   result:
-         [NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"%@\"}",
-          ERROR_EXPIRED,
-          [error localizedDescription]]];
+                   result:[NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"%@\"}",
+                           ERROR_EXPIRED,
+                           [error localizedDescription]]];
       }else{
         NSLog(@"not expired!");
         [self twlCallback:CB_CODE_EXPIRED result:EXPIRED_IN];
@@ -126,11 +123,8 @@ RCT_EXPORT_METHOD(IsExpired)
   }else{
     NSLog(@"not login!");
     [self twlCallback:CB_CODE_ERROR
-               result:
-     [NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"not login!\"}",
-      ERROR_NOTLOGIN
-      ]
-     ];
+               result:[NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"not login!\"}",
+                       ERROR_NOTLOGIN]];
   }
 }
 

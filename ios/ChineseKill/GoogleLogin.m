@@ -112,6 +112,8 @@ RCT_EXPORT_METHOD(Disconnect)
 //  NSString *email = user.profile.email;
   // ...
   if (error){
+    UINavigationController* ui = [[UIApplication sharedApplication] valueForKeyPath:@"delegate.navigationController"];
+    [ui popViewControllerAnimated:YES];
     [self gglCallback:CB_CODE_ERROR
                result:[NSString stringWithFormat:@"{\"id\":\"%@\", \"dsc\":\"%@\"}",
                        ERROR_LOGIN,
@@ -150,9 +152,11 @@ RCT_EXPORT_METHOD(Disconnect)
 //-(void)signInWillDispatch:(GIDSignIn *)signIn error:(NSError *)error
 //{
 //  if (error) {
-//    NSLog(@"error: %@", [error localizedDescription]);
+//    NSLog(@"signInWillDispatch error: %@", [error localizedDescription]);
 //  }else{
-//    NSLog(@"signIn as %@", signIn.currentUser.profile.name);
+//    NSLog(@"signInWillDispatch: signIn as %@", signIn.currentUser.profile.name);
+//    UINavigationController* ui = [[UIApplication sharedApplication] valueForKeyPath:@"delegate.navigationController"];
+//    [ui popViewControllerAnimated:YES];
 //  }
 //}
 
