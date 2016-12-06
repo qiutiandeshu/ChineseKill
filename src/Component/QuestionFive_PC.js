@@ -82,6 +82,7 @@ export default class QuestionFive_PC extends Component {
         let list = []
         let str = this.props.questionData.Q_Question
         str = str.replace(/_|。|，|？|！|；|：/g,'')
+        console.log("解析的str:",str)
         if(this.nowResultType == 'result'){
             for(let i=0;i<str.length;i++){
                 list.push(
@@ -109,11 +110,15 @@ export default class QuestionFive_PC extends Component {
     }
 
     getResultMsg = (str,detail)=>{
-        console.log('getResultMsg',detail)
+        //console.log('getResultMsg',detail)
         const {overallScore,phnScore,pronScore,toneScore,originalTone,recordTone,phoneScores} = detail
         let toneStr = ["轻声","一声","二声","三声","四声"]
         let result = str + ": "
         let blnGood = true
+        if(detail.overallScore<20){
+            result += "漏读或者声韵调均未读准确"
+            return result
+        }
         if(phoneScores.sm){
             if(phoneScores.sm < 75){
                 result += "声母读的不准  "
@@ -160,7 +165,7 @@ export default class QuestionFive_PC extends Component {
     onPressRecord = ()=> {
         if (this.state.recordState == "normal") {
             let param = {
-                gategory: 'word',
+                gategory: 'sent',
                 text: this.props.questionData.Q_Answer,
                 audioName: this.props.questionInfo
             }
@@ -186,7 +191,7 @@ export default class QuestionFive_PC extends Component {
     callBackRecord = (data)=> {
         switch (data.type) {
             case 'volume':
-                console.log("获得音量回调:",data.volume)
+                //..console.log("获得音量回调:",data.volume)
                 this.setState({
                     volumProgress: data.volume
                 })

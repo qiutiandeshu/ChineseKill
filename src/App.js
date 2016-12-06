@@ -224,6 +224,7 @@ export default class App extends Component {
     }
 
     fbCallback(data) {
+        this.thirdLoginCallback('facebook', data);
         if (parseInt(data.code) == FBLogin.CB_Error) {
             alert('登录FB出错:' + data.err_msg);
         } else if (parseInt(data.code) == FBLogin.CB_Expired) {
@@ -236,10 +237,10 @@ export default class App extends Component {
         } else if (parseInt(data.code) == FBLogin.CB_Logout) {
             alert('退出登录！');
         }
-        this.thirdLoginCallback('facebook', data);
     }
 
     twCallback(data) {
+        this.thirdLoginCallback('facebook', data);
         if (data.code == TWLogin.CB_CODE_ERROR) {
             var ret = JSON.parse(data.result);
             if (ret.id == TWLogin.ERROR_LOGIN) {
@@ -283,11 +284,11 @@ export default class App extends Component {
             // });
             // console.log('欢迎回来，' + ret.name + '!');
         }
-        this.thirdLoginCallback('facebook', data);
     }
 
     ggCallback(data) {
         // console.log(data);
+        this.thirdLoginCallback('facebook', data);
         if (data.code == GGLogin.CB_CODE_ERROR) {
             var ret = JSON.parse(data.result);
             if (ret.id == GGLogin.ERROR_LOGIN) {
@@ -330,7 +331,6 @@ export default class App extends Component {
             // });
             // console.log('登出成功：' + ret.fullName);
         }
-        this.thirdLoginCallback('facebook', data);
     }
 
     /*--------------------------Login end-----------------------*/
@@ -485,7 +485,7 @@ export default class App extends Component {
     }
 
     getDetails(details) {
-        console.log("获取详情:", details)
+        //console.log("获取详情:", details)
         var detailList = [];
         if (details) {
             for (let i = 0; i < details.length; i++) {
@@ -502,7 +502,7 @@ export default class App extends Component {
                 detailList[i] = detail
             }
         }
-        console.log("获取详情:", detailList)
+        //..console.log("获取详情:", detailList)
         return detailList;
     }
 
@@ -519,6 +519,13 @@ export default class App extends Component {
     }
 
     getPhoneScore = (content, phone)=> {
+        //console.log("获取到声明韵母的分数:",content,phone)
+        if(!phone){
+            let tmp = []
+            tmp[0] = 15+Math.floor(Math.random()*50)
+            phone = tmp;
+            console.log("这是一个前台硬写入的phone值:",phone)
+        }
         let pinyin = {}
         for (let i = 0; i < SyllableData.length; i++) {
             let syllable = SyllableData[i]
@@ -559,7 +566,6 @@ export default class App extends Component {
     }
 
     pcmCallback(data) {//播放录音的返回结果，主要的使用是播放完毕的回调。
-        console.log("会不会走到这里来呢")
         let workState = ''
         if (data.status == cv.PCM_TOTALTIME) {
             workState = 'totalTime' + data.msg//
@@ -977,7 +983,6 @@ export default class App extends Component {
     }
 
     stopSound = (audioName,audioTarget)=> {
-        if (this.objSound[audioName] == null) return;
         this.objSound[audioName].stop()
         this.nowPlayAudio = ''
         this.playTarget = -1
