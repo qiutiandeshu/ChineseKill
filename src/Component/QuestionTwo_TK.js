@@ -7,10 +7,12 @@ import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView'
 
-import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, TextInput,} from 'react-native'
+import {StyleSheet, Text, View, InteractionManager, Animated, TouchableOpacity, TextInput,Keyboard} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import QuestionRender from '../Common/QuestionRender'
+
+
 
 export default class QuestionTwo_TK extends Component {
     constructor(props) {
@@ -36,6 +38,7 @@ export default class QuestionTwo_TK extends Component {
     render() {
         return (
             <View style={styles.container}>
+                <PanButton name="btnCloseKeyboard" style={styles.hiddenBtn} onPress={this.hiddenKeyboard.bind(this)}/>
                 {this.renderTitle()}
                 {this.renderQuestion()}
                 {this.renderContents()}
@@ -59,6 +62,10 @@ export default class QuestionTwo_TK extends Component {
     }
 
     renderContents = ()=> {
+        let autoCorrect = false;
+        if(this.props.questionData.A_Tips.length < 30){
+            autoCorrect = true
+        }
         return (
             <TextInput style={styles.textInput}
                 multiline={true} ref = "input"
@@ -68,6 +75,7 @@ export default class QuestionTwo_TK extends Component {
                        onEndEditing = {()=>{console.log("输入结束")}}
                        blurOnSubmit = {true}
                        returnKeyType = "done"
+                       autoCorrect = {autoCorrect}
             />
         );
     }
@@ -90,6 +98,7 @@ export default class QuestionTwo_TK extends Component {
         let checkAnswer = this.writeText
         checkAnswer = checkAnswer.replace(/\s/g,"")
         checkAnswer = checkAnswer.toLowerCase()
+        answerData = answerData.replace(/\s/g,"")
         console.log("我的答案:",checkAnswer,"正确答案:",answerData)
         for(let i=0;i<answerData.length;i++){
             let answer = answerData[i].toLowerCase()
@@ -98,6 +107,10 @@ export default class QuestionTwo_TK extends Component {
             }
         }
         return "Wrong"
+    }
+
+    hiddenKeyboard = ()=>{
+        Keyboard.dismiss()
     }
 } 
 
@@ -111,5 +124,13 @@ const styles = StyleSheet.create({
         backgroundColor:'#F6F6F6',
         fontSize:MinUnit*2,
         padding:MinUnit,
+    },
+    hiddenBtn:{
+        position:'absolute',
+        width:ScreenWidth,
+        height:ScreenHeight,
+        top:0,
+        left:0,
+        backgroundColor:'white'
     },
 });
