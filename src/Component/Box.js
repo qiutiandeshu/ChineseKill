@@ -79,7 +79,7 @@ class Box extends Component {
     console.log(webData.DOCUMENT+"/Sound");
     var param = {
       name: name,
-      path: webData.DOCUMENT+"/Sound", //文件路径
+      path: webData.DOCUMENT+"/Sound",
       uri: pyUrl+name,
       type: "none",
       over: false,
@@ -110,7 +110,7 @@ class SettingBox extends Box {
 	render() {
 		return (
 			<PopupBox ref={'PopupBox'} name={'每日提醒'} leftIconName={'close'} onLeftPress={this.hidden.bind(this)} backPress={this.backPress.bind(this)}>
-        <PushNotification />      
+        <PushNotification />
 			</PopupBox>
 		);
 	}
@@ -360,7 +360,9 @@ class LoginBox extends Box {
     this.setState({
       blnWait: true,
     });
+    this.blnFacebook = false;
     app.onLoginThird('facebook', (json)=>{
+      this.blnFacebook = true;
       var data = json.data;
       if (parseInt(data.code) == FBLogin.CB_Error){
         this.setState({
@@ -380,12 +382,20 @@ class LoginBox extends Box {
       }else if (parseInt(data.code) == FBLogin.CB_Logout){
       }
     });
+    this.timer = setTimeout(()=>{
+      if (this.blnFacebook) return;
+      this.setState({
+        blnWait: false,
+      });
+    }, 10000);
   }
   onTwitterLogin() {
     this.setState({
       blnWait: true,
     });
+    this.blnTwitter = false;
     app.onLoginThird('twitter', (json)=>{
+      this.blnTwitter = true;
       var data = json.data;
       if (data.code == TWLogin.CB_CODE_ERROR){
             var ret = JSON.parse(data.result);
@@ -409,12 +419,20 @@ class LoginBox extends Box {
           HomeMenuLeft.userLogin();
         }
     });
+    this.timer = setTimeout(()=>{
+      if (this.blnTwitter) return;
+      this.setState({
+        blnWait: false,
+      });
+    }, 10000);
   }
   onGoogleLogin() {
     this.setState({
       blnWait: true,
     });
+    this.blnGoogle = false;
     app.onLoginThird('google', (json)=>{
+      this.blnGoogle = true;
       var data = json.data;
       if (data.code == GGLogin.CB_CODE_ERROR){
         this.setState({
@@ -442,6 +460,12 @@ class LoginBox extends Box {
         });
       }
     });
+    this.timer = setTimeout(()=>{
+      if (this.blnGoogle) return;
+      this.setState({
+        blnWait: false,
+      });
+    }, 10000);
   }
   hiddenEnd(bln) {
     this.email = '';
@@ -764,18 +788,22 @@ class FlashCardBox extends Box {
           app.storageReview['Word'] = {};
           app.storageReview['Sentence'] = {};
         }
-        json.data.Character.forEach((obj)=>{
-          obj.factor = 2500;
-          obj.day = socket.getTime();
-          obj.review_t = -1 * DAY_TIME;
-          app.storageReview['Character'][obj.key] = obj;
-        });
-        json.data.Word.forEach((obj)=>{
-          obj.factor = 2500;
-          obj.day = socket.getTime();
-          obj.review_t = -1 * DAY_TIME;
-          app.storageReview['Word'][obj.key] = obj;
-        });
+        if (json.data.Character) {
+          json.data.Character.forEach((obj)=>{
+            obj.factor = 2500;
+            obj.day = socket.getTime();
+            obj.review_t = -1 * DAY_TIME;
+            app.storageReview['Character'][obj.key] = obj;
+          });
+        }
+        if (json.data.Word) {
+          json.data.Word.forEach((obj)=>{
+            obj.factor = 2500;
+            obj.day = socket.getTime();
+            obj.review_t = -1 * DAY_TIME;
+            app.storageReview['Word'][obj.key] = obj;
+          });
+        }
         app.saveReview(app.storageReview);
         this.initSetting();
       }

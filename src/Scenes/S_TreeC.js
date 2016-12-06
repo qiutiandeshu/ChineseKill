@@ -33,7 +33,6 @@ export default class S_TreeZ extends Component {
 
     this.state = {
       blnRefresh: false,
-      blnWeb: false,
     };
     this.blnWait = true;
   }
@@ -50,9 +49,6 @@ export default class S_TreeZ extends Component {
   }
   componentDidMount() {
     InteractionManager.runAfterInteractions(()=>{
-      this.setState({
-        blnWeb: true
-      });
       this.timer = setTimeout(()=>{
         this.blnWait = false;
         this.Refresh();

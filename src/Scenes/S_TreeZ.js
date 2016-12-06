@@ -28,7 +28,6 @@ export default class S_TreeZ extends Component {
 
     this.state = {
       blnRefresh: false,
-      blnWeb: false,
     };
     this.blnWait = true;
   }
@@ -46,9 +45,6 @@ export default class S_TreeZ extends Component {
   componentDidMount() {
     InteractionManager.runAfterInteractions(()=>{
       // this.postMessage(Home.searchWord);
-      this.setState({
-        blnWeb: true
-      });
       this.timer = setTimeout(()=>{
         this.blnWait = false;
         this.Refresh();
@@ -64,7 +60,6 @@ export default class S_TreeZ extends Component {
       <View style={styles.container}>
         {this.renderTop()}
         <View style={{flex: 1,}}>
-        {this.state.blnWeb && 
           <WebViewBridge
             source={{uri: 'http://192.168.1.110:8811/hzsvg'}}
             scalesPageToFit={true}
@@ -72,7 +67,6 @@ export default class S_TreeZ extends Component {
             onBridgeMessage={this.onMessage.bind(this)}
             ref={(webview)=>{this.webview = webview;}}>
           </WebViewBridge>
-        }
           {/*<View style={styles.inputView}>
             <TextInput
               ref={'Input'}
