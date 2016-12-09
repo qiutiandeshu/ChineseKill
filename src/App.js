@@ -241,6 +241,7 @@ export default class App extends Component {
     }
 
     twCallback(data) {
+        console.log(data);
         if (data.code == TWLogin.CB_CODE_ERROR) {
             var ret = JSON.parse(data.result);
             if (ret.id == TWLogin.ERROR_LOGIN) {
@@ -284,7 +285,7 @@ export default class App extends Component {
             // });
             // console.log('欢迎回来，' + ret.name + '!');
         }
-        this.thirdLoginCallback('facebook', data);
+        this.thirdLoginCallback('twitter', data);
     }
 
     ggCallback(data) {

@@ -267,6 +267,7 @@ export default class DrawWord extends Component {
     this.showPoints = [];
     this.showArrow = [];
     this.blinkLine = null;
+    this.setUpdate();
   }
   InitWord(data){
     if (this.props.curWidth != 400){

@@ -194,10 +194,11 @@ class LogoutBox extends Box {
   onLogoutPress() {
     app.storageUserInfo.blnSign = false;
     app.saveUserInfo(app.storageUserInfo);
+    console.log('玩家信息：', app.storageUserInfo);
     if (app.storageUserInfo.kind != 'create') {
-      app.onLogoutThird(app.storageUserInfo.kind, (date)=>{
-
-      })
+      app.onLogoutThird(app.storageUserInfo.kind, (data)=>{
+        console.log('登出',data);
+      });
     }
     app.storageUserInfo = null;
     app.saveUserInfo(app.storageUserInfo);
