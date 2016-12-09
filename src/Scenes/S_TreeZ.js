@@ -61,7 +61,7 @@ export default class S_TreeZ extends Component {
         {this.renderTop()}
         <View style={{flex: 1,}}>
           <WebViewBridge
-            source={{uri: 'http://192.168.1.110:8811/hzsvg'}}
+            source={{uri: 'http://192.169.1.19:8811/hzsvg'}}
             scalesPageToFit={true}
             style={styles.webview}
             onBridgeMessage={this.onMessage.bind(this)}

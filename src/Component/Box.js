@@ -1342,7 +1342,6 @@ class CardBox extends Box {
   }
   render() {
     var _name = this.props.kind + ' Review';
-    console.log('blnRecord: '+this.blnRecord);
     return (
       <PopupBox ref={'PopupBox'} name={_name}
         leftIconName={'close'} onLeftPress={()=>{this.hidden();this.stopPlay();app.onStopChivox();}} 
@@ -1618,7 +1617,6 @@ class CardBox extends Box {
     if (this.selectData) {
       _name = this.selectData.character;
     }
-    console.log('renderCharacter: '+_name);
     return (
       <PanView name={'v_characterBox'} style={styles.character}>
         <PanView name={'v_characterBox_c'} style={[styles.c_view, ]}>

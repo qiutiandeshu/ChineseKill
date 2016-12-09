@@ -23,6 +23,7 @@ export default class HomeSideMenuLeft extends Component {
             blnSign: bln,
         };
         global.HomeMenuLeft = this;
+        this.blnShowBox = false;
     }
     static propTypes = {
         onCancel:React.PropTypes.func.isRequired,
@@ -49,6 +50,9 @@ export default class HomeSideMenuLeft extends Component {
             </PanView>
         );
     }
+    componentWillUnmount() {
+      this.timer && clearTimeout(this.timer);
+    }
     _onCloseSideMenu = ()=>{        
         this.props.onCancel();
     }
@@ -66,7 +70,11 @@ export default class HomeSideMenuLeft extends Component {
     }
     // 控制弹出框显示
     _onPopupBoxShow = (name)=>{
-        Home._onPopupBoxShow(name);
+        if (this.blnShowBox == false) {
+            Home._onPopupBoxShow(name);
+            this.blnShowBox = true;
+            this.timer = setTimeout(()=>{this.blnShowBox = false}, 500);
+        }
     }
     _onPopupBoxHidden = (name)=>{
         Home._onPopupBoxHidden(name);

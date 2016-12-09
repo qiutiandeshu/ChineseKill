@@ -202,7 +202,7 @@ export default class S_Practice extends Component {
         }
         let pointerEvents = 'auto'
         if(this.state.showResult != ""){
-            //..pointerEvents = 'box-only'
+            pointerEvents = 'box-only'
         }
         return (
             <View style={{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'#fff'}}>

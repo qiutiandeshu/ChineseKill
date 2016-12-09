@@ -11,7 +11,8 @@ function SocketLink(app, _callback) {
   // 连接服务器
   this.callback = _callback;
 	this.startLink = function() {
-		app.ws = new WebSocket('ws://192.168.1.110:1111');
+		app.ws = new WebSocket('ws://192.169.1.19:1111');
+    console.log("helloworld");
     this.server_k = SERVER_K.START;
 
     app.ws.onopen = (e) => {

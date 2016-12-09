@@ -74,7 +74,7 @@ export default class S_TreeZ extends Component {
           </View>
           <PanView name={'v_treec_web'} style={[styles.webview, styles.border]} >
             <WebViewBridge
-              source={{uri: 'http://192.168.1.110:8811/chsvg'}}
+              source={{uri: 'http://192.169.1.19:8811/chsvg'}}
               scalesPageToFit={true}
               style={{flex: 1,}}
               onBridgeMessage={this.onMessage.bind(this)}
