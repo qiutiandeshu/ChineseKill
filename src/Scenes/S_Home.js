@@ -270,6 +270,9 @@ export default class S_Home extends Component {
                                 );
                             }
                         });
+                        // app.onLoginThird("facebook", (data)=>{
+                        //     console.log(data);
+                        // });
                     }}>
                     <Text>删除描红文件</Text>
                     </PanButton>}

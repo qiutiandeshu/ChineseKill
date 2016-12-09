@@ -224,6 +224,7 @@ export default class App extends Component {
     }
 
     fbCallback(data) {
+        // console.log(data);
         if (parseInt(data.code) == FBLogin.CB_Error) {
             alert('登录FB出错:' + data.err_msg);
         } else if (parseInt(data.code) == FBLogin.CB_Expired) {
