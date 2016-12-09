@@ -83,7 +83,7 @@ export default class HomeSideMenuLeft extends Component {
     // 用户头像，登陆
     renderUserInfo = ()=>{
         var _word = 'Sign In/Sign Up';
-        if (this.state.blnSign) {
+        if (this.state.blnSign && app.storageUserInfo) {
             _word = ''+app.storageUserInfo.username;
             if (_word.length > 15) {
                 _word = _word.slice(0, 11) + '...';

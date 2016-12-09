@@ -224,7 +224,6 @@ export default class App extends Component {
     }
 
     fbCallback(data) {
-        this.thirdLoginCallback('facebook', data);
         if (parseInt(data.code) == FBLogin.CB_Error) {
             alert('登录FB出错:' + data.err_msg);
         } else if (parseInt(data.code) == FBLogin.CB_Expired) {
@@ -237,10 +236,10 @@ export default class App extends Component {
         } else if (parseInt(data.code) == FBLogin.CB_Logout) {
             alert('退出登录！');
         }
+        this.thirdLoginCallback('facebook', data);
     }
 
     twCallback(data) {
-        this.thirdLoginCallback('facebook', data);
         if (data.code == TWLogin.CB_CODE_ERROR) {
             var ret = JSON.parse(data.result);
             if (ret.id == TWLogin.ERROR_LOGIN) {
@@ -284,11 +283,13 @@ export default class App extends Component {
             // });
             // console.log('欢迎回来，' + ret.name + '!');
         }
+        this.thirdLoginCallback('facebook', data);
     }
 
     ggCallback(data) {
         // console.log(data);
-        this.thirdLoginCallback('facebook', data);
+        console.log("谷歌登陆完成!");
+        console.log(data);
         if (data.code == GGLogin.CB_CODE_ERROR) {
             var ret = JSON.parse(data.result);
             if (ret.id == GGLogin.ERROR_LOGIN) {
@@ -331,6 +332,7 @@ export default class App extends Component {
             // });
             // console.log('登出成功：' + ret.fullName);
         }
+        this.thirdLoginCallback('facebook', data);
     }
 
     /*--------------------------Login end-----------------------*/
