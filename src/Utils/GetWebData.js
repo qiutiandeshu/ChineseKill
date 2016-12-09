@@ -20,11 +20,15 @@ export default class GetWebData{
     return webData;
   }
   static Remove(){
-    webData.remove();
-    webData = null;
+    if (webData){
+      webData.remove();
+      webData = null;
+    }
   }
   static Release(){
-    webData.remove();
+    if (webData){
+      webData.remove();
+    }
   }
   //文件路径名称
   static MAIN_BUNDLE = RNFS.MainBundlePath;
