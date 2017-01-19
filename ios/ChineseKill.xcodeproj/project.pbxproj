@@ -145,6 +145,13 @@
 			remoteGlobalIDString = 4114DC4C1C187C3A003CD988;
 			remoteInfo = "React-Native-Webview-Bridge";
 		};
+		5A03FA4A1E30689300CFF4AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5A03FA461E30689300CFF4AD /* React-Native-Webview-Bridge.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4114DC4C1C187C3A003CD988;
+			remoteInfo = "React-Native-Webview-Bridge";
+		};
 		5A20B1151DDACD5E00F2EB54 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */;
@@ -275,6 +282,7 @@
 		1AE34EC588CF41F38DD7D8D5 /* RNSound.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSound.xcodeproj; path = "../node_modules/react-native-sound/RNSound.xcodeproj"; sourceTree = "<group>"; };
 		32CA045D0B944AFFB81D95EF /* RNFS.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
 		47E005161DEFC2D1006FCCDC /* React-Native-Webview-Bridge.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Native-Webview-Bridge.xcodeproj"; path = "../node_modules/react-native-webview-bridge/ios/React-Native-Webview-Bridge.xcodeproj"; sourceTree = "<group>"; };
+		5A03FA461E30689300CFF4AD /* React-Native-Webview-Bridge.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Native-Webview-Bridge.xcodeproj"; path = "../../../React-Native/ChineseKill/node_modules/react-native-webview-bridge/ios/React-Native-Webview-Bridge.xcodeproj"; sourceTree = "<group>"; };
 		5A20B0FF1DDACD5E00F2EB54 /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entypo.ttf; sourceTree = "<group>"; };
 		5A20B1001DDACD5E00F2EB54 /* EvilIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = EvilIcons.ttf; sourceTree = "<group>"; };
 		5A20B1011DDACD5E00F2EB54 /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.ttf; sourceTree = "<group>"; };
@@ -516,6 +524,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5A03FA471E30689300CFF4AD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5A03FA4B1E30689300CFF4AD /* libReact-Native-Webview-Bridge.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		5A20B0FE1DDACD5E00F2EB54 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -554,6 +570,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				5A03FA461E30689300CFF4AD /* React-Native-Webview-Bridge.xcodeproj */,
 				5AFDEB6D1DF2B0860023FFF1 /* RCTPushNotification.xcodeproj */,
 				47E005161DEFC2D1006FCCDC /* React-Native-Webview-Bridge.xcodeproj */,
 				90EE71961DDEEA0D005B6662 /* ART.xcodeproj */,
@@ -738,8 +755,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ChineseKill" */;
 			buildPhases = (
-				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
+				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				90274B911DED08A8002C9AA9 /* ShellScript */,
@@ -841,6 +858,10 @@
 					ProjectRef = 47E005161DEFC2D1006FCCDC /* React-Native-Webview-Bridge.xcodeproj */;
 				},
 				{
+					ProductGroup = 5A03FA471E30689300CFF4AD /* Products */;
+					ProjectRef = 5A03FA461E30689300CFF4AD /* React-Native-Webview-Bridge.xcodeproj */;
+				},
+				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
 				},
@@ -923,6 +944,13 @@
 			fileType = archive.ar;
 			path = "libReact-Native-Webview-Bridge.a";
 			remoteRef = 47E0052B1DEFC2D1006FCCDC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		5A03FA4B1E30689300CFF4AD /* libReact-Native-Webview-Bridge.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libReact-Native-Webview-Bridge.a";
+			remoteRef = 5A03FA4A1E30689300CFF4AD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		5A20B1161DDACD5E00F2EB54 /* libRCTImage-tvOS.a */ = {

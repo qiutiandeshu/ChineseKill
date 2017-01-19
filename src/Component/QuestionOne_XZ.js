@@ -157,7 +157,7 @@ export default class QuestionOne_XZ extends Component {
     }
 
     renderContents = ()=> {
-        let opition = []
+        /*let opition = []
         for(let i=0;i<this.listData.length;i++){
             const {content,blnSelect,pic} = this.listData[i]
             if(this.props.questionData.Q_Pics){
@@ -178,14 +178,15 @@ export default class QuestionOne_XZ extends Component {
             <View style={{flexDirection:flexDirection}}>
                 {opition}
             </View>
-        )
-        /*return (
+        )*/
+        return (
             <ListView name="content" dataSource={this.state.dataSource}
                       renderRow={this.renderOpition.bind(this)}
                       scrollEnabled={false}
                       contentContainerStyle={this.props.questionData.Q_Pics?styles.photoList:styles.textList}
+                      removeClippedSubviews={false}
             />
-        );*/
+        );
     }
     renderOpition = (rowData, sectionID, rowID)=> {
         const {content, blnSelect, pic} = rowData
@@ -312,7 +313,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         backgroundColor: '#EAEAEA',
         padding:MinWidth,
-        marginHorizontal:MinUnit*0.5,
+        marginHorizontal:MinUnit*0.25,
     },
     image:{
         width: ScreenWidth * 0.2,
@@ -322,7 +323,9 @@ const styles = StyleSheet.create({
     photoSelect: {
         backgroundColor: '#4BCFE1',
     },
-    textList: {},
+    textList: {
+
+    },
     photoList: {
         justifyContent: 'space-between',
         flexDirection: 'row',

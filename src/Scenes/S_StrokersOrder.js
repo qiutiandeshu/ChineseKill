@@ -228,6 +228,7 @@ export default class StrokersOrder extends Component {
           renderSectionHeader={this.renderSectionHeader.bind(this)}
           initialListSize={this.firstRenderCount}
           scrollRenderAheadDistance={500}
+          removeClippedSubviews={false}
         />
       </PanView>
     );
