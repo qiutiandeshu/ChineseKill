@@ -159,6 +159,15 @@ export default class App extends Component {
     }
 
     /*--------------------------Login start-----------------------*/
+    onShareThird(name, shareContent, callback) {
+        this.thirdCB = callback;
+        if (name == 'facebook'){
+            this.fbLogin.ShareLogin(shareContent);
+        } else {
+            console.log('not set this param of name');
+        }
+    }
+
     onLoginThird(name, callback) {
         this.thirdCB = callback;
         if (name == 'facebook') {

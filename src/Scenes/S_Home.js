@@ -6,7 +6,7 @@ import PanView from '../UserInfo/PanView'
 import PanButton from '../UserInfo/PanButton'
 import PanListView from '../UserInfo/PanListView'
 
-import {StyleSheet, Text, View, InteractionManager, Animated,Image,TouchableOpacity, ListView, Alert} from 'react-native'
+import {StyleSheet, Text, View, InteractionManager, Animated,Image,TouchableOpacity, ListView, Alert,} from 'react-native'
 import {ScreenWidth, ScreenHeight, MinWidth, MinUnit, UtilStyles, IconSize} from '../AppStyles'
 import MenuLeft from '../Component/HomeSideMenuLeft'
 import MenuRight from '../Component/HomeSideMenuRight'
@@ -275,6 +275,26 @@ export default class S_Home extends Component {
                         // });
                     }}>
                     <Text>删除描红文件</Text>
+                    </PanButton>}
+                {this.state.menuState == 'none'&&
+                    <PanButton name="btnShareFBLink" style={[styles.delBtn, {left: MinUnit*22}]} onPress={()=>{
+                        var shareContent = {
+                            contentType: 'link',
+                            contentUrl: "http://www.5ying.com",
+                            imageUrl: "http://www.5ying.com/magnithink/imgs/product/1.png",
+                            contentDescription: 'Wow, check out this great site!',
+                        };
+                        // var shareContent = {
+                        //   contentType: 'photo',
+                        //   photos: [
+                        //     {imageUrl: "./res/ball.png"}
+                        //   ],
+                        // };
+                        app.onShareThird("facebook", shareContent, (data)=>{
+                            console.log(data);
+                        });
+                    }}>
+                    <Text>分享到Facebook</Text>
                     </PanButton>}
             </View>
         );

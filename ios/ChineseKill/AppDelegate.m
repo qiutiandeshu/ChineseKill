@@ -48,6 +48,22 @@
   return YES;
 }
 
+// 不支持屏幕旋转
+- (BOOL)shouldAutorotate
+{
+  return NO;
+}
+
+// 只支持竖向
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations{
+  return UIInterfaceOrientationMaskLandscape;
+}
+
+// 画面一开始加载时就是竖向
+ - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+     return UIInterfaceOrientationLandscapeRight;
+ }
+
 
 // Required to register for notifications 需要注册通知
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings

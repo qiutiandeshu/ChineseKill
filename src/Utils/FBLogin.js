@@ -17,8 +17,13 @@ const {
   LoginManager,
   GraphRequest,
   GraphRequestManager,
+  ShareDialog,
+  ShareApi,
 } = FBSDK;
 
+var publish_permissions = [
+  "publish_actions",
+];
 var fbLogin = null;
 export default class FBLogin{
   static Instance(){
@@ -36,6 +41,8 @@ export default class FBLogin{
   static CB_Logout = 2;
   static CB_Expired = 3;
   static CB_GetInfo = 4;
+  static CB_ShareLogin = 5;
+  static CB_Share = 6;
 
   static ERR_Login = 1;
   static ERR_Logout = 2;
@@ -43,6 +50,8 @@ export default class FBLogin{
   static ERR_Cancel = 4;
   static ERR_IsExpired = 5;
   static ERR_GetInfo = 6;
+  static ERR_ShareLogin = 7;
+  static ERR_Share = 8;
 
   constructor(){
     this.infoRequest = new GraphRequest(
@@ -64,6 +73,121 @@ export default class FBLogin{
     if (this.callback){
       this.callback(data);
     }
+  }
+  // var shareContent = {
+  //   contentType: 'link',
+  //   contentUrl: "http://www.baidu.com",
+  //   imageUrl: "https://facebook.github.io/react-native/img/react-native-congratulations.png",
+  //   contentDescription: 'Wow, check out this great site!',
+  // };
+  ShareLogin(shareContent){
+    AccessToken.getCurrentAccessToken().then((data)=>{
+      if (data == null){
+        this.ShareLoginChild(shareContent);
+      }else {
+        var date = new Date();
+        var expirateDate = new Date();
+        expirateDate.setTime(data.expirationTime);
+        if (date.valueOf() > data.expirationTime){
+          this.ShareLoginChild(shareContent);
+        }else{
+          var bln = false;
+          for(var i=0;i<data.permissions.length;i++){
+            if (data.permissions[i] == "publish_actions"){
+              bln = true;
+              break;
+            }
+          }
+          if (bln){
+            this.shareLinkWithShareDialog(shareContent);
+          }else{
+            this.ShareLoginChild(shareContent);
+          }
+        }
+      }
+    }).catch((error)=>{
+      this.CallbackTo({
+        'code': FBLogin.CB_Error,
+        'id': FBLogin.ERR_ShareLogin,
+        'err_msg': error.toString(),
+      });
+    });
+    
+  }
+  ShareLoginChild(shareContent){
+    LoginManager.logInWithPublishPermissions(publish_permissions).then(
+      (result)=>{
+        if (result.isCancelled){
+          console.log("facebook share login cancel!");
+          this.CallbackTo({
+            'code': FBLogin.CB_Error,
+            'id': FBLogin.ERR_Cancel,
+            'err_msg': '取消授权！'
+          });
+        }else{
+          console.log("facebook share login success!");
+          this.CallbackTo({
+            'code': FBLogin.CB_ShareLogin
+          });
+          this.shareLinkWithShareDialog(shareContent);
+        }
+      }, (error)=>{
+        console.log("facebook share login:" + error);
+        this.CallbackTo({
+          'code': FBLogin.CB_Error,
+          'id': FBLogin.ERR_ShareLogin,
+          'err_msg': error
+        });
+      }
+    );
+  }
+  shareLinkWithShareDialog(shareContent) {
+    ShareDialog.canShow(shareContent).then(
+      (canShow)=>{
+        if (canShow) {
+          return ShareDialog.show(shareContent);
+        }
+      }
+    ).then(
+      (result)=>{
+        if (result.isCancelled || result.postId == undefined) {
+          console.log('Share cancelled');
+          this.CallbackTo({
+            'code': FBLogin.CB_Error,
+            'id': FBLogin.ERR_Cancel,
+            'err_msg': '取消分享！'
+          });
+        } else {
+          console.log('Share success with postId: ' + result.postId);
+           this.CallbackTo({
+            'code': FBLogin.CB_Share
+          });
+        }
+      },
+      (error)=>{
+        console.log('Share fail with error: ' + error);
+        this.CallbackTo({
+          'code': FBLogin.CB_Error,
+          'id': FBLogin.ERR_Share,
+          'err_msg': error
+        });
+      }
+    );
+
+    // ShareApi.canShare(shareContent).then(
+    //   (canShare)=>{
+    //     if (canShare) {
+    //       return ShareApi.share(shareContent, '/me', "Hello world!!");
+    //     }
+    //   }
+    // ).then(
+    //   (result)=>{
+    //     alert('Share with ShareApi success.');
+    //   },
+    //   (error)=>{
+    //     alert('Share with ShareApi failed with error: ' + error);
+    //   }
+    // );
   }
 
   // permissions=[
